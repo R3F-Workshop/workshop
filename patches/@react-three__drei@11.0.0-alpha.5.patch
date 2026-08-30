@@ -1,0 +1,79 @@
+diff --git a/webgpu/index.mjs b/webgpu/index.mjs
+index 265237b344dcfbec0670881af532f2e8af6730ea..5481d38f02b3ba665c5c4dd0037c68ab21e3480a 100644
+--- a/webgpu/index.mjs
++++ b/webgpu/index.mjs
+@@ -2,7 +2,7 @@ import * as React from 'react';
+ import { forwardRef, useImperativeHandle, useMemo, useEffect, useCallback, useRef, useLayoutEffect, useState, Fragment, createContext, useContext } from 'react';
+ import { useThree, useFrame, extend, createPortal, applyProps, useInstanceHandle, context as context$a, useLoader, addEffect, addAfterEffect } from '@react-three/fiber';
+ import * as THREE from 'three/webgpu';
+-import { MeshBasicNodeMaterial, RenderTarget, MeshNormalNodeMaterial, QuadMesh, MeshPhysicalNodeMaterial, Frustum, Matrix4, Line2NodeMaterial, Vector3, Vector4, Vector2, Color, InstancedInterleavedBuffer, InterleavedBufferAttribute, Object3D, WebGLCubeRenderTarget, HalfFloatType, CubeCamera as CubeCamera$1, EventDispatcher, Euler, Quaternion, MathUtils, TextureLoader, Texture as Texture$1, MeshLambertMaterial, DynamicDrawUsage, CatmullRomCurve3, CubicBezierCurve3, QuadraticBezierCurve3, Shape as Shape$1, CanvasTexture, DoubleSide, PerspectiveCamera as PerspectiveCamera$1, OrthographicCamera as OrthographicCamera$1, REVISION, AudioListener, AudioLoader, AnimationMixer, BufferAttribute, Box3, Sphere as Sphere$1, InstancedBufferAttribute, DepthTexture, DepthFormat, UnsignedShortType, CubeTextureLoader, DefaultLoadingManager, Ray, Raycaster, Camera, CubeReflectionMapping, EquirectangularReflectionMapping, Scene, RepeatWrapping, SpriteNodeMaterial, AdditiveBlending, CylinderGeometry } from 'three/webgpu';
++import { MeshBasicNodeMaterial, RenderTarget, MeshNormalNodeMaterial, QuadMesh, MeshPhysicalNodeMaterial, Frustum, Matrix4, Line2NodeMaterial, Vector3, Vector4, Vector2, Color, InstancedInterleavedBuffer, InterleavedBufferAttribute, Object3D, CubeRenderTarget as WebGLCubeRenderTarget, HalfFloatType, CubeCamera as CubeCamera$1, EventDispatcher, Euler, Quaternion, MathUtils, TextureLoader, Texture as Texture$1, MeshLambertMaterial, DynamicDrawUsage, CatmullRomCurve3, CubicBezierCurve3, QuadraticBezierCurve3, Shape as Shape$1, CanvasTexture, DoubleSide, PerspectiveCamera as PerspectiveCamera$1, OrthographicCamera as OrthographicCamera$1, REVISION, AudioListener, AudioLoader, AnimationMixer, BufferAttribute, Box3, Sphere as Sphere$1, InstancedBufferAttribute, DepthTexture, DepthFormat, UnsignedShortType, CubeTextureLoader, DefaultLoadingManager, Ray, Raycaster, Camera, CubeReflectionMapping, EquirectangularReflectionMapping, Scene, RepeatWrapping, SpriteNodeMaterial, AdditiveBlending, CylinderGeometry } from 'three/webgpu';
+ import { ArcballControls as ArcballControls$1 } from 'three/examples/jsm/controls/ArcballControls.js';
+ import { useGesture } from '@use-gesture/react';
+ import { FirstPersonControls as FirstPersonControls$1 } from 'three/examples/jsm/controls/FirstPersonControls.js';
+@@ -1821,39 +1821,40 @@ class PortalMaterialImpl extends MeshBasicNodeMaterial {
+   }
+   //* Uniform Accessors --
+   get blur() {
+-    return this._blur.value;
++    return this._blur?.value;
+   }
+   set blur(v) {
+-    this._blur.value = v;
++    if (this._blur) this._blur.value = v;
+   }
+   get map() {
+-    return this._map.value;
++    return this._map?.value;
+   }
+   set map(v) {
+-    this._map.value = v ?? new THREE.Texture();
++    if (this._map) this._map.value = v ?? new THREE.Texture();
+   }
+   get sdf() {
+-    return this._sdf.value;
++    return this._sdf?.value;
+   }
+   set sdf(v) {
+-    if (v) this._sdf.value = v;
++    if (v && this._sdf) this._sdf.value = v;
+   }
+   get blend() {
+-    return this._blend.value;
++    return this._blend?.value;
+   }
+   set blend(v) {
+-    this._blend.value = v;
++    if (this._blend) this._blend.value = v;
+   }
+   get size() {
+-    return this._size.value;
++    return this._size?.value;
+   }
+   set size(v) {
+-    this._size.value = v;
++    if (this._size) this._size.value = v;
+   }
+   get resolution() {
+-    return this._resolution.value;
++    return this._resolution?.value;
+   }
+   set resolution(v) {
++    if (!this._resolution) return;
+     if (Array.isArray(v)) this._resolution.value.set(v[0], v[1]);
+     else this._resolution.value.copy(v);
+   }
+@@ -2610,11 +2611,11 @@ const RenderCubeTexture = /* @__PURE__ */ React.forwardRef(
+         depthBuffer,
+         generateMipmaps
+       };
+-      const fboA2 = new THREE.WebGLCubeRenderTarget(fboSize, settings);
++      const fboA2 = new THREE.CubeRenderTarget(fboSize, settings);
+       fboA2.texture.isRenderTargetTexture = !flip;
+       fboA2.texture.flipY = true;
+       fboA2.texture.type = THREE.HalfFloatType;
+-      const fboB2 = new THREE.WebGLCubeRenderTarget(fboSize, settings);
++      const fboB2 = new THREE.CubeRenderTarget(fboSize, settings);
+       fboB2.texture.isRenderTargetTexture = !flip;
+       fboB2.texture.flipY = true;
+       fboB2.texture.type = THREE.HalfFloatType;

@@ -1,0 +1,38 @@
+diff --git a/dist/react-three-rapier.cjs.dev.js b/dist/react-three-rapier.cjs.dev.js
+index 5457a71526770bf8eb5968588c1d6d2af0177d3b..4b7e4558fd90067edcbbf478ead40b73125f6a5f 100644
+--- a/dist/react-three-rapier.cjs.dev.js
++++ b/dist/react-three-rapier.cjs.dev.js
+@@ -3,7 +3,7 @@
+ Object.defineProperty(exports, '__esModule', { value: true });
+ 
+ var rapier3dCompat = require('@dimforge/rapier3d-compat');
+-var fiber = require('@react-three/fiber');
++var fiber = require('@react-three/fiber/webgpu');
+ var React = require('react');
+ var three = require('three');
+ var suspendReact = require('suspend-react');
+diff --git a/dist/react-three-rapier.cjs.prod.js b/dist/react-three-rapier.cjs.prod.js
+index 5457a71526770bf8eb5968588c1d6d2af0177d3b..4b7e4558fd90067edcbbf478ead40b73125f6a5f 100644
+--- a/dist/react-three-rapier.cjs.prod.js
++++ b/dist/react-three-rapier.cjs.prod.js
+@@ -3,7 +3,7 @@
+ Object.defineProperty(exports, '__esModule', { value: true });
+ 
+ var rapier3dCompat = require('@dimforge/rapier3d-compat');
+-var fiber = require('@react-three/fiber');
++var fiber = require('@react-three/fiber/webgpu');
+ var React = require('react');
+ var three = require('three');
+ var suspendReact = require('suspend-react');
+diff --git a/dist/react-three-rapier.esm.js b/dist/react-three-rapier.esm.js
+index f3f41fbd35857d9cfed865b9a955500407759c3f..5d5d0bc2e1abed2db4e502e652c8513036aa05cf 100644
+--- a/dist/react-three-rapier.esm.js
++++ b/dist/react-three-rapier.esm.js
+@@ -1,6 +1,6 @@
+ import { Vector3 as Vector3$1, Quaternion as Quaternion$1, ActiveEvents, ColliderDesc, EventQueue, RigidBodyDesc } from '@dimforge/rapier3d-compat';
+ export { CoefficientCombineRule, Collider as RapierCollider, RigidBody as RapierRigidBody } from '@dimforge/rapier3d-compat';
+-import { useFrame, useThree } from '@react-three/fiber';
++import { useFrame, useThree } from '@react-three/fiber/webgpu';
+ import React, { useRef, useEffect, memo, useMemo, useContext, useState, createContext, useCallback, Fragment } from 'react';
+ import { Quaternion, Euler, Vector3, Object3D, Matrix4, BufferGeometry, BufferAttribute, MathUtils, DynamicDrawUsage } from 'three';
+ import { suspend } from 'suspend-react';
