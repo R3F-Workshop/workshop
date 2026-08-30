@@ -34,7 +34,7 @@ const eslintConfig = defineConfig([
     files: [
       "components/hero/**/*.tsx",
       "components/three/**/*.tsx",
-      "components/hero-demo/**/*.tsx",
+      "resources/**/*.tsx",
     ],
     rules: {
       "react-hooks/immutability": "off",
@@ -44,7 +44,7 @@ const eslintConfig = defineConfig([
   {
     // Vendored verbatim from three.js / Faraz's demo so it stays diffable
     // against upstream. Not ours to lint.
-    files: ["components/hero-demo/ssao-node.js"],
+    files: ["resources/hero-demo/ssao-node.js"],
     rules: {
       "@typescript-eslint/no-unused-vars": "off",
       "prefer-const": "off",

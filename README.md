@@ -1,12 +1,24 @@
 # Workshop fallback — Paris mini-site
 
-The clean workshop build of the Paris mini-site: Advanced React Three Fiber —
+The workshop build of the Paris mini-site: Advanced React Three Fiber —
 the PMNDRS workshop at Gobelins, Paris, September 8–9 2026.
+
+## Branches
+
+- **`main` (you are here)** — the *starting point*. The full page structure,
+  header, footer, sections, and multi-canvas plumbing are real; every canvas
+  renders a dead-simple placeholder (the hero is a spinning pyramid under the
+  pmndrs mark) designed to be replaced during the workshop. The finished
+  pieces sit in [`resources/`](resources/README.md) ready to paste back, and
+  `/demos/*` still runs every finished scene.
+- **`final-version`** — the complete site with the real hero and section
+  scenes. `git switch final-version` to see it, or
+  `git checkout final-version -- <path>` to pull any file into your working
+  tree.
 
 This repo is the production site with the production overhead removed: no
 hidable-section machinery, no unfinished sections, no dev harnesses, no dead
-code. What's left is the site as it ships plus the demo pages — the parts worth
-teaching from. The live site's repo remains the source of truth for production.
+code. The live site's repo remains the source of truth for production.
 
 Next.js 16 (App Router) · Tailwind v4 · shadcn/ui · React Three Fiber v10
 alpha (`@react-three/fiber/webgpu`) · drei 11 alpha (patched) · three r185.
@@ -40,8 +52,8 @@ skips them and the build fails.
 | Path | What it is |
 | --- | --- |
 | `app/page.tsx` | The site. Server components throughout except the header and hero. |
-| `components/hero/` | The hero shell: reveal choreography, the time-of-day dial and its replay spring. |
-| `components/hero-demo/` | The real hero pipeline: tower canvas, lettering, buildings, terrain, lights, the MRT post graph (`fx.tsx`), probes. |
+| `components/hero/` | The starter hero shell and pyramid scene, plus the time dial kept ready to wire back in. |
+| `resources/` | The finished hero pipeline and shell, compiling and importable — see `resources/README.md`. Powers `/demos/paris-hero`. |
 | `components/sections/` | One component per content section, all server-rendered. |
 | `components/three/` | The section and demo scenes (TSL shaders), plus the shared multi-canvas infrastructure. |
 | `lib/content.ts` | Every string on the site. |
@@ -50,12 +62,14 @@ skips them and the build fails.
 
 ## The hero
 
-A live R3F v10 WebGPU scene: the tower in a block city, with a time-of-day
-dial driving sun position, sky, fog, window emissive, and the star field. The
-CSS sky gradient stays in the DOM behind a transparent canvas; the wordmark is
-extruded in-scene (`components/hero-demo/lettering.tsx`) so the tower can
-occlude it. Post is a single MRT graph in `components/hero-demo/fx.tsx`
-(bloom, AO, sky haze, FSR3 as the temporal resolver).
+On `main` the hero is the placeholder: a spinning pyramid under the pmndrs
+mark, kept to the smallest possible primary canvas. The finished hero (on
+`final-version`, and live at `/demos/paris-hero`) is a full R3F v10 WebGPU
+scene: the tower in a block city, a time-of-day dial driving sun position,
+sky, fog, window emissive, and the star field; the wordmark extruded in-scene
+(`resources/hero-demo/lettering.tsx`) so the tower can occlude it; post as a
+single MRT graph in `resources/hero-demo/fx.tsx` (bloom, AO, sky haze, FSR3
+as the temporal resolver).
 
 Without WebGPU the hero (and every scene) falls back to static posters —
 `lib/use-webgpu.ts` is the one gate. `?no3d` forces the fallback.

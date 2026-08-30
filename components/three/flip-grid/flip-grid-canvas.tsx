@@ -2,21 +2,24 @@
 
 import { useRef } from "react";
 
+import { PlaceholderScene } from "@/components/three/placeholder-scene";
 import { SectionCanvas } from "@/components/three/section-canvas";
 
 import { FLIP_GRID_SITE, type FlipGridConfig } from "./config";
-import { FlipGridEnvironment } from "./environment";
-import { FlipGrid } from "./flip-grid";
 
 /**
- * The flip grid as a section backdrop.
+ * The flip grid slot as a section backdrop.
  *
  * Self-contained on purpose: it owns the positioned wrapper as well as the
- * canvas, because that wrapper *is* the element the cursor is measured against.
- * Handing `FlipGrid` a `renderer.domElement` instead would give it the hero's
- * canvas — under a shared renderer that's whichever canvas rendered last — and
- * the cursor would map against the wrong rectangle. Sections shouldn't have to
- * know that, so the pairing lives here.
+ * canvas, because that wrapper *is* the element the finished scene measures
+ * the cursor against (under a shared renderer, `renderer.domElement` is
+ * whichever canvas drew last — see the note in the finished version).
+ *
+ * Starter: renders the placeholder. The finished scene is `./flip-grid.tsx`
+ * (still fully working at /demos/flip-grid) — bring it back with
+ * `<FlipGridEnvironment config={config} />` and
+ * `<FlipGrid config={config} bounds={bounds} />`. The camera is orthographic
+ * at zoom 1, so 1 unit ≈ 1 px — hence the placeholder's scale.
  */
 export function FlipGridCanvas({
   config = FLIP_GRID_SITE,
@@ -24,6 +27,7 @@ export function FlipGridCanvas({
   config?: FlipGridConfig;
 }) {
   const bounds = useRef<HTMLDivElement>(null);
+  void config;
 
   return (
     <div ref={bounds} className="pointer-events-none absolute inset-0">
@@ -33,12 +37,7 @@ export function FlipGridCanvas({
         camera={{ position: [0, 0, 10], zoom: 1 }}
         fps={40}
       >
-        <FlipGridEnvironment config={config} />
-        <FlipGrid
-          key={`${config.cols}x${config.rows}`}
-          config={config}
-          bounds={bounds}
-        />
+        <PlaceholderScene scale={140} />
       </SectionCanvas>
     </div>
   );

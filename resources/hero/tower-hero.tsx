@@ -7,8 +7,8 @@ import { DepthAttachmentSync } from "@/components/three/depth-attachment-sync";
 import {
   PARIS_ATMOSPHERE_DEFAULTS,
   PARIS_HOMEPAGE_CITY_DEFAULTS,
-} from "@/components/hero-demo/paris-defaults";
-import { TowerCanvas } from "@/components/hero-demo/tower-canvas";
+} from "@/resources/hero-demo/paris-defaults";
+import { TowerCanvas } from "@/resources/hero-demo/tower-canvas";
 import { heroGate } from "@/lib/hero-gate";
 import { useWebGPU } from "@/lib/use-webgpu";
 

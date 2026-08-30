@@ -25,7 +25,7 @@ export const FlipGridCanvas = dynamic(
 );
 
 export const MagicBoxCanvas = dynamic(
-  () => import("./magic-box").then((m) => m.MagicBoxCanvas),
+  () => import("./magic-box-canvas").then((m) => m.MagicBoxCanvas),
   { ssr: false },
 );
 

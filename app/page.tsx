@@ -1,5 +1,4 @@
 import { Hero } from "@/components/hero/hero";
-import { LoadingScreen } from "@/components/loading-screen";
 import { Closer } from "@/components/sections/closer";
 import { Faq } from "@/components/sections/faq";
 import { Outcomes } from "@/components/sections/outcomes";
@@ -13,7 +12,9 @@ import { ConnectorsCanvas } from "@/components/three/scenes";
 export default function Page() {
   return (
     <>
-      <LoadingScreen />
+      {/* The finished hero pairs with <LoadingScreen /> here (still in
+          components/, driven by lib/hero-gate.ts) — bring both back with the
+          real scene. See resources/README.md. */}
       <SiteHeader />
       <Hero />
       <main className="relative z-10 bg-background">
