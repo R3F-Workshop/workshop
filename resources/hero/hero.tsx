@@ -13,9 +13,9 @@ import {
   type ReactNode,
 } from "react";
 
-import { RevealGroup } from "@/components/motion/reveal";
-import { TimeDial } from "@/components/hero/time-dial";
-import { Instructors } from "@/components/sections/instructors";
+import { RevealGroup } from "@/app/home/components/motion/reveal";
+import { TimeDial } from "@/app/home/sections/hero/time-dial";
+import { Instructors } from "@/app/home/sections/instructors/instructors";
 import { HERO, REGISTER_URL } from "@/lib/content";
 import { skyGradient, todAt } from "@/lib/time-of-day";
 

@@ -28,12 +28,18 @@ const eslintConfig = defineConfig([
     // imperative renderer. Scoped to the scene; the rest of the app keeps the
     // full rule set.
     //
-    // `components/three/**` is the same story one level up: TSL uniforms are
+    // The scene folders are the same story one level up: TSL uniforms are
     // mutable handles you write to from `useFrame`, which is the entire point
-    // of a uniform.
+    // of a uniform. Scenes are colocated per section, so the carve-out names
+    // the scene locations rather than one big three/ folder.
     files: [
-      "components/hero/**/*.tsx",
-      "components/three/**/*.tsx",
+      "app/home/sections/hero/**/*.tsx",
+      "app/home/sections/*/components/**/*.tsx",
+      "app/home/components/canvas/**/*.tsx",
+      "app/demos/*/components/**/*.tsx",
+      "app/demos/components/webgpu-gate.tsx",
+      "components/depth-attachment-sync.tsx",
+      "components/leva-panel.tsx",
       "resources/**/*.tsx",
     ],
     rules: {
@@ -44,7 +50,7 @@ const eslintConfig = defineConfig([
   {
     // Vendored verbatim from three.js / Faraz's demo so it stays diffable
     // against upstream. Not ours to lint.
-    files: ["resources/hero-demo/ssao-node.js"],
+    files: ["resources/tower-scene/ssao-node.js"],
     rules: {
       "@typescript-eslint/no-unused-vars": "off",
       "prefer-const": "off",

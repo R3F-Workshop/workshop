@@ -3,12 +3,12 @@
 import { useEffect } from "react";
 import { useFrame } from "@react-three/fiber/webgpu";
 
-import { DepthAttachmentSync } from "@/components/three/depth-attachment-sync";
+import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 import {
   PARIS_ATMOSPHERE_DEFAULTS,
   PARIS_HOMEPAGE_CITY_DEFAULTS,
-} from "@/resources/hero-demo/paris-defaults";
-import { TowerCanvas } from "@/resources/hero-demo/tower-canvas";
+} from "@/resources/tower-scene/paris-defaults";
+import { TowerCanvas } from "@/resources/tower-scene/tower-canvas";
 import { heroGate } from "@/lib/hero-gate";
 import { useWebGPU } from "@/lib/use-webgpu";
 

@@ -3,8 +3,8 @@
 import { folder, useControls } from "leva";
 import dynamic from "next/dynamic";
 
-import { ControlsToggle } from "@/components/demos/controls-toggle";
-import { BLOCK_CITY_DEFAULTS } from "@/components/three/block-city/config";
+import { ControlsToggle } from "@/app/demos/components/controls-toggle";
+import { BLOCK_CITY_DEFAULTS } from "@/app/home/sections/overview/components/block-city/config";
 import { useWebGPU } from "@/lib/use-webgpu";
 
 // `@react-three/fiber/webgpu` touches `localStorage` at module scope, so it can

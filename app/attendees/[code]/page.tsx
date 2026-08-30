@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { CopyBlock } from "@/components/attendees/copy-block";
+import { CopyBlock } from "@/app/attendees/components/copy-block";
 import { Card } from "@/components/ui/card";
 import {
   ACCESS_CODES,

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { InfoDialog, InfoSection } from "@/components/demos/info-dialog";
-import { HeroDemo } from "@/resources/hero-demo/hero-demo";
+import { InfoDialog, InfoSection } from "@/app/demos/components/info-dialog";
+import { HeroDemo } from "./components/hero-demo";
 
 export const metadata: Metadata = {
   title: "Paris hero — R3F v10 demo",

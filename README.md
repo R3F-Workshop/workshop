@@ -51,11 +51,13 @@ skips them and the build fails.
 
 | Path | What it is |
 | --- | --- |
-| `app/page.tsx` | The site. Server components throughout except the header and hero. |
-| `components/hero/` | The starter hero shell and pyramid scene, plus the time dial kept ready to wire back in. |
-| `resources/` | The finished hero pipeline and shell, compiling and importable — see `resources/README.md`. Powers `/demos/paris-hero`. |
-| `components/sections/` | One component per content section, all server-rendered. |
-| `components/three/` | The section and demo scenes (TSL shaders), plus the shared multi-canvas infrastructure. |
+| `app/page.tsx` | The `/` route; composes the home sections. |
+| `app/home/sections/<x>/` | One folder per section: its component, plus a `components/` folder for anything only it uses — each section's scene slot lives with it (block-city under overview, flip-grid under why, …). |
+| `app/home/sections/hero/` | The starter hero shell and pyramid scene, plus the time dial kept ready to wire back in. |
+| `app/home/components/` | Shared by home sections only: the section shell, reveal, loading screen (wired out), and `canvas/` (SectionCanvas, the scenes.tsx client boundary, PlaceholderScene, camera rig, studio env). |
+| `app/demos/<x>/` | Each demo page with its own components; the finished heavy scenes live in the section folders that own them. |
+| `resources/` | The finished hero pipeline (`tower-scene/`) and shell, compiling and importable — see `resources/README.md`. Powers `/demos/paris-hero`. |
+| `components/` | True globals: shadcn `ui/`, the brand logo, header, footer, DepthAttachmentSync, LevaPanel. |
 | `lib/content.ts` | Every string on the site. |
 | `lib/time-of-day.ts` | The cyclic sky/palette model shared by the DOM gradient and the 3D lighting. |
 | `vendor/pmndrs-sky` | Vendored `@pmndrs/sky` build (`link:` dep). `pnpm sync:sky` re-copies it from a local sky checkout (`SKY_REPO`); the checked-in `dist/` means fresh clones need nothing. |
@@ -67,8 +69,8 @@ mark, kept to the smallest possible primary canvas. The finished hero (on
 `final-version`, and live at `/demos/paris-hero`) is a full R3F v10 WebGPU
 scene: the tower in a block city, a time-of-day dial driving sun position,
 sky, fog, window emissive, and the star field; the wordmark extruded in-scene
-(`resources/hero-demo/lettering.tsx`) so the tower can occlude it; post as a
-single MRT graph in `resources/hero-demo/fx.tsx` (bloom, AO, sky haze, FSR3
+(`resources/tower-scene/lettering.tsx`) so the tower can occlude it; post as a
+single MRT graph in `resources/tower-scene/fx.tsx` (bloom, AO, sky haze, FSR3
 as the temporal resolver).
 
 Without WebGPU the hero (and every scene) falls back to static posters —
@@ -84,5 +86,5 @@ Without WebGPU the hero (and every scene) falls back to static posters —
   upstream is stale, not wrong; the patch repoints its imports at the WebGPU
   entry.
 - Multi-canvas: every canvas shares one `WebGPURenderer` (the hero owns it as
-  `id="main"`); `components/three/depth-attachment-sync.tsx` works around a
+  `id="main"`); `components/depth-attachment-sync.tsx` works around a
   three.js multi-canvas depth bug and belongs inside every `<Canvas>`.

@@ -6,9 +6,9 @@ import { ACESFilmicToneMapping } from "three/webgpu";
 import {
   BlendingCubeScene,
   CUBE_CAMERA,
-} from "@/components/three/blending-cube/blending-cube";
-import type { BlendingCubeConfig } from "@/components/three/blending-cube/config";
-import { DepthAttachmentSync } from "@/components/three/depth-attachment-sync";
+} from "@/app/home/sections/outcomes/components/blending-cube/blending-cube";
+import type { BlendingCubeConfig } from "@/app/home/sections/outcomes/components/blending-cube/config";
+import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 
 /**
  * The demo's own canvas.

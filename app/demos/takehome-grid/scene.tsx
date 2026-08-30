@@ -2,12 +2,12 @@
 
 import { Canvas } from "@react-three/fiber/webgpu";
 
-import { DepthAttachmentSync } from "@/components/three/depth-attachment-sync";
-import type { TakehomeGridConfig } from "@/components/three/takehome-grid/config";
+import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
+import type { TakehomeGridConfig } from "@/app/home/sections/outcomes/components/takehome-grid/config";
 import {
   TAKEHOME_CAMERA,
   TakehomeGrid,
-} from "@/components/three/takehome-grid/takehome-grid";
+} from "@/app/home/sections/outcomes/components/takehome-grid/takehome-grid";
 
 /**
  * The demo's own canvas. On the site this scene borrows the hero's renderer via

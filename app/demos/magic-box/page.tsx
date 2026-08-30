@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { InfoDialog, InfoSection } from "@/components/demos/info-dialog";
-import { MagicBoxStandalone } from "@/components/three/scenes";
+import { InfoDialog, InfoSection } from "@/app/demos/components/info-dialog";
+import { MagicBoxStandalone } from "./standalone";
 import { TEN_GLYPHS } from "@/lib/ten-glyphs";
 
 export const metadata: Metadata = {

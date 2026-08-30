@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { InfoDialog, InfoSection } from "@/components/demos/info-dialog";
+import { InfoDialog, InfoSection } from "@/app/demos/components/info-dialog";
 
 import { TakehomeGridDemo } from "./takehome-grid-demo";
 

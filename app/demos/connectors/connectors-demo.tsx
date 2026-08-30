@@ -4,13 +4,13 @@ import { folder, useControls } from "leva";
 import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
 
-import { ControlsToggle } from "@/components/demos/controls-toggle";
+import { ControlsToggle } from "@/app/demos/components/controls-toggle";
 import {
   ACCENTS,
   CONNECTORS_DEFAULTS,
   type ConnectorsConfig,
-} from "@/components/three/connectors/config";
-import type { ShapeKind } from "@/components/three/connectors/shapes";
+} from "@/app/home/sections/closer/components/connectors/config";
+import type { ShapeKind } from "@/app/home/sections/closer/components/connectors/shapes";
 import { useWebGPU } from "@/lib/use-webgpu";
 
 // `@react-three/fiber/webgpu` touches `localStorage` at module scope, so it can
