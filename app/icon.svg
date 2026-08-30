@@ -1,0 +1,14 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 64 64"
+  role="img"
+  aria-label="pmndrs"
+>
+  <rect width="64" height="64" rx="12" fill="#08080a" />
+  <g fill="#fff" transform="translate(10 10) scale(.055)">
+    <rect x="280" y="560" width="240" height="240" />
+    <rect x="280" y="280" width="240" height="240" />
+    <rect y="280" width="240" height="240" />
+    <path fill-rule="evenodd" d="M560 0H280V240H560V520H800V0H560Z" />
+  </g>
+</svg>

@@ -1,0 +1,329 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* next/font injects these on <html>; referencing them here is what wires
+     Geist into Tailwind's font-sans / font-mono utilities. */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono:
+    var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-heading: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* Design-doc greys with no shadcn equivalent. */
+  --color-hair: var(--hair);
+  --color-dim: var(--dim);
+  --color-faint: var(--faint);
+  --color-ghost: var(--ghost);
+
+  --radius-sm: calc(var(--radius) * 0.58);
+  --radius-md: calc(var(--radius) * 0.67);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+}
+
+/* The site is dark-only by design — one palette, taken straight from the design
+   doc, so the port stays faithful to it. */
+:root,
+.dark {
+  --background: #000000;
+  --foreground: #fafafa;
+
+  --card: #08080a;
+  --card-foreground: #fafafa;
+  --popover: #08080a;
+  --popover-foreground: #fafafa;
+
+  --primary: #fafafa;
+  --primary-foreground: #09090b;
+  --secondary: #1c1c1f;
+  --secondary-foreground: #fafafa;
+
+  --muted: #1c1c1f;
+  --muted-foreground: #a1a1aa;
+  --accent: #1c1c1f;
+  --accent-foreground: #fafafa;
+  --destructive: oklch(0.704 0.191 22.216);
+
+  --border: #1c1c1f;
+  --input: #27272a;
+  --ring: #52525b;
+
+  --hair: #141416;
+  --dim: #71717a;
+  --faint: #52525b;
+  --ghost: #3f3f46;
+
+  --radius: 0.75rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    scroll-behavior: smooth;
+    /* Reserve scrollbar space while the gate locks scrolling. */
+    scrollbar-gutter: stable;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  /* The doc's recurring mono eyebrow: "01 · OVERVIEW". */
+  .eyebrow {
+    @apply font-mono text-[11px] font-medium tracking-[0.13em] text-dim uppercase;
+  }
+  /* Hairline grid: a 1px gap over a border-coloured backdrop draws the rules. */
+  .hairline-grid {
+    @apply grid gap-px border border-border bg-border;
+  }
+}
+
+/* Scroll reveal. `components/motion/reveal.tsx` flips data-reveal to "in".
+   Gated on `scripting: enabled` so the hidden state never applies when JS is
+   off — otherwise a script failure leaves the whole page blank.
+   Note: this sets the `translate` property, which Tailwind's translate-*
+   utilities also own. Don't put data-reveal on an element already using them —
+   wrap it instead. */
+@media (scripting: enabled) {
+  [data-reveal] {
+    opacity: 0;
+    translate: 0 14px;
+    transition:
+      opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+      translate 700ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: calc(var(--i, 0) * 60ms);
+    will-change: opacity, translate;
+  }
+  [data-reveal="in"] {
+    opacity: 1;
+    translate: none;
+    will-change: auto;
+  }
+}
+
+/* The hero UI is cued from the canvas timeline once the PMNDRS chain is more
+   than halfway through. These layers are prepared before the cue, then use
+   only compositor-friendly opacity and transforms while the scene is busy. */
+@keyframes hero-ui-arrive {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(0.985);
+  }
+  68% {
+    opacity: 1;
+    transform: translate3d(0, -2px, 0) scale(1.003);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.hero-scroll-dial {
+  opacity: var(--hero-dial-opacity, 1);
+  will-change: opacity;
+}
+
+.hero-scroll-grade {
+  background:
+    radial-gradient(
+      ellipse at 62% 18%,
+      rgb(135 64 28 / 34%) 0%,
+      transparent 60%
+    ),
+    linear-gradient(
+      180deg,
+      rgb(12 5 3 / 82%) 0%,
+      rgb(5 2 5 / 94%) 56%,
+      rgb(0 0 0 / 99%) 100%
+    );
+  opacity: var(--hero-scene-grade-opacity, 0);
+  will-change: opacity;
+}
+
+@media (scripting: enabled) {
+  [data-site-header-state="out"] {
+    pointer-events: none;
+  }
+  [data-site-header-state="out"] .site-header-content {
+    opacity: 0;
+  }
+  [data-site-header-state="in"] {
+    pointer-events: auto;
+  }
+  [data-site-header-state="in"] .site-header-content {
+    opacity: 1;
+  }
+
+  [data-hero-ui] {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(0.985);
+    pointer-events: none;
+    backface-visibility: hidden;
+    will-change: opacity, transform;
+  }
+  [data-hero-ui-state="in"] [data-hero-ui] {
+    animation: hero-ui-arrive 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: var(--hero-ui-delay, 0ms);
+    pointer-events: auto;
+  }
+  [data-hero-ui-state="settled"] [data-hero-ui] {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    backface-visibility: visible;
+    will-change: auto;
+  }
+}
+
+/* Show the loading gate only when JavaScript can dismiss it. */
+[data-loading-screen] {
+  display: none;
+}
+
+@media (scripting: enabled) {
+  html:has([data-loading-screen][data-state="loading"]),
+  html:has([data-loading-screen][data-state="loading"]) body {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  [data-loading-screen] {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    background: var(--background);
+    transform: translate3d(0, 0, 0);
+    transition:
+      opacity 500ms cubic-bezier(0.42, 0, 1, 1),
+      transform 500ms cubic-bezier(0.55, 0, 1, 0.45);
+    will-change: opacity, transform;
+  }
+  [data-loading-screen][data-state="done"] {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+    pointer-events: none;
+  }
+}
+
+/* Rotate around each edge in sequence. Full turns keep the logo face forward. */
+.loading-logo-stage {
+  perspective: 480px;
+}
+
+.loading-logo {
+  animation: loading-logo-flip 3.2s infinite;
+  will-change: transform;
+}
+
+@keyframes loading-logo-flip {
+  0% {
+    transform: rotateY(0turn) rotateX(0turn);
+    animation-timing-function: cubic-bezier(0.7, 0, 0.25, 1);
+  }
+  25% {
+    transform: rotateY(1turn) rotateX(0turn);
+    animation-timing-function: cubic-bezier(0.7, 0, 0.25, 1);
+  }
+  50% {
+    transform: rotateY(1turn) rotateX(1turn);
+    animation-timing-function: cubic-bezier(0.7, 0, 0.25, 1);
+  }
+  75% {
+    transform: rotateY(0turn) rotateX(1turn);
+    animation-timing-function: cubic-bezier(0.7, 0, 0.25, 1);
+  }
+  100% {
+    transform: rotateY(0turn) rotateX(0turn);
+  }
+}
+
+@keyframes loading-logo-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .loading-logo {
+    animation: loading-logo-pulse 2s ease-in-out infinite;
+    will-change: opacity;
+  }
+  [data-loading-screen],
+  [data-loading-screen][data-state="done"] {
+    transform: none;
+  }
+  [data-reveal],
+  [data-reveal="in"] {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
+  [data-hero-ui] {
+    opacity: 1;
+    transform: none;
+    animation: none;
+    pointer-events: auto;
+    will-change: auto;
+  }
+  [data-site-header-state] {
+    pointer-events: auto;
+  }
+  .site-header-content {
+    opacity: 1;
+    transition: none;
+  }
+  .hero-dial-layer {
+    position: absolute;
+    inset: 0 0 auto;
+  }
+  .hero-scroll-dial {
+    opacity: 1;
+    will-change: auto;
+  }
+  .hero-scroll-grade {
+    opacity: 0;
+    will-change: auto;
+  }
+}
