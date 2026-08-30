@@ -63,10 +63,8 @@ export const SECTION_COPY = {
   setup: {
     eyebrow: "05 · Prerequisites",
     title: "Come in ready",
-    // Note: "new to 3D" here sits oddly against the Level "Intermediate" fact
-    // above — kept as-is from the production site; it's a policy call.
     audience:
-      "This is aimed at React developers who are new to 3D, or who have shipped a scene and hit a wall. You do not need graphics experience. You do need a working React setup and comfort with hooks.",
+      "This is aimed at React developers who have shipped a scene or two and want to go deeper — comfort with hooks is assumed, and prior R3F exposure helps. You do not need shader or graphics-pipeline experience; day one builds that up properly.",
     // Split around the one word that renders in mono, so the whole sentence
     // stays editable here rather than half of it living in the component.
     installBefore:
@@ -190,7 +188,8 @@ export const PREREQ_GROUPS = [
     items: [
       { a: "React with hooks", b: "required" },
       { a: "TypeScript basics", b: "helpful" },
-      { a: "Any 3D or shader work", b: "not needed" },
+      { a: "A first R3F or three.js scene", b: "helpful" },
+      { a: "Shader / graphics pipeline work", b: "not needed" },
     ],
   },
   {
@@ -219,7 +218,7 @@ export const FAQS = [
   },
   {
     q: "What if I have never written 3D code?",
-    a: "That is the intended starting point. The workshop assumes React fluency and teaches the 3D from scratch.",
+    a: "You can follow — the morning rebuilds the fundamentals in v10 terms — but the pace assumes you have at least played with a scene before. If you are brand new, run through the R3F getting-started docs before you travel and you will be fine.",
   },
   {
     q: "Do I need an idea for the hackathon?",
