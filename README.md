@@ -1,7 +1,15 @@
 # Workshop fallback — Paris mini-site
 
-The clean workshop build of the Paris mini-site: Advanced React Three Fiber —
+The workshop build of the Paris mini-site: Advanced React Three Fiber —
 the PMNDRS workshop at Gobelins, Paris, September 8–9 2026.
+
+## Branches
+
+- **`main`** — the workshop *starting point*: same page structure, every
+  canvas a placeholder, the finished pieces staged in `resources/` ready to
+  paste back.
+- **`final-version` (you are here)** — the complete site with the real hero
+  and section scenes.
 
 This repo is the production site with the production overhead removed: no
 hidable-section machinery, no unfinished sections, no dev harnesses, no dead
