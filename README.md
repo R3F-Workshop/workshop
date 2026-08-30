@@ -47,11 +47,12 @@ skips them and the build fails.
 
 | Path | What it is |
 | --- | --- |
-| `app/page.tsx` | The site. Server components throughout except the header and hero. |
-| `components/hero/` | The hero shell: reveal choreography, the time-of-day dial and its replay spring. |
-| `components/hero-demo/` | The real hero pipeline: tower canvas, lettering, buildings, terrain, lights, the MRT post graph (`fx.tsx`), probes. |
-| `components/sections/` | One component per content section, all server-rendered. |
-| `components/three/` | The section and demo scenes (TSL shaders), plus the shared multi-canvas infrastructure. |
+| `app/page.tsx` | The `/` route; composes the home sections. |
+| `app/home/sections/<x>/` | One folder per section: its component, plus a `components/` folder for anything only it uses — each section's scene lives with it (block-city under overview, flip-grid under why, …). |
+| `app/home/sections/hero/` | The hero: shell, time dial, and `components/tower-scene/` — the full pipeline (tower canvas, lettering, buildings, terrain, lights, the MRT post graph `fx.tsx`, probes). |
+| `app/home/components/` | Shared by home sections only: the section shell, reveal, and `canvas/` (SectionCanvas, the scenes.tsx client boundary, camera rig, studio env). |
+| `app/demos/<x>/` | Each demo page with its own components; heavy scenes are imported from the section that owns them. |
+| `components/` | True globals: shadcn `ui/`, the brand logo, header, footer, DepthAttachmentSync, LevaPanel. |
 | `lib/content.ts` | Every string on the site. |
 | `lib/time-of-day.ts` | The cyclic sky/palette model shared by the DOM gradient and the 3D lighting. |
 | `vendor/pmndrs-sky` | Vendored `@pmndrs/sky` build (`link:` dep). `pnpm sync:sky` re-copies it from a local sky checkout (`SKY_REPO`); the checked-in `dist/` means fresh clones need nothing. |
@@ -61,8 +62,8 @@ skips them and the build fails.
 A live R3F v10 WebGPU scene: the tower in a block city, with a time-of-day
 dial driving sun position, sky, fog, window emissive, and the star field. The
 CSS sky gradient stays in the DOM behind a transparent canvas; the wordmark is
-extruded in-scene (`components/hero-demo/lettering.tsx`) so the tower can
-occlude it. Post is a single MRT graph in `components/hero-demo/fx.tsx`
+extruded in-scene (`app/home/sections/hero/components/tower-scene/lettering.tsx`) so the tower can
+occlude it. Post is a single MRT graph in `tower-scene/fx.tsx`
 (bloom, AO, sky haze, FSR3 as the temporal resolver).
 
 Without WebGPU the hero (and every scene) falls back to static posters —
@@ -78,5 +79,5 @@ Without WebGPU the hero (and every scene) falls back to static posters —
   upstream is stale, not wrong; the patch repoints its imports at the WebGPU
   entry.
 - Multi-canvas: every canvas shares one `WebGPURenderer` (the hero owns it as
-  `id="main"`); `components/three/depth-attachment-sync.tsx` works around a
+  `id="main"`); `components/depth-attachment-sync.tsx` works around a
   three.js multi-canvas depth bug and belongs inside every `<Canvas>`.

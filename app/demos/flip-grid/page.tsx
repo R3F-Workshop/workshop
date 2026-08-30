@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { InfoDialog, InfoSection } from "@/components/demos/info-dialog";
+import { InfoDialog, InfoSection } from "@/app/demos/components/info-dialog";
 
 import { FlipGridDemo } from "./flip-grid-demo";
 

@@ -4,9 +4,9 @@ import { Canvas } from "@react-three/fiber/webgpu";
 import type { RefObject } from "react";
 import { ACESFilmicToneMapping } from "three/webgpu";
 
-import type { ConnectorsConfig } from "@/components/three/connectors/config";
-import { ConnectorsScene } from "@/components/three/connectors/connectors";
-import { DepthAttachmentSync } from "@/components/three/depth-attachment-sync";
+import type { ConnectorsConfig } from "@/app/home/sections/closer/components/connectors/config";
+import { ConnectorsScene } from "@/app/home/sections/closer/components/connectors/connectors";
+import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 
 /**
  * The demo's own canvas.

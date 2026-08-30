@@ -4,10 +4,10 @@ import { Canvas } from "@react-three/fiber/webgpu";
 import type { RefObject } from "react";
 import { ACESFilmicToneMapping } from "three/webgpu";
 
-import { DepthAttachmentSync } from "@/components/three/depth-attachment-sync";
-import type { FlipGridConfig } from "@/components/three/flip-grid/config";
-import { FlipGridEnvironment } from "@/components/three/flip-grid/environment";
-import { FlipGrid } from "@/components/three/flip-grid/flip-grid";
+import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
+import type { FlipGridConfig } from "@/app/home/sections/why/components/flip-grid/config";
+import { FlipGridEnvironment } from "@/app/home/sections/why/components/flip-grid/environment";
+import { FlipGrid } from "@/app/home/sections/why/components/flip-grid/flip-grid";
 
 /**
  * The demo's own canvas.

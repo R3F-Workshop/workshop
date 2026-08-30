@@ -1,14 +1,14 @@
-import { Hero } from "@/components/hero/hero";
-import { LoadingScreen } from "@/components/loading-screen";
-import { Closer } from "@/components/sections/closer";
-import { Faq } from "@/components/sections/faq";
-import { Outcomes } from "@/components/sections/outcomes";
-import { Overview } from "@/components/sections/overview";
-import { Setup } from "@/components/sections/setup";
-import { Why } from "@/components/sections/why";
+import { Hero } from "@/app/home/sections/hero/hero";
+import { LoadingScreen } from "@/app/home/components/loading-screen";
+import { Closer } from "@/app/home/sections/closer/closer";
+import { Faq } from "@/app/home/sections/faq/faq";
+import { Outcomes } from "@/app/home/sections/outcomes/outcomes";
+import { Overview } from "@/app/home/sections/overview/overview";
+import { Setup } from "@/app/home/sections/setup/setup";
+import { Why } from "@/app/home/sections/why/why";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { ConnectorsCanvas } from "@/components/three/scenes";
+import { ConnectorsCanvas } from "@/app/home/components/canvas/scenes";
 
 export default function Page() {
   return (

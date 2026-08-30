@@ -4,11 +4,11 @@ import { folder, useControls } from "leva";
 import dynamic from "next/dynamic";
 import { useRef } from "react";
 
-import { ControlsToggle } from "@/components/demos/controls-toggle";
+import { ControlsToggle } from "@/app/demos/components/controls-toggle";
 import {
   FLIP_GRID_DEFAULTS,
   type FlipGridConfig,
-} from "@/components/three/flip-grid/config";
+} from "@/app/home/sections/why/components/flip-grid/config";
 import { useWebGPU } from "@/lib/use-webgpu";
 
 // `@react-three/fiber/webgpu` touches `localStorage` at module scope, so it can

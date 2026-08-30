@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { InfoDialog, InfoSection } from "@/components/demos/info-dialog";
-import { GrainGradientStandalone } from "@/components/three/scenes";
+import { InfoDialog, InfoSection } from "@/app/demos/components/info-dialog";
+import { GrainGradientStandalone } from "./standalone";
 
 export const metadata: Metadata = {
   title: "Grain gradient — R3F v10 demo",

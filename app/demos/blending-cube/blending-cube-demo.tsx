@@ -4,12 +4,12 @@ import { folder, useControls } from "leva";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 
-import { ControlsToggle } from "@/components/demos/controls-toggle";
-import { STAGE_CAPTIONS } from "@/components/three/blending-cube/blending-cube";
+import { ControlsToggle } from "@/app/demos/components/controls-toggle";
+import { STAGE_CAPTIONS } from "@/app/home/sections/outcomes/components/blending-cube/blending-cube";
 import {
   BLENDING_CUBE_DEFAULTS,
   type BlendingCubeConfig,
-} from "@/components/three/blending-cube/config";
+} from "@/app/home/sections/outcomes/components/blending-cube/config";
 import { useWebGPU } from "@/lib/use-webgpu";
 
 // `@react-three/fiber/webgpu` touches `localStorage` at module scope, so it can

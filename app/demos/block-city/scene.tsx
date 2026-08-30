@@ -5,9 +5,9 @@ import { Canvas } from "@react-three/fiber/webgpu";
 import {
   BlockCity,
   CITY_CAMERA,
-} from "@/components/three/block-city/block-city";
-import type { BlockCityConfig } from "@/components/three/block-city/config";
-import { DepthAttachmentSync } from "@/components/three/depth-attachment-sync";
+} from "@/app/home/sections/overview/components/block-city/block-city";
+import type { BlockCityConfig } from "@/app/home/sections/overview/components/block-city/config";
+import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 
 /**
  * The demo's own canvas. On the site this scene borrows the hero's renderer via
