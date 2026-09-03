@@ -2,7 +2,7 @@ import { ExploreLink } from "@/app/home/components/explore-link";
 import { RevealGroup } from "@/app/home/components/motion/reveal";
 import { SceneSlot } from "@/app/home/sections/overview/components/scene-slot";
 import { BlockCityCanvas } from "@/app/home/components/canvas/scenes";
-import { FACTS, SECTION_COPY } from "@/lib/content";
+import { demoUrl, FACTS, SECTION_COPY } from "@/lib/content";
 import { Section, SectionTitle, Wrap } from "@/app/home/components/section";
 
 export function Overview() {
@@ -52,7 +52,7 @@ export function Overview() {
             {/* Deliberately true of both layers: the live scene when there is WebGPU, the concept frame when there isn't. */}
             <div className="flex items-center justify-between gap-4 border-t border-border px-4.5 py-4 font-mono text-[11px] text-faint">
               <span>{SECTION_COPY.overview.caption}</span>
-              <ExploreLink href="/demos/block-city" label="Explore" />
+              <ExploreLink href={demoUrl("block-city")} label="Explore" />
             </div>
           </div>
         </RevealGroup>

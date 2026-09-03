@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { InfoDialog, InfoSection } from "@/app/demos/components/info-dialog";
+import { demoUrl } from "@/lib/content";
 
 import { HeroSimpleDemo } from "./components/hero-simple-demo";
 
@@ -57,8 +58,9 @@ export default function HeroSimpleDemoPage() {
             sky-coloured height fog, FSR3 reconstruction from a lower render
             resolution, and a full-resolution lettering pass with authored
             depth. Plus a river, a park, a Haussmann ring, real constellations
-            and a six-second launch. It is all at <code>/demos/paris-hero</code>{" "}
-            and in <code>resources/tower-scene/</code>.
+            and a six-second launch. It is in{" "}
+            <code>resources/tower-scene/</code> here, and runs as the Paris hero
+            demo in the demos repo.
           </p>
         </InfoSection>
 
@@ -70,7 +72,7 @@ export default function HeroSimpleDemoPage() {
             All demos →
           </Link>
           <Link
-            href="/demos/paris-hero"
+            href={demoUrl("paris-hero")}
             className="text-[14px] text-muted-foreground underline underline-offset-4"
           >
             The pro version

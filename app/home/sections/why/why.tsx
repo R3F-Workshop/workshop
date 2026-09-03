@@ -2,7 +2,7 @@ import { ExploreLink } from "@/app/home/components/explore-link";
 import { RevealGroup } from "@/app/home/components/motion/reveal";
 import { FlipGridCanvas } from "@/app/home/components/canvas/scenes";
 import { Card } from "@/components/ui/card";
-import { WHY } from "@/lib/content";
+import { demoUrl, WHY } from "@/lib/content";
 import { Wrap } from "@/app/home/components/section";
 
 /** Forward-looking: what v10 and WebGPU make possible. */
@@ -41,7 +41,7 @@ export function Why() {
 
           <div className="mt-6 hidden md:block" data-reveal>
             <ExploreLink
-              href="/demos/flip-grid"
+              href={demoUrl("flip-grid")}
               label="Explore the flip grid"
             />
           </div>

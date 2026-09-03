@@ -8,7 +8,7 @@ import {
   TakehomeGridCanvas,
 } from "@/app/home/components/canvas/scenes";
 import { Card } from "@/components/ui/card";
-import { OUTCOMES, SECTION_COPY } from "@/lib/content";
+import { demoUrl, OUTCOMES, SECTION_COPY } from "@/lib/content";
 import { Section, SectionTitle, Wrap } from "@/app/home/components/section";
 
 /** The visual area at the top of an outcome card. */
@@ -29,7 +29,7 @@ function Slot({ label, children }: { label: string; children?: ReactNode }) {
 const SLOTS: { label: string; demo?: string; scene?: ReactNode }[] = [
   {
     label: "Ten, written six ways",
-    demo: "/demos/magic-box",
+    demo: demoUrl("magic-box"),
     // Closer than the demo's framing: the slot is short and wide, so the vertical field of view is what limits it.
     scene: (
       <MagicBoxCanvas camera={{ position: [-3.3, 1.55, 3.75], fov: 40 }} />
@@ -37,7 +37,7 @@ const SLOTS: { label: string; demo?: string; scene?: ReactNode }[] = [
   },
   {
     label: "One box, four imports",
-    demo: "/demos/blending-cube",
+    demo: demoUrl("blending-cube"),
     // Pulled in and lifted slightly: the default framing leaves room under the cube for a contact shadow that a 190px slot has no vertical budget for.
     scene: (
       <BlendingCubeCanvas camera={{ position: [3.2, 2.1, 4.0], fov: 30 }} />
@@ -45,7 +45,7 @@ const SLOTS: { label: string; demo?: string; scene?: ReactNode }[] = [
   },
   {
     label: "Everything on this page, yours",
-    demo: "/demos/takehome-grid",
+    demo: demoUrl("takehome-grid"),
     scene: <TakehomeGridCanvas />,
   },
 ];

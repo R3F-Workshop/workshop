@@ -11,7 +11,7 @@ grab-it-fast copy for live coding.
 
 | Path | What it is |
 | --- | --- |
-| `tower-scene/` | The full finished hero pipeline: `tower-canvas.tsx`, `lettering.tsx` (the in-scene PMNDRS wordmark), buildings, terrain, lights, stars, the MRT post graph (`fx.tsx`), probes. Powers `/demos/paris-hero` right now (its Leva shell lives in `app/demos/paris-hero/components/`), so it is verified working at all times. |
+| `tower-scene/` | The full finished hero pipeline: `tower-canvas.tsx`, `lettering.tsx` (the in-scene PMNDRS wordmark), buildings, terrain, lights, stars, the MRT post graph (`fx.tsx`), probes. A copy powers the Paris hero demo in the [demos repo](https://github.com/R3F-Workshop/demos), which is where it is exercised now. |
 | `hero/hero.tsx` | The finished hero shell: loading-gate choreography, staggered UI reveal, the time-dial replay spring. |
 | `hero/tower-hero.tsx` | The bridge that mounts `TowerCanvas` as the site's primary canvas (`id="main"`), with the WebGPU fallback poster. |
 
@@ -36,8 +36,9 @@ These never left the app tree — they're wired-out, not deleted:
 ## Putting a finished section scene back
 
 Each section's `*-canvas.tsx` wrapper renders `PlaceholderScene`; its header
-comment names the exact JSX to swap in. The finished scene files never moved
-— they still power `/demos/*` — so it's a two-line change per wrapper. Or
+comment names the exact JSX to swap in. The finished scene files never moved,
+and copies run as the standalone demos in the demos repo, so it is a
+two-line change per wrapper. Or
 take the finished wrapper wholesale:
 
 ```sh

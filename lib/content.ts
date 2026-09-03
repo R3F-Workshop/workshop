@@ -2,6 +2,11 @@
 
 export const REGISTER_URL = "https://threejs.paris/workshop";
 
+/** Where a demo lives now that the standalone pages moved to the demos repo. Point this at the deployed demos site once there is one. */
+export function demoUrl(slug: string) {
+  return `https://github.com/R3F-Workshop/demos/tree/main/src/demos/${slug}`;
+}
+
 export const HERO = {
   kicker: "September 8 & 9, 2026 · Gobelins, Paris",
   title: ["Advanced React", "Three Fiber"],

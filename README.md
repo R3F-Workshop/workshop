@@ -10,7 +10,7 @@ the PMNDRS workshop at Gobelins, Paris, September 8–9 2026.
   renders a dead-simple placeholder (the hero is a spinning pyramid under the
   pmndrs mark) designed to be replaced during the workshop. The finished
   pieces sit in [`resources/`](resources/README.md) ready to paste back, and
-  `/demos/*` still runs every finished scene.
+  the standalone demo pages live in the [demos repo](https://github.com/R3F-Workshop/demos).
 - **`final-version`** — the complete site with the real hero and section
   scenes. `git switch final-version` to see it, or
   `git checkout final-version -- <path>` to pull any file into your working
@@ -42,8 +42,8 @@ skips them and the build fails.
 | Route | What it is |
 | --- | --- |
 | `/` | The site: header, live 3D hero, seven content sections. |
-| `/demos` | Index of the standalone scene pages (not linked from the nav). |
-| `/demos/*` | Eight scenes, each with Leva controls (`?debug`) and a teaching write-up. |
+| `/demos` | Index of the standalone scene pages (not linked from the nav). Only the simple hero is left here. |
+| `/demos/hero-simple` | The simple hero with Leva controls (`?debug`) and a teaching write-up. The other eight demos live in the [demos repo](https://github.com/R3F-Workshop/demos). |
 | `/attendees` | Access-code gate for the attendee guide. |
 | `/attendees/[code]` | The guide — `generateStaticParams` + `dynamicParams: false`, so only the real codes exist as routes. |
 
@@ -55,8 +55,8 @@ skips them and the build fails.
 | `app/home/sections/<x>/` | One folder per section: its component, plus a `components/` folder for anything only it uses — each section's scene slot lives with it (block-city under overview, flip-grid under why, …). |
 | `app/home/sections/hero/` | The hero shell, the time dial, and `components/` — the simple hero: one file per lesson beat (Canvas, tower, stage, trees, houses, wordmark, stars, `sun.ts`, spotlights, `post-fx.tsx`). |
 | `app/home/components/` | Shared by home sections only: the section shell, reveal, loading screen (wired out), and `canvas/` (SectionCanvas, the scenes.tsx client boundary, PlaceholderScene, camera rig, studio env). |
-| `app/demos/<x>/` | Each demo page with its own components; the finished heavy scenes live in the section folders that own them. |
-| `resources/` | The *pro* hero pipeline (`tower-scene/`) and shell, compiling and importable — see `resources/README.md`. Powers `/demos/paris-hero`. The simple hero on `/` and `/demos/hero-simple` does not use it. |
+| `app/demos/hero-simple/` | The one demo page still here. The other eight moved to the demos repo, each with a copy of its scene; the originals stay in the section folders that own them. |
+| `resources/` | The *pro* hero pipeline (`tower-scene/`) and shell, compiling and importable — see `resources/README.md`. A copy powers the Paris hero demo in the demos repo. The simple hero on `/` and `/demos/hero-simple` does not use it. |
 | `components/` | True globals: shadcn `ui/`, the brand logo, header, footer, DepthAttachmentSync, LevaPanel. |
 | `lib/content.ts` | Every string on the site. |
 | `lib/time-of-day.ts` | The cyclic sky/palette model shared by the DOM gradient and the 3D lighting. |
@@ -66,7 +66,7 @@ skips them and the build fails.
 
 On `main` the hero is the placeholder: a spinning pyramid under the pmndrs
 mark, kept to the smallest possible primary canvas. The finished hero (on
-`final-version`, and live at `/demos/paris-hero`) is a full R3F v10 WebGPU
+`final-version`, and in the demos repo as the Paris hero) is a full R3F v10 WebGPU
 scene: the tower in a block city, a time-of-day dial driving sun position,
 sky, fog, window emissive, and the star field; the wordmark extruded in-scene
 (`resources/tower-scene/lettering.tsx`) so the tower can occlude it; post as a
