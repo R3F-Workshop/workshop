@@ -5,25 +5,14 @@ import { Card } from "@/components/ui/card";
 import { WHY } from "@/lib/content";
 import { Wrap } from "@/app/home/components/section";
 
-/**
- * Forward-looking: what v10 and WebGPU make possible. The agentic point is one
- * card, not the thesis.
- */
+/** Forward-looking: what v10 and WebGPU make possible. */
 export function Why() {
   return (
     <section
       id="why"
       className="relative overflow-hidden px-4 pt-9 pb-14 sm:px-6 sm:pt-12 sm:pb-20 md:px-8 md:pb-24 lg:px-10 lg:pt-14 lg:pb-28"
     >
-      {/* The tiles are the argument. Their state — flip angle, velocity, and how
-          long each has left to hold — lives in a GPU storage buffer that a
-          compute pass integrates; the CPU writes five floats a frame however
-          many tiles there are. "Stays flipped for three seconds" is the part
-          that can't be faked without somewhere to keep per-instance state,
-          which is precisely what this section claims v10 buys.
-
-          It brings its own positioned wrapper: that element is what the cursor
-          is measured against. */}
+      {/* The tiles are the argument. */}
       <FlipGridCanvas />
 
       <Wrap className="relative">

@@ -6,10 +6,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-/**
- * Standalone pieces pulled out of the marketing page so they can be shared,
- * poked at, and screenshotted on their own.
- */
+/** Standalone pieces pulled out of the marketing page so they can be shared, poked at, and screenshotted on their own. */
 const DEMOS = [
   {
     href: "/demos/hero-simple",

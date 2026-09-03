@@ -40,10 +40,7 @@ export function Overview() {
             className="overflow-hidden rounded-xl border border-border bg-card"
             data-reveal
           >
-            {/* The poster stays the base layer and the scene fades in over it,
-                so this still reads without WebGPU. The city is its own
-                component rather than the hero's: that one is shaped around the
-                tower it stands in, and leaves a hole in the middle here. */}
+            {/* The poster stays the base layer and the scene fades in over it, so this still reads without WebGPU. */}
             <SceneSlot
               poster="/concept/city-wide.png"
               alt="Concept frame of the block city at mid distance"
@@ -52,8 +49,7 @@ export function Overview() {
             >
               <BlockCityCanvas />
             </SceneSlot>
-            {/* Deliberately true of both layers: the live scene when there is
-                WebGPU, the concept frame when there isn't. */}
+            {/* Deliberately true of both layers: the live scene when there is WebGPU, the concept frame when there isn't. */}
             <div className="flex items-center justify-between gap-4 border-t border-border px-4.5 py-4 font-mono text-[11px] text-faint">
               <span>{SECTION_COPY.overview.caption}</span>
               <ExploreLink href="/demos/block-city" label="Explore" />

@@ -1,7 +1,4 @@
-/**
- * Every piece of copy on the site, in one place.
- * Lifted from the `renderVals()` block of the original design doc.
- */
+/** Every piece of copy on the site, in one place. */
 
 export const REGISTER_URL = "https://threejs.paris/workshop";
 
@@ -24,28 +21,14 @@ export const HERO = {
   ],
 };
 
-/**
- * No seat or capacity claim anywhere on the page, deliberately.
- *
- * The hero said thirty, this strip said forty and the closer said forty, which
- * was three numbers for one fact. Publishing any of them also means maintaining
- * it as places fill. Registration is the honest place for that number.
- */
-/**
- * Section chrome: the eyebrow and title each section carries, plus the prose
- * that was otherwise stranded in JSX.
- *
- * Keyed by section id. Structured content — the Why cards, the outcomes, the
- * FAQ — keeps its own export below; this is for the copy that had nowhere
- * else to live.
- */
+/** The page makes no seat or capacity claim. */
+/** Section chrome: the eyebrow and title each section carries, plus the prose that was otherwise stranded in JSX. */
 export const SECTION_COPY = {
   overview: {
     eyebrow: "01 · Overview",
     title: "Learn the pieces, then build with them",
     body: "Day one is teaching: React Three Fiber v10, then the pmndrs ecosystem around it — drei, physics, post, state, and how the pieces fit together. Day two is a hackathon: three tracks, a lead on each, something running by the end of the afternoon.",
-    // True of both layers: the live scene when there is WebGPU, the concept
-    // frame when there isn't.
+    // True of both layers: the live scene when there is WebGPU, the concept frame when there isn't.
     caption: "The block city · at mid distance",
   },
   why: {
@@ -65,8 +48,7 @@ export const SECTION_COPY = {
     title: "Come in ready",
     audience:
       "This is aimed at React developers who have shipped a scene or two and want to go deeper — comfort with hooks is assumed, and prior R3F exposure helps. You do not need shader or graphics-pipeline experience; day one builds that up properly.",
-    // Split around the one word that renders in mono, so the whole sentence
-    // stays editable here rather than half of it living in the component.
+    // Split around the one word that renders in mono, so the whole sentence stays editable here rather than half of it living in the component.
     installBefore:
       "The one rule that matters: run the install once on your own network before you travel. Forty people pulling ",
     installCode: "node_modules",
@@ -80,7 +62,6 @@ export const SECTION_COPY = {
   },
 } as const;
 
-/** The closing call to action. Not in SECTION_COPY: it has no eyebrow. */
 export const CLOSER = {
   kicker: "September 8 & 9, 2026 · Gobelins, Paris",
   title: "Add the workshop to your conference ticket",
@@ -133,15 +114,7 @@ export const OUTCOMES = [
   },
 ];
 
-/**
- * The `role` line is a credential, not a rank.
- *
- * It used to read "Lead instructor" twice and "Assistant" twice, which sorted
- * the room rather than saying anything — and undersold the half of it that
- * matters most: two of these people build the stack being taught. Who runs a
- * track on day two is real information, so it moves into the bio, where it is a
- * fact about the schedule rather than a label on a person.
- */
+/** The `role` line is a credential, not a rank. */
 export interface Instructor {
   name: string;
   role: string;
