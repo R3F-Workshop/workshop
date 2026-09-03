@@ -12,6 +12,13 @@ export const metadata: Metadata = {
  */
 const DEMOS = [
   {
+    href: "/demos/hero-simple",
+    title: "Paris hero, the simple version",
+    blurb:
+      "The hero as it is built on day one: the tower over an instanced city under a physical sky, a wordmark in the scene, and one bloom pass. About seven hundred lines, every file one lesson.",
+    tags: ["instancing", "@pmndrs/sky", "useRenderPipeline"],
+  },
+  {
     href: "/demos/paris-hero",
     title: "Paris hero",
     blurb:

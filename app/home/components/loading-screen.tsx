@@ -3,35 +3,26 @@
 import { useEffect, useRef, useState } from "react";
 
 import { Logo } from "@/components/brand/logo";
-import {
-  heroGate,
-  heroGateCanRevealOverlay,
-  heroGateOverlayHasExited,
-} from "@/lib/hero-gate";
+import { heroReady } from "@/lib/hero-ready";
 
-/** Minimum display time prevents dismissal during a logo flip. */
+/** Minimum display time, so it never flashes. */
 const MIN_SHOW_MS = 800;
-/** Maximum wait before bypassing a stalled canvas. */
-const MAX_WAIT_MS = 15_000;
-/** Keep the counter responsive without re-rendering on every animation frame. */
-const PROGRESS_TICK_MS = 100;
-/** Hold the completed loading screen for one beat before its exit begins. */
-const EXIT_BEAT_MS = 300;
+/** Maximum wait before giving up on a stalled canvas. */
+const MAX_WAIT_MS = 12_000;
 /** Transition fallback for browsers that omit the event. */
 const FADE_FALLBACK_MS = 750;
 
 /**
- * Covers the page until the hero confirms its starting pose.
+ * Covers the page until the hero has rendered.
  *
- * It renders before hydration, locks scrolling, and releases intro playback
- * after its opacity transition finishes.
+ * It renders before hydration and locks scrolling (see `globals.css`,
+ * `[data-loading-screen]`), then fades once `heroReady` flips — which the
+ * scene does from inside the canvas after its first smooth frames. If WebGPU
+ * is missing the hero flips it immediately, and a backstop timer covers a
+ * canvas that never comes up at all.
  */
 export function LoadingScreen() {
-  // Skip the overlay after the gate has completed.
-  const [gone, setGone] = useState(() =>
-    heroGateOverlayHasExited(heroGate.getState()),
-  );
-  const [progress, setProgress] = useState(0);
+  const [gone, setGone] = useState(() => heroReady.get());
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -40,49 +31,26 @@ export function LoadingScreen() {
 
     const shownAt = performance.now();
     let fadeTimer: number | undefined;
-    let exitBeatTimer: number | undefined;
-    let fadeFallback: number | undefined;
-    const progressTimer = window.setInterval(() => {
-      const elapsed = performance.now() - shownAt;
-      setProgress(Math.min(99, Math.floor((elapsed / MAX_WAIT_MS) * 100)));
-    }, PROGRESS_TICK_MS);
+    let fallbackTimer: number | undefined;
 
     const dismiss = () => {
       if (fadeTimer !== undefined) return;
-      window.clearInterval(progressTimer);
-      setProgress(100);
-      fadeTimer = window.setTimeout(
-        () => {
-          // Restore scrolling when the opacity transition starts.
-          exitBeatTimer = window.setTimeout(() => {
-            root.dataset.state = "done";
-            fadeFallback = window.setTimeout(() => {
-              heroGate.overlayExited();
-              setGone(true);
-            }, FADE_FALLBACK_MS);
-          }, EXIT_BEAT_MS);
-        },
-        Math.max(0, MIN_SHOW_MS - (performance.now() - shownAt)),
-      );
+      const wait = Math.max(0, MIN_SHOW_MS - (performance.now() - shownAt));
+      fadeTimer = window.setTimeout(() => {
+        root.dataset.state = "done";
+        fallbackTimer = window.setTimeout(() => setGone(true), FADE_FALLBACK_MS);
+      }, wait);
     };
 
-    const syncGate = () => {
-      const state = heroGate.getState();
-      if (heroGateOverlayHasExited(state)) setGone(true);
-      else if (heroGateCanRevealOverlay(state)) dismiss();
-    };
-    const stopWaiting = heroGate.subscribe(syncGate);
-    syncGate();
-
-    const backstop = window.setTimeout(() => heroGate.bypass(), MAX_WAIT_MS);
+    const unsubscribe = heroReady.subscribe(dismiss);
+    if (heroReady.get()) dismiss();
+    const backstop = window.setTimeout(dismiss, MAX_WAIT_MS);
 
     return () => {
-      stopWaiting();
+      unsubscribe();
       window.clearTimeout(backstop);
       window.clearTimeout(fadeTimer);
-      window.clearTimeout(exitBeatTimer);
-      window.clearTimeout(fadeFallback);
-      window.clearInterval(progressTimer);
+      window.clearTimeout(fallbackTimer);
     };
   }, []);
 
@@ -93,29 +61,19 @@ export function LoadingScreen() {
       ref={rootRef}
       data-loading-screen
       data-state="loading"
-      role="progressbar"
+      role="status"
       aria-label="Loading"
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuenow={progress}
       onTransitionEnd={(event) => {
         if (
           event.target === event.currentTarget &&
           event.propertyName === "opacity"
         ) {
-          // Start playback after the overlay reaches zero opacity.
-          heroGate.overlayExited();
           setGone(true);
         }
       }}
     >
-      <div className="flex flex-col items-center gap-7 text-foreground">
-        <div className="loading-logo-stage">
-          <Logo color="currentColor" className="loading-logo size-12" />
-        </div>
-        <div className="eyebrow min-w-[4ch] select-none text-center tabular-nums">
-          {progress}%
-        </div>
+      <div className="loading-logo-stage text-foreground">
+        <Logo color="currentColor" className="loading-logo size-12" />
       </div>
     </div>
   );

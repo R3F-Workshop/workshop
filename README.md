@@ -53,10 +53,10 @@ skips them and the build fails.
 | --- | --- |
 | `app/page.tsx` | The `/` route; composes the home sections. |
 | `app/home/sections/<x>/` | One folder per section: its component, plus a `components/` folder for anything only it uses — each section's scene slot lives with it (block-city under overview, flip-grid under why, …). |
-| `app/home/sections/hero/` | The starter hero shell and pyramid scene, plus the time dial kept ready to wire back in. |
+| `app/home/sections/hero/` | The hero shell, the time dial, and `components/` — the simple hero: one file per lesson beat (Canvas, tower, stage, trees, houses, wordmark, stars, `sun.ts`, spotlights, `post-fx.tsx`). |
 | `app/home/components/` | Shared by home sections only: the section shell, reveal, loading screen (wired out), and `canvas/` (SectionCanvas, the scenes.tsx client boundary, PlaceholderScene, camera rig, studio env). |
 | `app/demos/<x>/` | Each demo page with its own components; the finished heavy scenes live in the section folders that own them. |
-| `resources/` | The finished hero pipeline (`tower-scene/`) and shell, compiling and importable — see `resources/README.md`. Powers `/demos/paris-hero`. |
+| `resources/` | The *pro* hero pipeline (`tower-scene/`) and shell, compiling and importable — see `resources/README.md`. Powers `/demos/paris-hero`. The simple hero on `/` and `/demos/hero-simple` does not use it. |
 | `components/` | True globals: shadcn `ui/`, the brand logo, header, footer, DepthAttachmentSync, LevaPanel. |
 | `lib/content.ts` | Every string on the site. |
 | `lib/time-of-day.ts` | The cyclic sky/palette model shared by the DOM gradient and the 3D lighting. |

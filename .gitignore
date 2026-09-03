@@ -54,3 +54,6 @@ next-env.d.ts
 # CONTENT.md carries organiser-only plans; COPY.md is the working copy deck.
 CONTENT.md
 COPY.md
+
+
+outlines/*
