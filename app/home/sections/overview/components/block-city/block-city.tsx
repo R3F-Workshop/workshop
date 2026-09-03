@@ -6,25 +6,9 @@ import * as THREE from "three/webgpu";
 
 import type { BlockCityConfig } from "./config";
 
-/**
- * A block city that builds itself, for the Overview slot.
- *
- * Deliberately not the hero's `City`. That one is shaped around the tower it
- * stands in — a plaza cleared from the middle, a corridor kept open toward the
- * camera — which is exactly right there and leaves a donut-shaped hole here,
- * where the city is the subject rather than the setting. It is also on the
- * hero's critical path and shared with a diverged branch, so it is left alone.
- *
- * What is worth borrowing is borrowed: the deterministic sin-hash, the idea of
- * banding blocks into tiers so window density can track height, and the
- * canvas-drawn window map.
- *
- * The build is the point. Blocks rise out of the ground in a wave and settle,
- * which is the section's argument — learn the pieces, then build with them —
- * playing out in the picture beside it.
- */
+/** A block city that builds itself, for the Overview slot. */
 
-/** Deterministic PRNG. The same sin-hash the hero city and the design doc use. */
+/** Deterministic PRNG. */
 function rand(n: number, seed: number) {
   const x = Math.sin(seed * 9301 + n * 49297) * 233280;
   return x - Math.floor(x);
@@ -48,10 +32,7 @@ const TIERS = [
   { max: Infinity, rows: 8 },
 ];
 
-/**
- * A tab left in the background accumulates no frames, but `delta` still counts
- * the wall clock — without this the build is over before the first frame draws.
- */
+/** A tab left in the background accumulates no frames, but `delta` still counts the wall clock. */
 const MAX_DT = 1 / 20;
 
 function smoothstep(edge0: number, edge1: number, x: number) {
@@ -77,9 +58,7 @@ function buildBlocks(config: BlockCityConfig): Block[][] {
       const ox = (gx - halfC) / halfC;
       const oz = (gz - halfR) / halfR;
 
-      // Trimmed to an ellipse. A rectangular patch shows its corners as two
-      // hard diagonals against the sky, which reads as a slab rather than a
-      // skyline thinning out into haze.
+      // Trimmed to an ellipse.
       const r = Math.hypot(ox, oz);
       if (r > 1) continue;
       // Ragged edge, so the boundary itself isn't a clean curve either.
@@ -99,8 +78,7 @@ function buildBlocks(config: BlockCityConfig): Block[][] {
           (config.maxHeight - config.minHeight) *
           (1 - config.centreBias + config.centreBias * bias);
 
-      // The wave sweeps from the far side toward the camera, so the build
-      // finishes on the blocks nearest the eye.
+      // The wave sweeps from the far side toward the camera, so the build finishes on the blocks nearest the eye.
       const delay =
         ((1 - (oz + 1) / 2) * 0.75 + rand(n, 8) * 0.25) * config.build;
 
@@ -164,8 +142,7 @@ function Tier({
   const map = useMemo(() => {
     const t = texture.clone();
     t.needsUpdate = true;
-    // Per-tier, which is the whole reason tiers exist — windows stay roughly
-    // square instead of stretching with the building.
+    // Generate textures per tier so windows stay roughly square.
     t.repeat.set(1.6, rows / 4);
     return t;
   }, [texture, rows]);
@@ -205,8 +182,7 @@ function Tier({
       const grown = p <= 0 ? 0 : easeOutBack(p, config.overshoot);
       if (p < 1) moving = true;
 
-      // Grown from the ground rather than lifted into place: at zero the block
-      // is flat and invisible, so nothing has to be hidden under a floor.
+      // Grown from the ground rather than lifted into place: at zero the block is flat and invisible, so nothing has to be hidden under a floor.
       const h = Math.max(b.h * grown, 1e-4);
       scratch.position.set(b.x, h / 2, b.z);
       scratch.scale.set(b.w, h, b.d);
@@ -221,8 +197,7 @@ function Tier({
     mesh.instanceMatrix.needsUpdate = true;
     mesh.computeBoundingSphere();
 
-    // Once every block has landed there is nothing left to write, so the whole
-    // per-frame cost goes away and only the drift remains.
+    // Once every block has landed there is nothing left to write, so the whole per-frame cost goes away and only the drift remains.
     if (!moving) settled.current = true;
   });
 
@@ -257,14 +232,7 @@ function Tier({
   );
 }
 
-/**
- * Shared framing.
- *
- * Low, and that is the whole trick. Raise the camera and the blocks flatten into
- * a plan view — a model on a table — because a six-unit building seen from
- * twenty units up occupies almost none of the frame. Down near roof height the
- * near blocks tower, the far ones recede behind them, and it reads as a skyline.
- */
+/** Shared framing. */
 export const CITY_CAMERA = { position: [0, 8.5, 66], fov: 26 } as const;
 
 export function BlockCity({ config }: { config: BlockCityConfig }) {
@@ -286,8 +254,7 @@ export function BlockCity({ config }: { config: BlockCityConfig }) {
   return (
     <>
       <ambientLight intensity={config.ambient} />
-      {/* Low and raking, so the block faces separate from each other rather
-          than flattening into one silhouette. */}
+      {/* Low and raking, so the block faces separate from each other rather than flattening into one silhouette. */}
       <directionalLight
         position={[-40, 26, 34]}
         intensity={config.keyIntensity}
@@ -299,10 +266,7 @@ export function BlockCity({ config }: { config: BlockCityConfig }) {
         groundColor={config.base}
       />
 
-      {/* No ground plane, on purpose. A lit one draws a hard horizon straight
-          across the frame and turns the city into a diorama on a table; without
-          it the rooflines are the horizon and the patch thins out into sky. It
-          also means nothing has to hide the blocks before they rise. */}
+      {/* Omit the ground plane to avoid a hard horizon across the skyline. */}
       <group ref={group}>
         {tiers.map((blocks, i) => (
           <Tier

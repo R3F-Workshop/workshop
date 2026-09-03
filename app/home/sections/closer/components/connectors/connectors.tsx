@@ -22,31 +22,7 @@ import { getShape, shapeRadius, type ShapeKind } from "./shapes";
 
 import { useSectionOnScreen } from "@/app/home/components/canvas/section-canvas";
 
-/**
- * A container with no walls.
- *
- * After Lusion's connectors (via `pmndrs/examples/lusion-connectors`), rebuilt
- * on R3F v10 and WebGPU. Gravity is off; every frame each body takes an impulse
- * toward where it belongs proportional to how far out it has drifted, which is a
- * spring. What holds the pile together is that spring fighting the bodies' own
- * collisions — so it packs, sloshes, and re-settles, and none of that needs a
- * box to be in. On the demo page "where it belongs" is the origin for every
- * body, as in the original; behind the footer it is a slot each across the
- * width, which is what turns the pile into a band. See `spreadX` in `config.ts`.
- *
- * The cursor is a kinematic ball with no mesh. It has no forces of its own; it
- * simply cannot be overlapped, so shoving it through the pile displaces
- * everything in its way.
- *
- * What changed on the way over from the original:
- *  - the connector `.glb` is gone — the bodies are generated (see `shapes.ts`);
- *  - `MeshTransmissionMaterial` is gone with it. That one is a WebGL shader
- *    material; on WebGPU three does real transmission natively, so the glass
- *    body is a plain `meshPhysicalNodeMaterial` with `transmission: 1`;
- *  - no `EffectComposer`/N8AO. `@react-three/postprocessing` is WebGL-only, and
- *    the ambient occlusion it added is doing much less work here than it does
- *    against the original's flat background.
- */
+/** A container with no walls. */
 
 /** Where the cursor body parks when the pointer isn't over the scene. */
 const AWAY = -12;
@@ -55,34 +31,18 @@ const AWAY = -12;
 const MAX_DT = 0.1;
 
 type Body = {
-  /** 0 dark, 1 light, 2 accent. Resolved to a colour at render, not here. */
+  /** 0 dark, 1 light, 2 accent. */
   slot: 0 | 1 | 2;
   /** The rougher of the two finishes its colour comes in. */
   rough: boolean;
-  /** The one transmissive body. Spawns far out so it flies in on load. */
+  /** The one transmissive body. */
   glass: boolean;
-  /**
-   * Where this body is pulled to, across the frame: -1 the left edge, 0 the
-   * middle, +1 the right. Resolved against the viewport per frame rather than
-   * baked into world units, so the band re-spaces itself on a phone instead of
-   * hanging half its bodies off the sides.
-   */
+  /** Where this body is pulled to, across the frame: -1 the left edge, 0 the middle, +1 the right. */
   anchor: number;
   position: [number, number, number];
 };
 
-/**
- * Deal the bodies out: dark, light, accent, repeating.
- *
- * The original hard-codes nine and alternates roughness within each colour,
- * which is what stops three white bodies reading as one white blob. Same idea,
- * generalised over `count` — and the last one dealt is the glass.
- *
- * Note what this *doesn't* decide: colours and roughness are slots here, looked
- * up per frame. Baking them in would mean re-dealing — and so re-throwing every
- * body back to a random start — every time the accent changes, and the accent
- * changes on every click.
- */
+/** Deal the bodies out: dark, light, accent, repeating. */
 function deal(
   shape: ShapeKind,
   count: number,
@@ -93,20 +53,14 @@ function deal(
 
   return Array.from({ length: count }, (_, i) => {
     const glass = i === count - 1;
-    // Evenly across the frame, nudged off the ruler line so a band of them
-    // doesn't read as a row of fence posts. Deterministic per index, so the
-    // spacing survives a reshuffle.
+    // Evenly across the frame, nudged off the ruler line so a band of them doesn't read as a row of fence posts.
     const even = count > 1 ? (i / (count - 1)) * 2 - 1 : 0;
     return {
       glass,
       slot: (i % 3) as 0 | 1 | 2,
       rough: i % 2 === 0,
       anchor: even + Math.sin(i * 12.9898) * (0.7 / count),
-      // Depth is deliberately the short axis. On a 17.5° lens a body four units
-      // nearer the camera renders half again as large as its twin at the origin,
-      // and a pile whose front row looms like that stops reading as a diorama.
-      // The settled pile ends up a slab rather than a ball, which is also what
-      // keeps it from hiding its own middle.
+      // Depth is deliberately the short axis.
       position: glass
         ? [spread, centerY + spread, spread * 0.25]
         : [
@@ -123,25 +77,16 @@ export function ConnectorsScene({
   bounds,
 }: {
   config: ConnectorsConfig;
-  /**
-   * The element the cursor is measured against — the canvas's wrapper, not the
-   * canvas. Under a shared renderer `gl.domElement` is whichever canvas drew
-   * last, so the scene is handed its own rectangle instead of looking one up.
-   */
+  /** The element the cursor is measured against: the canvas's wrapper, not the canvas. */
   bounds: RefObject<HTMLElement | null>;
 }) {
-  // Body sleep (see `Bodies`) quiets a settled pile, but the solver still
-  // steps every frame. Off screen, stop stepping entirely — this is the one
-  // scene whose per-frame cost is CPU physics rather than its (already
-  // skipped) render pass.
+  // Body sleep (see `Bodies`) quiets a settled pile, but the solver still steps every frame.
   const onScreen = useSectionOnScreen();
 
   return (
     <>
       <ConnectorsEnvironment config={config} />
-      {/* Rapier's wasm arrives asynchronously and `<Physics>` suspends on it.
-          Nothing renders in the meantime, which is the right answer for a
-          backdrop — a half-built pile appearing would be worse than none. */}
+      {/* Rapier's wasm arrives asynchronously and `<Physics>` suspends on it. */}
       <Suspense fallback={null}>
         <Physics gravity={[0, 0, 0]} paused={!onScreen}>
           <Cursor bounds={bounds} radius={config.pointerRadius} />
@@ -156,10 +101,7 @@ function Bodies({ config }: { config: ConnectorsConfig }) {
   const shape = getShape(config.shape);
   const { shape: kind, count, scale, centerY } = config;
 
-  // Only what changes where the bodies start. Everything else — the palette, the
-  // roughness, the glass, the strength of the pull, how wide they spread — is
-  // read per frame, so dragging a slider never throws away the pile you were
-  // tuning against, and clicking to recolour doesn't scatter it.
+  // Only what changes where the bodies start.
   const bodies = useMemo(
     () => deal(kind, count, scale, centerY),
     [kind, count, scale, centerY],
@@ -174,9 +116,7 @@ function Bodies({ config }: { config: ConnectorsConfig }) {
   const onScreen = useSectionOnScreen();
 
   useFrame(({ viewport }, delta) => {
-    // Impulses land on velocities immediately, stepped or not — feeding them
-    // into a paused world would wind the pile up like a spring and release it
-    // all at once on scroll-back.
+    // Impulses land on velocities immediately, stepped or not.
     if (!onScreen) return;
 
     const reach = (viewport.width / 2) * config.spreadX;
@@ -185,10 +125,7 @@ function Bodies({ config }: { config: ConnectorsConfig }) {
       const api = apis.current[i];
       if (!api) return;
       const { x, y, z } = api.translation();
-      // Deliberately `false` for wake-up: a band nobody is touching settles,
-      // falls asleep, and stops costing anything, and the cursor body wakes
-      // whatever it runs into. Passing `true` here would keep a dozen bodies
-      // integrating forever behind a footer nobody is looking at.
+      // Deliberately `false` for wake-up: a band nobody is touching settles, falls asleep, and stops costing anything.
       api.applyImpulse(
         pull.current
           .set(x - body.anchor * reach, y - config.centerY, z)
@@ -198,9 +135,7 @@ function Bodies({ config }: { config: ConnectorsConfig }) {
       );
     });
 
-    // Colours ease rather than switch. Cycling the accent is a click, and a
-    // dozen bodies changing hue on the same frame reads as a glitch; over a
-    // couple of hundred milliseconds it reads as the scene answering.
+    // Colours ease rather than switch.
     const k = 1 - Math.pow(0.005, Math.min(delta, MAX_DT));
     bodies.forEach((body, i) => {
       const material = mats.current[i];
@@ -243,8 +178,7 @@ function Bodies({ config }: { config: ConnectorsConfig }) {
             thickness={config.glassThickness}
             roughness={config.glassRoughness}
             ior={config.glassIor}
-            // Transmission alone leaves the silhouette invisible against a dark
-            // page. The clearcoat is what puts an edge back on it.
+            // Transmission alone leaves the silhouette invisible against a dark page.
             clearcoat={1}
             clearcoatRoughness={0.05}
           />
@@ -264,9 +198,7 @@ function Bodies({ config }: { config: ConnectorsConfig }) {
         )}
       </mesh>
 
-      {/* An accent body lights its neighbours, so the colour spreads instead of
-          staying inside its own silhouette. Cheap: point lights with a hard
-          distance cutoff, no shadows. */}
+      {/* An accent body lights its neighbours, so the colour spreads instead of staying inside its own silhouette. */}
       {body.slot === 2 && !body.glass && config.accentLight > 0 ? (
         <pointLight
           intensity={config.accentLight}
@@ -279,14 +211,7 @@ function Bodies({ config }: { config: ConnectorsConfig }) {
   ));
 }
 
-/**
- * The cursor, as a body.
- *
- * Tracked off `window` rather than through R3F's pointer events, for the same
- * reason the flip grid does it: on the site this canvas is behind the closing
- * call to action and must not take clicks, so it is `pointer-events: none` and
- * never sees a pointer event of its own.
- */
+/** The cursor, as a body. */
 function Cursor({
   bounds,
   radius,
@@ -310,10 +235,7 @@ function Cursor({
       ndc.current = x < -1 || x > 1 || y < -1 || y > 1 ? null : { x, y };
     };
 
-    // `pointermove` stops firing once the cursor leaves the document, so
-    // without these the body would stay wherever it was last seen — a permanent
-    // dent in the pile. Each is a different way to lose the cursor with no
-    // final move event: out of the document, out of the window, tab hidden.
+    // `pointermove` stops firing once the cursor leaves the document, so without these the body would stay wherever it was last seen.
     const park = () => {
       ndc.current = null;
     };
@@ -341,10 +263,7 @@ function Cursor({
     const next = target.current;
 
     if (at) {
-      // Eased rather than snapped. A kinematic body teleported across the pile
-      // sweeps nothing on the way — it appears on the far side and the bodies
-      // it should have shoved are left untouched, or fired off at whatever
-      // velocity resolving the overlap implies.
+      // Eased rather than snapped.
       const k = 1 - Math.pow(0.0001, Math.min(delta, MAX_DT));
       next.x = MathUtils.lerp(next.x, (at.x * viewport.width) / 2, k);
       next.y = MathUtils.lerp(next.y, (at.y * viewport.height) / 2, k);

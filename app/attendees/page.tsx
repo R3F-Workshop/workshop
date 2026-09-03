@@ -8,10 +8,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-/**
- * A landing spot for anyone who remembers the code but not the whole URL —
- * the real entry point is the direct link in the confirmation email.
- */
+/** A landing spot for anyone who remembers the code but not the whole URL: the real entry point is the direct link in the confirmation email. */
 export default function AttendeesGate() {
   return (
     <main className="flex min-h-svh flex-col bg-background">

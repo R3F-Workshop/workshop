@@ -6,18 +6,11 @@ import { useEffect, useMemo } from "react";
 import type { FlipGridConfig } from "./config";
 import { createStudioEnvironment, ENV_PRESETS } from "@/app/home/components/canvas/studio-env";
 
-/**
- * Builds the environment the gold reflects and hands it to the scene.
- *
- * Rebuilt whenever a light changes — cheap in itself, 256×128 of CPU float
- * maths, but three re-runs PMREM on the result, so it is deliberately not on
- * the per-frame path.
- */
+/** Builds the environment the gold reflects and hands it to the scene. */
 export function FlipGridEnvironment({ config }: { config: FlipGridConfig }) {
   const texture = useMemo(() => {
     const preset = ENV_PRESETS[config.envPreset];
-    // The three intensities are positional slots, not fixed roles: key/kick/fill
-    // in the studio, sun/haze/bounce outdoors.
+    // The three intensities are positional slots, not fixed roles: key/kick/fill in the studio, sun/haze/bounce outdoors.
     const [a, b, c] = preset.softboxes;
     return createStudioEnvironment({
       ...preset,
@@ -38,8 +31,7 @@ export function FlipGridEnvironment({ config }: { config: FlipGridConfig }) {
     config.fillIntensity,
   ]);
 
-  // The generator allocates a new DataTexture each time; the old one holds a
-  // GPU allocation until it's told to let go.
+  // The generator allocates a new DataTexture each time: the old one holds a GPU allocation until it's told to let go.
   useEffect(() => () => texture.dispose(), [texture]);
 
   return (

@@ -5,11 +5,7 @@ import * as THREE from "three/webgpu";
 
 import { makeRng, scatterOnDisc } from "./scatter";
 
-/**
- * The same shape as `Trees` with a box instead of a ball and a height that
- * varies. This is the file the agent beat writes from `trees.tsx`; read every
- * line of whatever it gives you.
- */
+/** The same shape as `Trees` with a box instead of a ball and a height that varies. */
 export function Houses({
   count = 1200,
   radius = 150,
@@ -36,8 +32,7 @@ export function Houses({
     for (let i = 0; i < count; i++) {
       const x = points[i * 2];
       const z = points[i * 2 + 1];
-      // Taller toward the edge, so the near ring stays low and the skyline
-      // rises behind it.
+      // Taller toward the edge, so the near ring stays low and the skyline rises behind it.
       const distance = Math.hypot(x, z) / radius;
       const height = 2.5 + random() ** 1.6 * 9 * (0.5 + distance);
       const width = THREE.MathUtils.lerp(2.5, 5, random());

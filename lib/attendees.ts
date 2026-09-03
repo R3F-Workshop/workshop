@@ -1,17 +1,9 @@
-/**
- * Content for the gated attendee guide at /attendees/<code>.
- *
- * Sourced from Notion — see the @notion tags per block. This is a build-time
- * copy, same model as `lib/content.ts`; re-pull by hand when Notion changes.
- */
+/** Content for the gated attendee guide at /attendees/<code>. */
 
-/**
- * Not security — obscurity, and proportionate for ~40 people.
- * Any code here works; `paris2026` is the one to put in the email.
- */
+/** Not security: obscurity, and proportionate for ~40 people. */
 export const ACCESS_CODES = ["paris2026", "supersecret"] as const;
 
-/** @notion 01 · Prerequisites — c370baf6-0216-8395-8da1-013edd909459 */
+/** @notion 01 · Prerequisites: c370baf6-0216-8395-8da1-013edd909459 */
 export const SETUP = {
   heading: "Do this at home, before you travel",
   lede: "Fifteen minutes, once, on your own network. Forty people pulling node_modules over conference wifi is the only thing that reliably wrecks a hands-on day — and it is entirely avoidable.",
@@ -24,7 +16,7 @@ pnpm dev         # open the localhost URL`,
   note: "Clone it — don't degit. degit strips git history, and the checkpoints you'll use all day are branches.",
 };
 
-/** @notion 01 · Prerequisites — c370baf6-0216-8395-8da1-013edd909459 */
+/** @notion 01 · Prerequisites: c370baf6-0216-8395-8da1-013edd909459 */
 export const REQUIREMENTS = [
   {
     a: "Node",
@@ -50,17 +42,14 @@ export const REQUIREMENTS = [
   },
 ];
 
-/**
- * WebGPU is a hard requirement now that the workshop runs on v10 — worth a
- * 10-second check at home rather than a surprise at 09:30 on Day 1.
- */
+/** WebGPU is a hard requirement now that the workshop runs on v10: worth a 10-second check at home rather than a surprise at 09:30 on Day 1. */
 export const WEBGPU_CHECK = {
   heading: "Check WebGPU before you travel",
   body: "We work in R3F v10 on WebGPU. Open your browser console and run this. An object means you're set; null or an error means update your browser, or turn hardware acceleration on.",
   command: "await navigator.gpu?.requestAdapter()",
 };
 
-/** @notion 08 · Day 1 Attendee Guide — 0a30baf6-0216-830f-9320-81d9bde47338 */
+/** @notion 08 · Day 1 Attendee Guide: 0a30baf6-0216-830f-9320-81d9bde47338 */
 export const CHECKPOINTS = {
   heading: "How the day works",
   lede: "Every demo is a chain of runnable checkpoints. Fall behind and you rejoin with one command — you will not be left stranded at the back of the room.",
@@ -71,7 +60,7 @@ git diff demo-hello/step-02 demo-hello/step-03`,
     "Ahead of the room instead? Every demo ends with stretch goals. One install covers the whole workshop, so switching branches never reinstalls.",
 };
 
-/** @notion 10 · Troubleshooting Cheat Sheet — 3980baf6-0216-83ce-9cd3-814488a417e9 */
+/** @notion 10 · Troubleshooting Cheat Sheet: 3980baf6-0216-83ce-9cd3-814488a417e9 */
 export const TROUBLESHOOTING = [
   {
     group: "Setup and install",
@@ -140,7 +129,7 @@ export const DAY_OF = [
   { k: "Power", v: "At every seat" },
 ];
 
-/** The link lands in the reminder email; until then the note renders. */
+/** The link lands in the reminder email: until then the note renders. */
 export const HELP_CHANNEL = {
   label: "Help channel",
   note: "Link to follow before the workshop — it will be in your reminder email.",

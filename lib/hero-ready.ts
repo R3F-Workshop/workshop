@@ -2,13 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 
-/**
- * One bit, shared: has the hero rendered?
- *
- * The scene sets it (from inside the canvas, once its shaders have compiled),
- * the loading screen and the header read it. A tiny external store rather
- * than context because the two sides live in different React trees.
- */
+/** One bit, shared: has the hero rendered? */
 
 let ready = false;
 const listeners = new Set<() => void>();

@@ -1,13 +1,6 @@
-/**
- * Deterministic scatter for the city.
- *
- * Seeded rather than `Math.random()` for two reasons: the React Compiler's
- * purity rule is right that a random call inside `useMemo` is a bug waiting to
- * happen (a dropped memo reshuffles the whole city), and a city that is the
- * same on every reload is the only kind you can compare screenshots of.
- */
+/** Deterministic scatter for the city. */
 
-/** mulberry32 — small, fast, good enough for placing boxes. */
+/** mulberry32: small, fast, good enough for placing boxes. */
 export function makeRng(seed: number) {
   let a = seed >>> 0;
   return () => {
@@ -18,10 +11,7 @@ export function makeRng(seed: number) {
   };
 }
 
-/**
- * `count` points spread evenly over a disc of `radius`, leaving a `clearing`
- * around the origin for the tower. Returns flat `[x, z, x, z, …]`.
- */
+/** `count` points spread evenly over a disc of `radius`, leaving a `clearing` around the origin for the tower. */
 export function scatterOnDisc(
   count: number,
   radius: number,
@@ -31,7 +21,7 @@ export function scatterOnDisc(
   const points = new Float32Array(count * 2);
   let placed = 0;
   while (placed < count) {
-    // sqrt keeps the density even; without it the middle is crowded.
+    // sqrt keeps the density even: without it the middle is crowded.
     const r = radius * Math.sqrt(random());
     if (r < clearing) continue;
     const angle = random() * Math.PI * 2;

@@ -110,8 +110,7 @@ function playClick(audio: DialAudio, speed: number) {
   burst.start(now);
   burst.stop(now + 0.025);
 
-  // Two differently damped modes make the detent feel like a small object
-  // with a hard shell and a heavier body instead of a synthesized beep.
+  // Two differently damped modes make the detent feel like a small object with a hard shell and a heavier body instead of a synthesized beep.
   const modes = [
     ["triangle", 735, lerp(0.017, 0.01, speed), 0.001, 0.034],
     ["sine", 190, lerp(0.024, 0.008, speed), 0.0015, 0.052],
@@ -167,9 +166,7 @@ export function TimeDial({
     audioRef.current = audio;
     if (audio.ctx.state === "suspended") void audio.ctx.resume();
 
-    // At speed, physical detents blur into a ratchet. Discard intervals too
-    // dense to resolve, then soften and vary the remaining impacts so they do
-    // not become a rigid machine-gun sequence.
+    // At speed, physical detents blur into a ratchet.
     const interval = audio.ctx.currentTime - audio.lastClickAt;
     if (interval < MIN_CLICK_INTERVAL) return;
     const speed = clamp01((0.18 - interval) / 0.14);

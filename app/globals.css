@@ -8,8 +8,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  /* next/font injects these on <html>; referencing them here is what wires
-     Geist into Tailwind's font-sans / font-mono utilities. */
+  /* next/font injects these on <html>: referencing them here is what wires Geist into Tailwind's font-sans / font-mono utilities. */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono:
     var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -46,8 +45,7 @@
   --radius-3xl: calc(var(--radius) * 2.2);
 }
 
-/* The site is dark-only by design — one palette, taken straight from the design
-   doc, so the port stays faithful to it. */
+/* The site is dark-only by design: one palette, taken straight from the design doc, so the port stays faithful to it. */
 :root,
 .dark {
   --background: #000000;
@@ -110,12 +108,7 @@
   }
 }
 
-/* Scroll reveal. `components/motion/reveal.tsx` flips data-reveal to "in".
-   Gated on `scripting: enabled` so the hidden state never applies when JS is
-   off — otherwise a script failure leaves the whole page blank.
-   Note: this sets the `translate` property, which Tailwind's translate-*
-   utilities also own. Don't put data-reveal on an element already using them —
-   wrap it instead. */
+/* Scroll reveal. */
 @media (scripting: enabled) {
   [data-reveal] {
     opacity: 0;
@@ -133,9 +126,7 @@
   }
 }
 
-/* The hero UI is cued from the canvas timeline once the PMNDRS chain is more
-   than halfway through. These layers are prepared before the cue, then use
-   only compositor-friendly opacity and transforms while the scene is busy. */
+/* The hero UI is cued from the canvas timeline once the PMNDRS chain is more than halfway through. */
 @keyframes hero-ui-arrive {
   0% {
     opacity: 0;
@@ -240,7 +231,7 @@
   }
 }
 
-/* Rotate around each edge in sequence. Full turns keep the logo face forward. */
+/* Rotate around each edge in sequence. */
 .loading-logo-stage {
   perspective: 480px;
 }

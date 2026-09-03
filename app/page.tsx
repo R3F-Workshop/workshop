@@ -13,7 +13,7 @@ import { ConnectorsCanvas } from "@/app/home/components/canvas/scenes";
 export default function Page() {
   return (
     <>
-      {/* Holds the page until the hero has rendered — see lib/hero-ready.ts. */}
+      {/* Holds the page until the hero has rendered: see lib/hero-ready.ts. */}
       <LoadingScreen />
       <SiteHeader />
       <Hero />
@@ -23,10 +23,7 @@ export default function Page() {
         <Outcomes />
         <Setup />
         <Faq />
-        {/* The physics layer sits over the closer's city poster and gradient,
-            but under its headline and button, and spans the footer too. It
-            takes no pointer events: the cursor that pushes the pile around is
-            read off `window`, so the content above stays clickable. */}
+        {/* The physics layer sits over the closer's city poster and gradient, but under its headline and button, and spans the footer too. */}
         <div className="relative">
           <ConnectorsCanvas />
           <Closer />

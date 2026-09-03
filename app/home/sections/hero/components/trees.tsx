@@ -5,14 +5,7 @@ import * as THREE from "three/webgpu";
 
 import { makeRng, scatterOnDisc } from "./scatter";
 
-/**
- * Every tree is one instance of one mesh: one geometry, one material, N
- * matrices, one draw call. The GPU draws the same thing N times and the
- * matrices say where.
- *
- * An icosahedron at detail 1 is 80 triangles. The default sphere is 960, and
- * at this distance a tree is a few pixels — nobody can tell.
- */
+/** Every tree is one instance of one mesh: one geometry, one material, N matrices, one draw call. */
 export function Trees({
   count = 3000,
   radius = 150,
@@ -50,8 +43,7 @@ export function Trees({
     return { matrices, colors };
   }, [count, radius, clearing, seed]);
 
-  // The mesh exists after mount, not during render — so the matrices go in
-  // from a layout effect. And the flag everyone forgets: `needsUpdate`.
+  // The mesh exists after mount, not during render: so the matrices go in from a layout effect.
   useLayoutEffect(() => {
     const mesh = ref.current;
     if (!mesh) return;
@@ -62,15 +54,13 @@ export function Trees({
   }, [placed]);
 
   return (
-    // `args` is the constructor, so a new count means a new mesh — the key
-    // makes that explicit instead of hoping R3F rebuilds it.
+    // `args` is the constructor, so a new count means a new mesh: the key makes that explicit instead of hoping R3F rebuilds it.
     <instancedMesh
       key={count}
       ref={ref}
       args={[undefined, undefined, count]}
       receiveShadow
-      // One mesh spanning the whole city: culling is all-or-nothing and never
-      // triggers while the city is in frame.
+      // One mesh spanning the whole city: culling is all-or-nothing and never triggers while the city is in frame.
       frustumCulled={false}
     >
       <icosahedronGeometry args={[1, 1]} />

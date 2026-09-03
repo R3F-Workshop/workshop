@@ -7,37 +7,17 @@ import { Text, useFont } from "@pmndrs/glyph/react";
 import type { Text as TextObject } from "@pmndrs/glyph/three";
 import { msdf } from "@pmndrs/glyph/three/msdf";
 
-/**
- * The PMNDRS wordmark, threaded through the tower.
- *
- * Real geometry from `@pmndrs/glyph`. All six letters sit inside one
- * billboard at the tower's base, so the group always faces the camera — and
- * inside a camera-facing group, a letter's `z` is simply how far toward the
- * camera it sits. Letters behind the axis get hidden by the ironwork, letters
- * in front cover it, by nothing more than the depth test.
- *
- * The layout is the pro version's, scaled to this tower. What the pro adds is
- * a custom depth per *band* of a glyph (P's bowl behind the spire, its stem in
- * front), a separate full-resolution text pass, and pointer physics — see
- * `resources/tower-scene/lettering.tsx`. Shipped ready-made; import it.
- */
+/** The PMNDRS wordmark, threaded through the tower. */
 
 const FONT = {
   input: { baked: "/hero-demo/Geist-ExtraBold.font.glb" },
   raster: { technique: msdf },
 } as const;
 
-/**
- * The pro layout is authored against a 24-unit tower; ours is 66. Same
- * proportions, one multiplier.
- */
+/** The pro layout is authored against a 24-unit tower: ours is 66. */
 const LAYOUT_SCALE = 66 / 24;
 
-/**
- * Per letter: where it sits (x across, y up, z toward the camera), and where
- * the glyph's visual centre is as a fraction of the em, so each letter is
- * placed by its outline rather than its box.
- */
+/** Per letter: where it sits (x across, y up, z toward the camera), and where the glyph's visual centre is as a fraction of the em. */
 const LETTERS: {
   char: string;
   position: [number, number, number];
@@ -62,8 +42,7 @@ export function Wordmark({
 }) {
   const font = useFont(FONT);
 
-  // A paragraph's origin is its top-left corner. Measure where the baseline
-  // lands once the first letter has laid out, then place every glyph by it.
+  // A paragraph's origin is its top-left corner.
   const probe = useRef<TextObject<typeof msdf> | null>(null);
   const [baselineEm, setBaselineEm] = useState<number | null>(null);
   useFrame(() => {

@@ -52,15 +52,12 @@ interface FSRNodeLike {
   dispose(): void;
 }
 
-/** Sky texture used to color the fog. */
+
 interface SkyWithBaker {
   baker?: { texture?: THREE.CubeTexture };
 }
 
-/**
- * Full-resolution lettering pass. Glyphs and tower depth share the scene,
- * while the camera mirrors the main camera without temporal jitter.
- */
+/** Full-resolution lettering pass. */
 export interface TextLayer {
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
@@ -102,7 +99,7 @@ export interface FXOptions {
   skyFogHeight?: number;
   /** Clamps downward sky samples to the illuminated horizon. */
   skyFogHorizonClamp?: boolean;
-  /** Uses FSR3 as the temporal resolver. TRAA runs when disabled. */
+  /** Uses FSR3 as the temporal resolver. */
   fsr?: boolean;
   /** FSR3 upscale ratio (1 = native AA, 1.5 = Quality, 1.7 = Balanced). */
   renderScale?: number;
@@ -159,11 +156,7 @@ export function FX({
   /** Lettering pass reused across render graph rebuilds. */
   const textPassRef = useRef<ReturnType<typeof TSL.pass> | null>(null);
 
-  // `useRenderPipeline` deliberately keeps its pipeline alive across component
-  // cleanup (including Fast Refresh), so disposing these refs from a React
-  // cleanup would leave that live pipeline pointing at destroyed GPU resources.
-  // Rebuilds retire them transactionally in the pipeline callback below; a
-  // real Canvas teardown releases the renderer/device that owns the remainder.
+  // `useRenderPipeline` keeps its pipeline alive across component cleanup, including Fast Refresh.
 
   /** Active SSGI pass whose tuning values are runtime uniforms. */
   const ssgiPassRef = useRef<SSGIPass | null>(null);
@@ -279,8 +272,6 @@ export function FX({
       const scenePass = passes.scenePass;
 
       // Keep the active graph alive until its replacement is fully assembled.
-      // If anything below throws, fiber retains the previous outputNode, so its
-      // resources must remain valid too.
       const retiredFsrNode = fsrNodeRef.current;
       let nextFsrNode: FSRNodeLike | null = null;
 
@@ -524,7 +515,6 @@ export function FX({
           let textRgb = textTex.rgb as unknown as AnyVec3;
           if (bloomTex) {
             // Shape bloom luminance to extend its reach across the lettering.
-            // Restore the bloom hue before applying it to each glyph.
             const raw = bloomTex.rgb as unknown as AnyVec3;
             const level = TSL.max(TSL.luminance(raw), 1e-4);
             const lit = TSL.pow(level, 0.6).mul(glowKnobs.textGlow).min(2.0);

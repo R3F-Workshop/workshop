@@ -21,13 +21,7 @@ function getRenderCallCount(renderer: { info: unknown }): number {
   return (renderer.info as { calls: number }).calls;
 }
 
-/**
- * Warms the scene behind the loading overlay.
- *
- * It measures frame pacing after assets resolve and confirms the selected pose
- * before allowing the overlay to exit. Demand rendering continues until each
- * phase completes.
- */
+/** Warms the scene behind the loading overlay. */
 export function WarmupProbe({
   gate,
   replayIntro,
@@ -35,7 +29,7 @@ export function WarmupProbe({
 }: {
   gate: HeroGateController;
   replayIntro: boolean;
-  /** Match the canvas render job; zero means both remain uncapped. */
+  /** Match the canvas render job: zero means both remain uncapped. */
   maxFps?: number;
 }) {
   const invalidate = useThree((state) => state.invalidate);
@@ -94,10 +88,7 @@ export function WarmupProbe({
         return;
       }
 
-      // Finish-phase callbacks still run at the display's refresh rate when
-      // the render job is capped. Only count a confirmation when Three's
-      // monotonic render-call counter proves that the selected pose was
-      // actually submitted during this scheduler frame.
+      // Finish-phase callbacks still run at the display's refresh rate when the render job is capped.
       const renderCall = getRenderCallCount(renderer);
       if (renderCall === lastRenderCall.current) {
         invalidate();

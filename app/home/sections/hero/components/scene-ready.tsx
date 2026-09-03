@@ -10,14 +10,7 @@ const SETTLED_DELTA = 0.05;
 /** Give up waiting and reveal whatever we have. */
 const BUDGET = 6;
 
-/**
- * Reports when the scene is actually on screen.
- *
- * Mount it inside the `<Suspense>` so it can't start counting until the
- * model and the font have loaded. The first frames after that are the shader
- * compile — long stalls — so it waits for a run of smooth ones. That is the
- * moment the loading screen can let go.
- */
+/** Reports when the scene is actually on screen. */
 export function SceneReady({ onReady }: { onReady: () => void }) {
   const streak = useRef(0);
   const elapsed = useRef(0);

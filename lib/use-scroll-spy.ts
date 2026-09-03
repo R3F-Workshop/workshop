@@ -26,9 +26,7 @@ export function useScrollSpy(): ScrollSpy {
       const y = window.scrollY || doc.scrollTop || 0;
       const total = Math.max(1, doc.scrollHeight - vh);
 
-      // The hero grade and pinned dial share this already-throttled scroll
-      // measurement instead of registering another listener. The title and
-      // description stay in normal flow so they move together at the same rate.
+      // The hero grade and pinned dial share this already-throttled scroll measurement instead of registering another listener.
       const hero = document.getElementById("top");
       if (hero) {
         const reducedMotion = window.matchMedia(
@@ -80,7 +78,7 @@ export function useScrollSpy(): ScrollSpy {
     window.addEventListener("resize", onScroll);
     measure();
 
-    // Sections shift as webfonts land; re-measure once things settle.
+    // Sections shift as webfonts land: re-measure once things settle.
     const settle = window.setTimeout(measure, 400);
 
     return () => {

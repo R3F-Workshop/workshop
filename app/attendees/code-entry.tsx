@@ -29,7 +29,7 @@ export function CodeEntry() {
           setValue(e.target.value);
           setWrong(false);
         }}
-        // Codes are lowercase; phone keyboards should not fight the user.
+        // Use lowercase input to match the stored codes on phone keyboards.
         autoCapitalize="none"
         autoCorrect="off"
         spellCheck={false}

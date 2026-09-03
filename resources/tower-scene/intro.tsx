@@ -5,10 +5,7 @@ import { useFrame, useThree } from "@react-three/fiber/webgpu";
 
 import type { HeroGateController } from "@/lib/hero-gate";
 
-/**
- * Shared clock for the hero entrance.
- * Rendered time and a capped step keep the animation stable.
- */
+/** Shared clock for the hero entrance. */
 export const INTRO_COMPLETE = 6.2;
 export const LETTER_CHAIN_START = 2.65;
 /** The letter chain is past halfway and beginning to settle. */

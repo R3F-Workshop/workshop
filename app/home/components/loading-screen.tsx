@@ -12,15 +12,7 @@ const MAX_WAIT_MS = 12_000;
 /** Transition fallback for browsers that omit the event. */
 const FADE_FALLBACK_MS = 750;
 
-/**
- * Covers the page until the hero has rendered.
- *
- * It renders before hydration and locks scrolling (see `globals.css`,
- * `[data-loading-screen]`), then fades once `heroReady` flips — which the
- * scene does from inside the canvas after its first smooth frames. If WebGPU
- * is missing the hero flips it immediately, and a backstop timer covers a
- * canvas that never comes up at all.
- */
+/** Covers the page until the hero has rendered. */
 export function LoadingScreen() {
   const [gone, setGone] = useState(() => heroReady.get());
   const rootRef = useRef<HTMLDivElement>(null);

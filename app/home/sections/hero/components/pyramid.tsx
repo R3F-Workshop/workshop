@@ -4,13 +4,7 @@ import { useRef } from "react";
 import { useFrame, type ThreeElements } from "@react-three/fiber/webgpu";
 import type { Mesh } from "three";
 
-/**
- * The starting point: a four-sided cone is a pyramid, and `flatShading` keeps
- * the facets crisp. It spins, which is the first `useFrame` on the page.
- *
- * Once the real tower arrives this has a second job: it is the Suspense
- * fallback, so a hero stuck on the pyramid means "the model never loaded".
- */
+/** The starting point: a four-sided cone is a pyramid, and `flatShading` keeps the facets crisp. */
 export function Pyramid(props: ThreeElements["group"]) {
   const ref = useRef<Mesh>(null);
 

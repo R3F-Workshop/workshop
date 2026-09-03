@@ -1,11 +1,4 @@
-/**
- * Coordinates the loading overlay and WebGPU hero.
- *
- * Normal path:
- * warming -> priming-intro -> revealing-intro -> armed -> playing -> settled
- *
- * Bypass paths settle on the final pose without rewinding visible animation.
- */
+/** Coordinates the loading overlay and WebGPU hero. */
 export type HeroGateState =
   | "warming"
   | "priming-intro"

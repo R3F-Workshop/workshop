@@ -2,10 +2,7 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * The shell every content section shares: hairline top rule, the design doc's
- * fluid vertical rhythm, and scroll-margin so nav jumps clear the fixed header.
- */
+/** The shell every content section shares: hairline top rule, the design doc's fluid vertical rhythm. */
 export function Section({
   id,
   className,

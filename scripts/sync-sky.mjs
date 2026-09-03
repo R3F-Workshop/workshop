@@ -1,28 +1,5 @@
 #!/usr/bin/env node
-/**
- * Copy the local `@pmndrs/sky` build into `vendor/pmndrs-sky`.
- *
- * Why not just `link:` the checkout directly (which is what we tried first):
- * a linked directory keeps its own `node_modules`, and every bare import inside
- * the package resolves there instead of against the consuming app. That gave us
- * a second `@react-three/fiber` (10.0.0-canary vs our alpha.3) and a second
- * `three` — not merely duplicate weight, but broken `instanceof` checks and a
- * split TSL node registry. It also failed outright:
- *
- *   Export WebGLCubeRenderTarget doesn't exist in target module
- *   ./SebH-TSL-Sky/node_modules/.pnpm/@react-three+fiber@10.0.0-canary…
- *
- * Turbopack `resolveAlias` does not reach inside the linked subtree, so it
- * cannot be fixed from the app side.
- *
- * Copying only `dist/` + a trimmed `package.json` leaves no `node_modules`
- * beside the package, so `three`, `@react-three/fiber` and `react` all resolve
- * from the app — one copy of each. It also keeps the package inside the project
- * root, which means no widened Turbopack root and no alias plumbing at all.
- *
- * Run after every `pnpm build` in the sky checkout:
- *   pnpm sync:sky
- */
+/** Copy the local `@pmndrs/sky` build into `vendor/pmndrs-sky`. */
 import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -34,8 +11,7 @@ const pkg = JSON.parse(
   await readFile(path.join(SOURCE, "package.json"), "utf8"),
 );
 
-// Keep only what a consumer resolves against. `devDependencies` in particular
-// must not survive: they are what pulled the second R3F into the graph.
+// Keep only what a consumer resolves against.
 const vendored = {
   name: pkg.name,
   version: pkg.version,

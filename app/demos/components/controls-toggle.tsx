@@ -6,23 +6,7 @@ import { useState } from "react";
 import { LevaPanel } from "@/components/leva-panel";
 import { cn } from "@/lib/utils";
 
-/**
- * Leva, behind a button.
- *
- * A demo page is the effect first — a panel of thirty sliders in the corner
- * reads as an unfinished tool rather than as something made on purpose. The
- * controls matter for the teaching, so they stay one click away rather than
- * always up.
- *
- * Anchored top-right, which is where Leva docks, so the button sits over the
- * panel's own corner instead of somewhere unrelated. `InfoDialog` takes the
- * opposite corner.
- *
- * The panel itself is `LevaPanel`, so there is exactly one thing on the site
- * that mounts `<Leva>` and the `?debug` gate keeps working here too. It stays
- * mounted and toggles `hidden` rather than unmounting — unmounting drops the
- * store, which would silently reset every value you had just dialled in.
- */
+/** Toggles the Leva controls panel. */
 export function ControlsToggle({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
 

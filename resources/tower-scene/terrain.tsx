@@ -18,21 +18,7 @@ interface SkyWithBaker {
   baker?: { texture?: THREE.CubeTexture };
 }
 
-/**
- * Ground, river and park for the block city.
- *
- * The ground plane exists because without it the sky (and with
- * `mirrorBelowHorizon`, the *flipped* sky) is visible straight through the
- * city floor — the buildings sit on nothing. A dark disc big enough to reach
- * the horizon fixes both that and the free-floating look of the shadows.
- *
- * The river is a ribbon mesh swept along `geography.ts`'s spline — the same
- * curve the building scatter rejects against, so the banks always match.
- * Water is a node material: near-mirror roughness so it reflects the sky/IBL,
- * with a cheap animated noise shimmer in color and roughness so it reads as
- * moving water instead of smoked glass. No vertex displacement — at hero
- * distance the shimmer is what sells it, not silhouettes.
- */
+/** Ground, river and park for the block city. */
 
 const GROUND_COLOR = "#131313";
 const PARK_COLOR = "#26381f";
@@ -52,8 +38,7 @@ const AXIS_PATH_WIDTH = 3.6;
 
 function useRiverGeometry() {
   return useMemo(() => {
-    // Sweep the curve into a flat ribbon: for each sample, offset left/right
-    // along the horizontal normal. u across the width, v along the length.
+    // Sweep the curve into a flat ribbon: for each sample, offset left/right along the horizontal normal. u across the width, v along the length.
     const SEGMENTS = 160;
     const points = riverCurve.getSpacedPoints(SEGMENTS);
     const positions = new Float32Array((SEGMENTS + 1) * 2 * 3);
@@ -85,9 +70,7 @@ function useRiverGeometry() {
       uvs[uo + 3] = i / SEGMENTS;
 
       if (i < SEGMENTS) {
-        // Wound so the face normal points +y — (v1-v0)×(v2-v0) up, with v0
-        // the left-bank vertex. The first draft had these clockwise and the
-        // whole river rendered face-down: perfectly present, never visible.
+        // Wound so the face normal points +y: (v1-v0)×(v2-v0) up, with v0 the left-bank vertex.
         const a = i * 2;
         indices.push(a, a + 2, a + 1, a + 1, a + 2, a + 3);
       }
@@ -102,16 +85,9 @@ function useRiverGeometry() {
   }, []);
 }
 
-/**
- * The water's shader graph, consumed as node props on a JSX
- * `<meshStandardNodeMaterial>` below. A plain function rather than a hook so
- * `useLocalNodes` can own the caching: it re-runs the creator when the shared
- * TSL stores change (HMR included), which a bare `useMemo` never would.
- */
+/** The water's shader graph, consumed as node props on a JSX `<meshStandardNodeMaterial>` below. */
 function makeWaterNodes(skyCube?: THREE.CubeTexture) {
-  // Two octaves of scrolling noise as a shimmer field: ripple distortion
-  // for the reflection below, plus a subtle brightness/roughness
-  // modulation so the surface never reads as a static sheet.
+  // Two octaves of scrolling noise as a shimmer field: ripple distortion for the reflection below.
   const p = TSL.positionWorld.xz.mul(0.35);
   const t = TSL.time.mul(0.35);
   const n1 = TSL.mx_noise_float(TSL.vec3(p.x, p.y, t));
@@ -123,24 +99,11 @@ function makeWaterNodes(skyCube?: THREE.CubeTexture) {
   const colorNode = TSL.color(WATER_COLOR).mul(shimmer.mul(0.5).add(1.0));
   const roughnessNode = shimmer.mul(0.06).add(0.08).clamp(0.03, 0.2);
 
-  // What actually makes it read as water at dusk: mirror the baked sky
-  // cube in the surface. Reflect the view ray about the flat-up normal,
-  // wobble it with the shimmer noise so the reflection ripples, clamp
-  // just above the horizon (the cube is black below it — same story as
-  // the fog), and Fresnel-weight so grazing looks like glass while
-  // straight down stays dark river. Emissive is the honest channel for
-  // an image-based term the light loop can't produce — and it flows into
-  // the bloom attachment, so the sun's reflection blooms like the real
-  // thing. Without this the river is an invisible black ribbon: there's
-  // no SSR and the dusk sun alone gives the surface nothing to mirror.
+  // What actually makes it read as water at dusk: mirror the baked sky cube in the surface.
   let emissiveNode = null;
   if (skyCube) {
     const view = TSL.normalize(TSL.positionWorld.sub(TSL.cameraPosition));
-    // The reflected elevation is compressed toward the horizon (y × 0.3):
-    // physically a steep look-down reflects the dark zenith, but night
-    // water famously streaks low light sources across itself, and the
-    // horizon band is where the dusk sky keeps all its color. Without the
-    // compression the river reads as black from any elevated camera.
+    // The reflected elevation is compressed toward the horizon (y × 0.3): physically a steep look-down reflects the dark zenith.
     const reflected = TSL.normalize(
       TSL.vec3(
         view.x.add(n1.mul(0.10)),
@@ -165,22 +128,19 @@ export const Terrain = memo(function Terrain({
   river?: boolean;
   park?: boolean;
 }) {
-  // Null when sky is disabled — the water then falls back to plain dark.
+  // Null when sky is disabled: the water then falls back to plain dark.
   const sky = useSky();
   const skyCube = (sky as SkyWithBaker | null)?.baker?.texture;
   const riverGeometry = useRiverGeometry();
 
-  // The `useCallback` matters: `useLocalNodes` memoizes on creator identity,
-  // so keying the creator on the cube texture is what rebuilds the graph when
-  // the sky finishes its first bake (it arrives a frame after mount).
+  // The `useCallback` matters: `useLocalNodes` memoizes on creator identity.
   const waterNodes = useLocalNodes(
     useCallback(() => makeWaterNodes(skyCube), [skyCube]),
   );
 
   return (
     <>
-      {/* Reaches well past the city ring (radius 400) so the horizon line is
-          ground meeting sky, not city floating in it. */}
+      {/* Reaches well past the city ring (radius 400) so the horizon line is ground meeting sky, not city floating in it. */}
       <mesh
         position={[0, GROUND_Y, 0]}
         rotation-x={-Math.PI / 2}
@@ -260,8 +220,7 @@ export const Terrain = memo(function Terrain({
             color={WATER_COLOR}
             roughness={0.06}
             metalness={0}
-            // Belt-and-braces against winding mistakes: a flat ribbon costs
-            // nothing to draw double-sided and can never vanish again.
+            // Belt-and-braces against winding mistakes: a flat ribbon costs nothing to draw double-sided and can never vanish again.
             side={THREE.DoubleSide}
             colorNode={waterNodes.colorNode}
             roughnessNode={waterNodes.roughnessNode}

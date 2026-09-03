@@ -22,7 +22,7 @@ export interface StarsOptions {
   twinkle?: number;
   /** Solar time in hours, shared with the atmosphere. */
   timeOfDay?: number;
-  /** Observer latitude. Paris by default. */
+  /** Observer latitude. */
   latitude?: number;
   /** Calendar day, shared with the atmosphere's solar model. */
   dayOfYear?: number;
@@ -45,7 +45,7 @@ interface BrightStar {
   ra: number;
   /** Declination, degrees. */
   dec: number;
-  /** Apparent visual magnitude. Lower is brighter. */
+  /** Apparent visual magnitude. */
   magnitude: number;
   /** Color range from amber at 0 to blue white at 1. */
   tone: number;
@@ -115,10 +115,7 @@ function directionOnGalacticPlane(angle: number, offset = 0) {
     .normalize();
 }
 
-/**
- * Rotates equatorial coordinates into the local horizon.
- * Sidereal time is derived from the same solar time used by the atmosphere.
- */
+/** Rotates equatorial coordinates into the local horizon. */
 function celestialOrientation(
   latitude: number,
   dayOfYear: number,
@@ -188,10 +185,7 @@ function makeRandom(seed: number) {
   };
 }
 
-/**
- * Renders stars as instanced raster sized sprites with a second Milky Way layer.
- * Magnitude and sun elevation control their order of appearance in twilight.
- */
+/** Renders stars as instanced raster sized sprites with a second Milky Way layer. */
 export function Stars({
   count = 4200,
   intensity = 2.8,
@@ -367,10 +361,7 @@ export function Stars({
     material.positionNode = instancedVec3(offsetAttr);
     material.sizeAttenuation = false;
 
-    /**
-     * Compensate for projection and target height so sprite size stays fixed
-     * in render target pixels.
-     */
+    /** Compensate for projection and target height so sprite size stays fixed in render target pixels. */
     // TSL types omit matrix column access.
     const projColumns = TSL.cameraProjectionMatrix as unknown as ReturnType<
       typeof TSL.vec4
@@ -504,7 +495,6 @@ export function Stars({
   });
 
   // Time controls the seasonal sky orientation.
-  // Disable culling because both layers span the full dome.
   return (
     <group matrix={orientation} matrixAutoUpdate={false}>
       <mesh

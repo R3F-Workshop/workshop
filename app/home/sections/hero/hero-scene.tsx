@@ -24,11 +24,7 @@ function FallbackPoster() {
   );
 }
 
-/**
- * The bridge between the page and the scene: one capability check, then
- * either the poster or the canvas. `useWebGPU` also answers "no" for reduced
- * motion, which is deliberate — the hero animates continuously.
- */
+/** The bridge between the page and the scene: one capability check, then either the poster or the canvas. */
 export function HeroScene({
   hour,
   autoRotate = true,

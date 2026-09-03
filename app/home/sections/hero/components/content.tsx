@@ -9,16 +9,7 @@ import { Tower } from "./tower";
 import { Trees } from "./trees";
 import { Wordmark } from "./wordmark";
 
-/**
- * Things to play with. Everything here reads the same `hour`.
- *
- * Launch animation goes here. The pro version grows the city in over six
- * seconds with a shared intro clock (`resources/tower-scene/intro.tsx`) that
- * every instanced mesh reads on the GPU through a `positionNode`
- * (`resources/tower-scene/buildings.tsx`, `useBuildPosition`). The simple
- * version is static; a `useFrame` that scales the instances up by `delta` is
- * the afternoon's first stretch.
- */
+/** Groups the interactive hero objects. */
 export function Content({
   hour,
   treeCount,

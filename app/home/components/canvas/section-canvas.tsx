@@ -15,20 +15,7 @@ import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 
 import { useWebGPU } from "@/lib/use-webgpu";
 
-/**
- * A secondary canvas.
- *
- * v10 lets every canvas share one `WebGPURenderer`: the hero declares
- * `id="main"` and owns it, everything below points at it with
- * `renderer={{ primaryCanvas: "main" }}`. So a canvas per section costs a swap
- * chain, not a GPU context — which is why the old shared-canvas-plus-`View`
- * design is gone.
- *
- * Two gates before anything mounts:
- *  - WebGPU is available at all (else the caller shows a poster);
- *  - the primary has registered, since a secondary with no renderer to borrow
- *    is an error rather than a fallback.
- */
+/** A secondary canvas that shares the hero's WebGPU renderer. */
 
 const PRIMARY = "main";
 
@@ -44,8 +31,7 @@ function usePrimaryReady(): boolean {
       .then(() => {
         if (alive) setReady(true);
       })
-      // Timed out — the hero never came up, so there's no renderer to share.
-      // Staying unmounted leaves the poster in place, which is the right answer.
+      // Timed out: the hero never came up, so there's no renderer to share.
       .catch(() => {});
     return () => {
       alive = false;
@@ -57,26 +43,12 @@ function usePrimaryReady(): boolean {
 
 const OnScreenContext = createContext(true);
 
-/**
- * Whether the enclosing `SectionCanvas` is near the viewport. The canvas's
- * render job is already skipped while this is false; scenes that burn CPU in
- * `useFrame` regardless of rendering (physics, most of all) should read this
- * and stand down too.
- */
+/** Whether the enclosing `SectionCanvas` is near the viewport. */
 export function useSectionOnScreen(): boolean {
   return useContext(OnScreenContext);
 }
 
-/**
- * Skips this canvas's render pass while it is scrolled out of view.
- *
- * Job-level for the same reason the hero idles that way (see
- * `useIdleWhenHidden` in tower-hero): `frameloop` writes to the scheduler
- * singleton the whole page shares, so pausing one canvas's job is the only
- * per-canvas idle there is. Only the render job pauses — `useFrame` updates
- * keep their rhythm, so nothing has to reconcile a paused clock on the way
- * back in.
- */
+/** Skips this canvas's render pass while it is scrolled out of view. */
 function IdleWhenHidden({ jobId, hidden }: { jobId: string; hidden: boolean }) {
   // The no-callback form of `useFrame` is the documented scheduler access.
   const { scheduler } = useFrame();
@@ -87,7 +59,7 @@ function IdleWhenHidden({ jobId, hidden }: { jobId: string; hidden: boolean }) {
     if (hidden) scheduler.pauseJob(jobId);
     else scheduler.resumeJob(jobId);
 
-    // Never leave it parked on unmount — the job outlives this effect.
+    // Never leave it parked on unmount: the job outlives this effect.
     return () => {
       if (scheduler.getJobIds().includes(jobId)) scheduler.resumeJob(jobId);
     };
@@ -98,7 +70,7 @@ function IdleWhenHidden({ jobId, hidden }: { jobId: string; hidden: boolean }) {
 
 export function SectionCanvas({
   children,
-  /** Section canvases are decoration; they don't need the primary's framerate. */
+  /** Section canvases are decoration: they don't need the primary's framerate. */
   fps = 30,
   className,
   camera,
@@ -110,25 +82,21 @@ export function SectionCanvas({
   className?: string;
   camera?: Record<string, unknown>;
   orthographic?: boolean;
-  /** Opt in to pointer events. Only for canvases the visitor is meant to grab. */
+  /** Opt in to pointer events. */
   interactive?: boolean;
 }) {
   const support = useWebGPU();
   const ready = usePrimaryReady();
   const mounted = support === "yes" && ready;
 
-  // The render job needs a stable name to be pausable, and the scheduler
-  // takes the canvas id as the job id. `useId` guarantees uniqueness across
-  // instances; strip React's delimiters so it stays a clean DOM id too.
+  // The render job needs a stable name to be pausable, and the scheduler takes the canvas id as the job id.
   const jobId = "section-" + useId().replace(/[^a-zA-Z0-9_-]/g, "");
 
   // r3f forwards the Canvas ref to the <canvas> element itself.
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [onScreen, setOnScreen] = useState(true);
 
-  // Freeze the canvas once it scrolls away — same signal the hero uses, per
-  // canvas. On a page of decorated sections, whatever is off screen is most
-  // of them.
+  // Freeze the canvas once it scrolls away: same signal the hero uses, per canvas.
   useEffect(() => {
     const el = canvasRef.current;
     if (!el) return;
@@ -150,15 +118,9 @@ export function SectionCanvas({
       orthographic={orthographic}
       camera={camera}
       dpr={[1, 1.75]}
-      // Sections are laid out on a fractional grid, so a bare
-      // getBoundingClientRect flaps between e.g. 148.4 and 148.6 as the page
-      // scrolls — each flip resizes the swap chain and desyncs the depth
-      // attachment. Snapping to even integers makes the measured size stable,
-      // and since these canvases are pointer-events: none, re-measuring on
-      // scroll buys us nothing to begin with.
+      // Sections are laid out on a fractional grid, so a bare getBoundingClientRect flaps between e.g. 148.4 and 148.6 as the page scrolls.
       forceEven
-      // Interactive canvases keep it: R3F maps pointer coordinates through
-      // size.top/left, which goes stale the moment the page scrolls.
+      // Interactive canvases keep it: R3F maps pointer coordinates through size.top/left, which goes stale the moment the page scrolls.
       resize={interactive ? undefined : { scroll: false }}
       renderer={{
         alpha: true,
@@ -167,9 +129,7 @@ export function SectionCanvas({
         // Draw after the hero and honor each scene's explicit frame-rate cap.
         scheduler: { after: PRIMARY, fps },
       }}
-      // Backgrounds must never eat clicks or text selection. Where a scene
-      // needs the cursor it reads it from the window instead. Interactive
-      // canvases also claim the drag, so the page doesn't scroll under them.
+      // Backgrounds must never eat clicks or text selection.
       style={
         interactive
           ? { touchAction: "none", cursor: "grab" }

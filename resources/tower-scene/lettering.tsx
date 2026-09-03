@@ -33,20 +33,14 @@ import {
 import type { TextLayer } from "./fx";
 import { INTRO_COMPLETE, LETTER_CHAIN_START } from "./intro";
 
-/**
- * Billboarded MSDF letters render in a full-resolution pass. Authored depth
- * bands and the tower depth twin determine the ironwork occlusion per pixel.
- */
+/** Billboarded MSDF letters render in a full-resolution pass. */
 
 const FONT_REQUEST = {
   input: { baked: "/hero-demo/Geist-ExtraBold.font.glb" },
   raster: { technique: msdf },
 } as const;
 
-/**
- * Creates a lit MSDF material with authored depth. The alpha test prevents
- * transparent parts of the glyph quad from writing depth.
- */
+/** Creates a lit MSDF material with authored depth. */
 function createLetterMaterial(
   towerGlow: THREE.PointLight,
   /** The depth written for the visible glyph pixels. */
@@ -77,10 +71,7 @@ function createLetterMaterial(
   });
 }
 
-/**
- * Depth offsets in city units from top to bottom. Each UV band blends from
- * one offset to the next so a letter can pass through the tower.
- */
+/** Depth offsets in city units from top to bottom. */
 type Layering = {
   z: readonly number[];
   bands?: readonly (readonly [number, number])[];
@@ -110,10 +101,7 @@ type Knock = {
   spin: number;
 };
 
-/**
- * Reduce lift and tilt for depth banded letters so their seams stay aligned
- * with the tower.
- */
+/** Reduce lift and tilt for depth banded letters so their seams stay aligned with the tower. */
 /** Glyph has one depth layer. */
 const FREE: Knock = { sway: 0.45, lift: 0.34, spin: 0.032 };
 /** Glyph crosses a broad tower section. */
@@ -121,10 +109,7 @@ const BANDED: Knock = { sway: 0.36, lift: 0.18, spin: 0.018 };
 /** Glyph crosses the narrow spire. */
 const THREADED: Knock = { sway: 0.3, lift: 0.07, spin: 0.008 };
 
-/**
- * Poster layout in city units. Positions share the tower axis plane while
- * layers control occlusion and centers align each glyph by its outline bounds.
- */
+/** Poster layout in city units. */
 const LETTERS: {
   char: string;
   /** Position in city units on the tower axis plane. */
@@ -194,7 +179,7 @@ const KNOCK_SPEED_LIMIT = 13;
 const SHOVE = 0.72;
 /** Share that pushes the letter out of the pointer's way. */
 const DODGE = 0.55;
-/** Spring back to the authored slot. Underdamped, so the letter rings a little. */
+/** Spring back to the authored slot. */
 const SWAY_STIFFNESS = 110;
 const SWAY_DAMPING = 5.7;
 const SPIN_STIFFNESS = 84;
@@ -270,10 +255,7 @@ function spring(
   return [value + nextVelocity * dt, nextVelocity] as const;
 }
 
-/**
- * Projects each letter into pointer space and tests the cursor sweep.
- * Hits add velocity to springs anchored at the authored letter positions.
- */
+/** Projects each letter into pointer space and tests the cursor sweep. */
 function usePointerKnock(
   groups: RefObject<(THREE.Group | null)[]>,
   { size, worldScale }: { size: number; worldScale: number },
@@ -529,11 +511,7 @@ function usePointerKnock(
   });
 }
 
-/**
- * One link in the PMNDRS chain. Each letter is pulled out of the tower by an
- * underdamped spring, with the next link released a beat later. Opacity stays
- * at zero until release, then position and rotation settle at different rates.
- */
+/** One link in the PMNDRS chain. */
 function AnimatedLetter({
   index,
   target,
@@ -592,12 +570,7 @@ function AnimatedLetter({
     [reveal, side],
   );
 
-  /**
-   * Transform invariants:
-   * 1. JSX never owns the live position or rotation.
-   * 2. Only `applyPose` and this frame step write the transform.
-   * 3. A settled pose is held unless the clock rewinds or its target changes.
-   */
+  /** Transform invariants: 1. */
   useFrame((_, frameDelta) => {
     const object = group.current;
     if (!object) return;

@@ -6,16 +6,7 @@ import * as THREE from "three/webgpu";
 
 import { makeRng } from "./scatter";
 
-/**
- * A dome of points that comes out as the sun goes down.
- *
- * `lightLevel` is the same number the tower and the spotlights read; it lands
- * in a uniform, so the dial never rebuilds this shader. The twinkle is a TSL
- * `time` sine per star. (The pro version has real constellations and the Milky
- * Way. These are dots in the right general mood.)
- *
- * Shipped ready-made; import it.
- */
+/** A dome of points that comes out as the sun goes down. */
 export function Stars({
   count = 2500,
   radius = 1400,
@@ -24,7 +15,7 @@ export function Stars({
   seed = 0x5eed,
 }: {
   count?: number;
-  /** Dome radius. Keep it inside the camera's far plane. */
+  /** Dome radius. */
   radius?: number;
   /** 0 in daylight, 1 at night. */
   lightLevel?: number;
@@ -43,15 +34,14 @@ export function Stars({
     const brightness = new Float32Array(count);
     const phase = new Float32Array(count);
     for (let i = 0; i < count; i++) {
-      // Even over the upper hemisphere, kept a little above the horizon so
-      // the city's skyline never has stars poking through it.
+      // Even over the upper hemisphere, kept a little above the horizon so the city's skyline never has stars poking through it.
       const y = 0.04 + random() * 0.96;
       const r = Math.sqrt(1 - y * y);
       const angle = random() * Math.PI * 2;
       positions[i * 3] = Math.cos(angle) * r * radius;
       positions[i * 3 + 1] = y * radius;
       positions[i * 3 + 2] = Math.sin(angle) * r * radius;
-      // Most stars are faint; a few are not.
+      // Most stars are faint: a few are not.
       brightness[i] = 0.25 + random() ** 3 * 0.75;
       phase[i] = random() * Math.PI * 2;
     }

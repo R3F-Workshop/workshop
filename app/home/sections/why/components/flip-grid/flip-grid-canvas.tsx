@@ -7,20 +7,7 @@ import { SectionCanvas } from "@/app/home/components/canvas/section-canvas";
 
 import { FLIP_GRID_SITE, type FlipGridConfig } from "./config";
 
-/**
- * The flip grid slot as a section backdrop.
- *
- * Self-contained on purpose: it owns the positioned wrapper as well as the
- * canvas, because that wrapper *is* the element the finished scene measures
- * the cursor against (under a shared renderer, `renderer.domElement` is
- * whichever canvas drew last — see the note in the finished version).
- *
- * Starter: renders the placeholder. The finished scene is `./flip-grid.tsx`
- * (still fully working at /demos/flip-grid) — bring it back with
- * `<FlipGridEnvironment config={config} />` and
- * `<FlipGrid config={config} bounds={bounds} />`. The camera is orthographic
- * at zoom 1, so 1 unit ≈ 1 px — hence the placeholder's scale.
- */
+/** The flip grid slot as a section backdrop. */
 export function FlipGridCanvas({
   config = FLIP_GRID_SITE,
 }: {

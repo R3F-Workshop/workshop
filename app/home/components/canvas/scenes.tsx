@@ -2,20 +2,9 @@
 
 import dynamic from "next/dynamic";
 
-/**
- * The client-only boundary for the home page's 3D.
- *
- * `@react-three/fiber/webgpu` reaches for `localStorage` at module scope, so it
- * cannot appear anywhere in the server render graph — importing a scene
- * directly from a section breaks the build. Sections import from here instead;
- * this module only pulls in `next/dynamic`, and the scenes load client-side.
- * (The demo pages carry their own boundaries — see `standalone.tsx` next to
- * each demo's `page.tsx`.)
- *
- * It also keeps three.js out of the initial route bundle.
- */
+/** The client-only boundary for the home page's 3D. */
 
-/** The "Why now" backdrop. Brings its own wrapper — see the component. */
+/** The "Why now" backdrop. */
 export const FlipGridCanvas = dynamic(
   () =>
     import("@/app/home/sections/why/components/flip-grid/flip-grid-canvas").then(
@@ -32,10 +21,7 @@ export const MagicBoxCanvas = dynamic(
   { ssr: false },
 );
 
-/**
- * The physics container behind the closing CTA and the footer. Brings its own
- * wrapper — see the component.
- */
+/** The physics container behind the closing CTA and the footer. */
 export const ConnectorsCanvas = dynamic(
   () =>
     import(
@@ -53,7 +39,7 @@ export const BlockCityCanvas = dynamic(
   { ssr: false },
 );
 
-/** The "demos" outcome card. Tiles that turn to name what you leave with. */
+/** The "demos" outcome card. */
 export const TakehomeGridCanvas = dynamic(
   () =>
     import(
@@ -62,7 +48,7 @@ export const TakehomeGridCanvas = dynamic(
   { ssr: false },
 );
 
-/** The "ecosystem" outcome card. One box, gaining a capability at a time. */
+/** The "ecosystem" outcome card. */
 export const BlendingCubeCanvas = dynamic(
   () =>
     import(

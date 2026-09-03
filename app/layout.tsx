@@ -13,14 +13,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-/**
- * Absolute base for social image URLs.
- *
- * Without it Next resolves og:image against localhost and the share card is
- * dead everywhere but this machine. Vercel supplies the production host on its
- * own, and per-deployment previews get their own; NEXT_PUBLIC_SITE_URL wins so
- * the real domain can be set once it is pointed at the project.
- */
+/** Absolute base for social image URLs. */
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
   (process.env.VERCEL_PROJECT_PRODUCTION_URL
@@ -51,7 +44,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      // Dark-only by design — there is no theme toggle, so the class is fixed.
+      // Dark-only by design: there is no theme toggle, so the class is fixed.
       className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">{children}</body>

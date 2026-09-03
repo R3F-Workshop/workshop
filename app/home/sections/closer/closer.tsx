@@ -3,14 +3,6 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { CLOSER, REGISTER_URL } from "@/lib/content";
 
-/**
- * The closing call to action.
- *
- * The poster and its gradient belong to this section; the physics container
- * drifting over them does not — that one spans this section *and* the footer,
- * so it is mounted alongside both in `app/page.tsx`. Hence the `z-20` on the
- * content: it has to sit above a canvas that isn't a descendant of this element.
- */
 export function Closer() {
   return (
     <section className="relative overflow-hidden border-t border-border">

@@ -3,15 +3,7 @@
 import { Environment } from "@react-three/drei";
 import type { ColorRepresentation } from "three";
 
-/**
- * Ported from `threejs-conf-pmndrs/src/Lights.tsx`.
- *
- * Everything here is Stage 0 scaffolding with a short life: `@pmndrs/sky`
- * replaces the cubemap IBL, the ambient, and the hemisphere fill at Stage 1,
- * and drives the directional light from a real solar position instead of a
- * hand-placed moon. Kept faithful for now so Stage 1 is a legible diff and we
- * have an honest before/after.
- */
+
 export function Lights({
   shadowRadius = 60,
   environment = true,
@@ -26,20 +18,12 @@ export function Lights({
   sunColor?: ColorRepresentation;
   sunIntensity?: number;
   sunPosition?: [number, number, number];
-  /**
-   * Faraz's hand-placed moonlight + ambient + hemisphere fill.
-   *
-   * Off once sky is driving the scene: sky sets `scene.environment` from its own
-   * PMREM bake, so keeping these would double-count the ambient and light the
-   * city from a direction the sky doesn't agree with. The shadow-casting
-   * directional stays either way — sky provides illumination, not shadows.
-   */
+  /** Faraz's hand-placed moonlight + ambient + hemisphere fill. */
   sunlight?: boolean;
 }) {
   return (
     <>
-      {/* Night sky cubemap, image-based lighting only — the sky itself is the
-          scene background. Deleted at Stage 1. */}
+      {/* Night sky cubemap, image-based lighting only: the sky itself is the scene background. */}
       {environment && (
         <Environment
           files={["px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"]}
@@ -77,10 +61,7 @@ export function Lights({
         color="#ffd3b0"
       />
 
-      {/* Moonlight key light casting soft cool shadows.
-          The ortho frustum is fitted to the near city rather than the full
-          400-unit disc — the original spent its whole 2048² map on geometry
-          too far away to read, which is why near shadows were mushy. */}
+      {/* Moonlight key light casting soft cool shadows. */}
       <directionalLight
         castShadow
         position={[-25, 40, -20]}

@@ -1,18 +1,6 @@
 import { ImageResponse } from "next/og";
 
-/**
- * The share card.
- *
- * Generated rather than drawn, so it never drifts from the copy: the kicker and
- * the title come from the same `lib/content.ts` the page renders.
- *
- * Two constraints shape the design. Satori has no WebGPU, so none of the real
- * scenes can appear here — the gold band is a still approximation of the flip
- * grid's rank, built from divs. And it reads no local font: the site's Geist
- * arrives through `next/font/google` as woff2, which Satori cannot parse, and
- * there is no .ttf in the repo to hand it. So this leans on layout, the mark
- * and the gold rather than on distinctive type.
- */
+
 
 export const alt =
   "Advanced React Three Fiber — a pmndrs workshop. Gobelins, Paris, September 8 and 9, 2026.";
@@ -23,7 +11,7 @@ const BG = "#08080a";
 const GOLD = "#c9a862";
 const DIM = "#17171c";
 
-/** The pmndrs mark, on its native 800×800 grid. Five rects — see brand/logo. */
+/** The pmndrs mark, on its native 800×800 grid. */
 const MARK: [number, number, number, number][] = [
   [280, 560, 240, 240],
   [280, 280, 240, 240],
@@ -39,8 +27,7 @@ function rand(n: number, seed: number) {
 }
 
 export default function Image() {
-  // 24 × 38 + 23 gaps + 2 × 64 padding = 1155, inside the 1200 frame. At 26
-  // the last column is clipped by the edge and reads as a mistake, not a bleed.
+  // 24 × 38 + 23 gaps + 2 × 64 padding = 1155, inside the 1200 frame.
   const cols = 24;
   const rows = 3;
   const tile = 38;
@@ -116,8 +103,7 @@ export default function Image() {
         </div>
       </div>
 
-      {/* A still of the flip grid's rank: mostly resting, a scatter turned to
-            gold, denser toward the right so it reads as a sweep in progress. */}
+      {/* A still of the flip grid's rank: mostly resting, a scatter turned to gold, denser toward the right so it reads as a sweep in progress. */}
       <div style={{ display: "flex", flexDirection: "column" }}>
         {Array.from({ length: rows }).map((_, r) => (
           <div key={r} style={{ display: "flex", marginTop: r ? gap : 0 }}>

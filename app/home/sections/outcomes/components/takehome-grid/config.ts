@@ -1,18 +1,6 @@
-/**
- * Tunables for the takehome grid.
- *
- * Split out of the component so the Leva dependency stays on the demo side of
- * the boundary — nothing under `components/` imports it.
- */
+/** Tunables for the takehome grid. */
 
-/**
- * What the tiles say.
- *
- * These are the real demo slugs, and that is the whole point of the card: the
- * things being handed over are the things the visitor has already scrolled
- * past. Adding a name here that isn't a demo yet would make the card a claim
- * rather than evidence, so the list grows when the demos do.
- */
+/** What the tiles say. */
 export const TAKEHOME_NAMES = [
   "magic-box",
   "flip-grid",
@@ -26,11 +14,11 @@ export type TakehomeGridConfig = {
   cols: number;
   rows: number;
 
-  /** Tile width in world units; height follows from `aspect`. */
+  /** Tile width in world units: height follows from `aspect`. */
   tile: number;
   aspect: number;
   gap: number;
-  /** Tile depth as a fraction of its height — the edge you see mid-turn. */
+  /** Tile depth as a fraction of its height: the edge you see mid-turn. */
   thickness: number;
 
   /** Seconds between one tile starting its turn and the next. */
@@ -44,7 +32,7 @@ export type TakehomeGridConfig = {
   /** How far past the landing the turn overshoots, 0 for none. */
   overshoot: number;
 
-  /** The resting face — dark, so the reveal is a change in value not hue. */
+  /** The resting face: dark, so the reveal is a change in value not hue. */
   front: string;
   /** The revealed face. */
   back: string;
@@ -80,11 +68,7 @@ export const TAKEHOME_GRID_DEFAULTS: TakehomeGridConfig = {
   keyIntensity: 2.2,
 };
 
-/**
- * The card slot is 190px tall and the tiles have to stay legible in it, so the
- * site preset runs the sequence slower and holds the reveal longer — the whole
- * point is that a visitor scrolling past sees the names, not the motion.
- */
+/** The card slot is 190px tall and the tiles have to stay legible in it, so the site preset runs the sequence slower and holds the reveal longer. */
 export const TAKEHOME_GRID_SITE: TakehomeGridConfig = {
   ...TAKEHOME_GRID_DEFAULTS,
   stagger: 0.3,

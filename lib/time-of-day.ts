@@ -1,18 +1,15 @@
-/**
- * Cyclic time-of-day values shared by the dial, CSS sky, and 3D atmosphere.
- * Inputs are fractions of a 24-hour solar day and wrap at midnight.
- */
+/** Cyclic time-of-day values shared by the dial, CSS sky, and 3D atmosphere. */
 
 export type Phase = "NIGHT" | "DUSK" | "GOLDEN" | "DAY";
 
 type RGB = [number, number, number];
 
 interface Palette {
-  /** CSS gradient stops, top → bottom. */
+  /** CSS gradient stops from top to bottom. */
   skyTop: RGB;
   skyMid: RGB;
   skyBottom: RGB;
-  /** Sun elevation in degrees above the horizon; negative is below. */
+  /** Sun elevation in degrees above the horizon: negative is below. */
   sunElevation: number;
   /** Compass bearing in degrees from north at 0 to east at 90. */
   sunAzimuth: number;

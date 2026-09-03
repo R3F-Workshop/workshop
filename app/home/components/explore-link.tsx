@@ -2,17 +2,7 @@ import { ArrowUpRightIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * "Explore this" — the link from a section to the demo its scene came from.
- *
- * Desktop only. The demo pages assume a pointer and a viewport with room for a
- * controls panel and a dialog, so offering them on a phone would be a promise
- * the other end can't keep. `hidden` also keeps it out of the accessibility
- * tree there, rather than leaving an invisible link in the tab order.
- *
- * Opens in a new tab on purpose: these are asides, and a visitor reading the
- * page should get their place back when they close it.
- */
+/** Links a section to its standalone demo. */
 export function ExploreLink({
   href,
   label = "Explore this demo",

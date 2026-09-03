@@ -1,8 +1,8 @@
 import { abs, acos, bool, Break, ceil, clamp, Continue, cos, countOneBits, cross, div, dot, float, Fn, fract, getNormalFromDepth, getViewPosition, HALF_PI, If, interleavedGradientNoise, logarithmicDepthToViewZ, Loop, max, mix, mul, NodeUpdateType, normalize, passTexture, PI, pow, rand, reference, screenCoordinate, shiftRight, sign, sin, sqrt, sub, uint, uniform, uv, vec2, vec3, vec4, viewZToPerspectiveDepth } from 'three/tsl';
 import { MathUtils, NodeMaterial, QuadMesh, RedFormat, RendererUtils, RenderTarget, TempNode, UnsignedByteType, Vector2 } from 'three/webgpu';
 
-const _quadMesh = /*@__PURE__*/ new QuadMesh();
-const _size = /*@__PURE__*/ new Vector2();
+const _quadMesh = /* @__PURE__ */ new QuadMesh();
+const _size = /* @__PURE__ */ new Vector2();
 
 // From Activision GTAO paper: https://www.activision.com/cdn/research/s2016_pbs_activision_occlusion.pptx
 const _temporalRotations = [ 60, 300, 180, 240, 120, 0 ];
@@ -10,35 +10,7 @@ const _spatialOffsets = [ 0, 0.5, 0.25, 0.75 ];
 
 let _rendererState;
 
-/**
- * Post processing node for applying Screen Space Ambient Occlusion (SSAO) to a scene.
- *
- * This is an AO-only port of the SSGI effect: it keeps only the bitmask horizon based
- * ambient occlusion calculation and drops all the indirect diffuse (GI) work.
- *
- * References:
- * - {@link https://github.com/cdrinmatane/SSRT3}.
- * - {@link https://cdrinmatane.github.io/posts/ssaovb-code/}.
- * - {@link https://cdrinmatane.github.io/cgspotlight-slides/ssilvb_slides.pdf}.
- *
- * The quality and performance of the effect mainly depend on `sliceCount` and `stepCount`.
- * The total number of samples taken per pixel is `sliceCount` * `stepCount` * `2`. Here are some
- * recommended presets depending on whether temporal filtering is used or not.
- *
- * With temporal filtering (recommended):
- *
- * - Low: `sliceCount` of `1`, `stepCount` of `12`.
- * - Medium: `sliceCount` of `2`, `stepCount` of `8`.
- * - High: `sliceCount` of `3`, `stepCount` of `16`.
- *
- * Without temporal filtering:
- *
- * - Low: `sliceCount` of `2`, `stepCount` of `6`.
- * - Medium: `sliceCount` of `3`, `stepCount` of `8`.
- * - High: `sliceCount` of `4`, `stepCount` of `12`.
- *
- * @augments TempNode
- */
+/** Post processing node for applying Screen Space Ambient Occlusion (SSAO) to a scene. */
 class SSAONode extends TempNode {
 
 	static get type() {
@@ -47,219 +19,80 @@ class SSAONode extends TempNode {
 
 	}
 
-	/**
-	 * Constructs a new SSAO node.
-	 *
-	 * @param {TextureNode} depthNode - A texture node that represents the scene's depth.
-	 * @param {TextureNode} normalNode - A texture node that represents the scene's normals.
-	 * @param {PerspectiveCamera} camera - The camera the scene is rendered with.
-	 * @param {?TextureNode} [alphaNode=null] - An optional texture node whose alpha channel represents the scene's surface opacity. When provided, samples whose surface alpha is below `alphaThreshold` are excluded from occlusion so transparent/faded meshes do not cast AO.
-	 */
+	/** Constructs a new SSAO node. */
 	constructor( depthNode, normalNode, camera, alphaNode = null ) {
 
 		super( 'vec4' );
 
-		/**
-		 * A node that represents the scene's depth.
-		 *
-		 * @type {TextureNode}
-		 */
+		/** A node that represents the scene's depth. */
 		this.depthNode = depthNode;
 
-		/**
-		 * An optional node whose alpha channel represents the scene's surface
-		 * opacity. When set, occlusion samples on surfaces whose alpha is below
-		 * {@link SSAONode#alphaThreshold} are ignored, so transparent or faded
-		 * meshes do not contribute ambient occlusion.
-		 *
-		 * @type {?TextureNode}
-		 * @default null
-		 */
+		/** An optional node whose alpha channel represents the scene's surface opacity. */
 		this.alphaNode = alphaNode;
 
-		/**
-		 * A node that represents the scene's normals. If no normals are passed to the
-		 * constructor (because MRT is not available), normals can be automatically
-		 * reconstructed from depth values in the shader.
-		 *
-		 * @type {TextureNode}
-		 */
+		/** A node that represents the scene's normals. */
 		this.normalNode = normalNode;
 
-		/**
-		 * The `updateBeforeType` is set to `NodeUpdateType.FRAME` since the node renders
-		 * its effect once per frame in `updateBefore()`.
-		 *
-		 * @type {string}
-		 * @default 'frame'
-		 */
+		/** The `updateBeforeType` is set to `NodeUpdateType.FRAME` since the node renders its effect once per frame in `updateBefore()`. */
 		this.updateBeforeType = NodeUpdateType.FRAME;
 
-		/**
-		 * Number of per-pixel hemisphere slices. This has a big performance cost and should be kept as low as possible.
-		 * Should be in the range `[1, 4]`.
-		 *
-		 * @type {UniformNode<uint>}
-		 * @default 1
-		 */
+		/** Number of per-pixel hemisphere slices. */
 		this.sliceCount = uniform( 1, 'uint' );
 
-		/**
-		 * Number of samples taken along one side of a given hemisphere slice. This has a big performance cost and should
-		 * be kept as low as possible.  Should be in the range `[1, 32]`.
-		 *
-		 * @type {UniformNode<uint>}
-		 * @default 12
-		 */
+		/** Number of samples taken along one side of a given hemisphere slice. */
 		this.stepCount = uniform( 12, 'uint' );
 
-		/**
-		 * Power function applied to AO to make it appear darker/lighter. Should be in the range `[0, 4]`.
-		 *
-		 * @type {UniformNode<float>}
-		 * @default 1
-		 */
+		/** Power function applied to AO to make it appear darker/lighter. */
 		this.aoIntensity = uniform( 1, 'float' );
 
-		/**
-		 * Surfaces whose alpha (sampled from {@link SSAONode#alphaNode}) is below
-		 * this value are treated as fully transparent and excluded from occlusion.
-		 * Only used when `alphaNode` is provided. Should be in the range `[0, 1]`.
-		 *
-		 * @type {UniformNode<float>}
-		 * @default 0.5
-		 */
+		/** Surfaces whose alpha (sampled from {@link SSAONode#alphaNode}) is below this value are treated as fully transparent and excluded from occlusion. */
 		this.alphaThreshold = uniform( 1, 'float' );
 
-		/**
-		 * Effective sampling radius in world space. AO can only have influence within that radius.
-		 * Should be in the range `[1, 25]`.
-		 *
-		 * @type {UniformNode<float>}
-		 * @default 12
-		 */
+		/** Effective sampling radius in world space. */
 		this.radius = uniform( 12, 'float' );
 
-		/**
-		 * Makes the sample distance in screen space instead of world-space (helps having more detail up close).
-		 *
-		 * @type {UniformNode<bool>}
-		 * @default true
-		 */
+		/** Makes the sample distance in screen space instead of world-space (helps having more detail up close). */
 		this.useScreenSpaceSampling = uniform( true, 'bool' );
 
-		/**
-		 * Controls samples distribution. It's an exponent applied at each step get increasing step size over the distance.
-		 * Should be in the range `[1, 3]`.
-		 *
-		 * @type {UniformNode<float>}
-		 * @default 2
-		 */
+		/** Controls samples distribution. */
 		this.expFactor = uniform( 2, 'float' );
 
-		/**
-		 * Constant thickness value of objects on the screen in world units. Allows occlusion to pass behind surfaces past that thickness value.
-		 * Should be in the range `[0.01, 10]`.
-		 *
-		 * @type {UniformNode<float>}
-		 * @default 1
-		 */
+		/** Constant thickness value of objects on the screen in world units. */
 		this.thickness = uniform( 1, 'float' );
 
-		/**
-		 * Whether to increase thickness linearly over distance or not (avoid losing detail over the distance).
-		 *
-		 * @type {UniformNode<bool>}
-		 * @default false
-		 */
+		/** Whether to increase thickness linearly over distance or not (avoid losing detail over the distance). */
 		this.useLinearThickness = uniform( false, 'bool' );
 
-		/**
-		 * Whether to use temporal filtering or not. Setting this property to
-		 * `true` requires the usage of `TRAANode`. This will help to reduce noise
-		 * although it introduces typical TAA artifacts like ghosting and temporal
-		 * instabilities.
-		 *
-		 * If setting this property to `false`, a manual denoise via `DenoiseNode`
-		 * is required.
-		 *
-		 * @type {boolean}
-		 * @default true
-		 */
+		/** Whether to use temporal filtering or not. */
 		this.useTemporalFiltering = true;
 
 		// private uniforms
 
-		/**
-		 * The resolution of the effect.
-		 *
-		 * @private
-		 * @type {UniformNode<vec2>}
-		 */
+		/** The resolution of the effect. */
 		this._resolution = uniform( new Vector2() );
 
-		/**
-		 * Used to compute the effective step radius when viewSpaceSampling is `false`.
-		 *
-		 * @private
-		 * @type {UniformNode<vec2>}
-		 */
+
 		this._halfProjScale = uniform( 1 );
 
-		/**
-		 * Temporal direction that influences the rotation angle for each slice.
-		 *
-		 * @private
-		 * @type {UniformNode<float>}
-		 */
+		/** Temporal direction that influences the rotation angle for each slice. */
 		this._temporalDirection = uniform( 0 );
 
-		/**
-		 * Temporal offset added to the initial ray step.
-		 *
-		 * @private
-		 * @type {UniformNode<float>}
-		 */
+		/** Temporal offset added to the initial ray step. */
 		this._temporalOffset = uniform( 0 );
 
-		/**
-		 * Represents the inverse projection matrix of the scene's camera.
-		 *
-		 * @private
-		 * @type {UniformNode<mat4>}
-		 */
+		/** Represents the inverse projection matrix of the scene's camera. */
 		this._cameraProjectionMatrixInverse = uniform( camera.projectionMatrixInverse );
 
-		/**
-		 * Represents the near value of the scene's camera.
-		 *
-		 * @private
-		 * @type {ReferenceNode<float>}
-		 */
+		/** Represents the near value of the scene's camera. */
 		this._cameraNear = reference( 'near', 'float', camera );
 
-		/**
-		 * Represents the far value of the scene's camera.
-		 *
-		 * @private
-		 * @type {ReferenceNode<float>}
-		 */
+		/** Represents the far value of the scene's camera. */
 		this._cameraFar = reference( 'far', 'float', camera );
 
-		/**
-		 * A reference to the scene's camera.
-		 *
-		 * @private
-		 * @type {PerspectiveCamera}
-		 */
+		/** A reference to the scene's camera. */
 		this._camera = camera;
 
-		/**
-		 * The render target the effect is rendered into. The single texture holds the AO.
-		 *
-		 * @private
-		 * @type {RenderTarget}
-		 */
+		/** The render target the effect is rendered into. */
 		this._renderTarget = new RenderTarget( 1, 1, { depthBuffer: false } );
 
 		const aoTexture = this._renderTarget.texture;
@@ -267,42 +100,23 @@ class SSAONode extends TempNode {
 		aoTexture.type = UnsignedByteType;
 		aoTexture.format = RedFormat;
 
-		/**
-		 * The material that is used to render the effect.
-		 *
-		 * @private
-		 * @type {NodeMaterial}
-		 */
+		/** The material that is used to render the effect. */
 		this._material = new NodeMaterial();
 		this._material.name = 'SSAO';
 
-		/**
-		 * The AO result of the effect is represented as a separate texture node.
-		 *
-		 * @private
-		 * @type {PassTextureNode}
-		 */
+		/** The AO result of the effect is represented as a separate texture node. */
 		this._aoNode = passTexture( this, this._renderTarget.texture );
 
 	}
 
-	/**
-	 * Returns the AO result of the effect as a texture node.
-	 *
-	 * @return {PassTextureNode} A texture node that represents the AO result of the effect.
-	 */
+	/** Returns the AO result of the effect as a texture node. */
 	getAONode() {
 
 		return this._aoNode;
 
 	}
 
-	/**
-	 * Sets the size of the effect.
-	 *
-	 * @param {number} width - The width of the effect.
-	 * @param {number} height - The height of the effect.
-	 */
+	/** Sets the size of the effect. */
 	setSize( width, height ) {
 
 		this._resolution.value.set( width, height );
@@ -312,18 +126,14 @@ class SSAONode extends TempNode {
 
 	}
 
-	/**
-	 * This method is used to render the effect once per frame.
-	 *
-	 * @param {NodeFrame} frame - The current node frame.
-	 */
+
 	updateBefore( frame ) {
 
 		const { renderer } = frame;
 
 		_rendererState = RendererUtils.resetRendererState( renderer, _rendererState );
 
-		//
+
 
 		const size = renderer.getDrawingBufferSize( _size );
 		this.setSize( size.width, size.height );
@@ -344,7 +154,7 @@ class SSAONode extends TempNode {
 
 		}
 
-		//
+
 
 		_quadMesh.material = this._material;
 		_quadMesh.name = 'SSAO';
@@ -364,12 +174,7 @@ class SSAONode extends TempNode {
 
 	}
 
-	/**
-	 * This method is used to setup the effect's TSL code.
-	 *
-	 * @param {NodeBuilder} builder - The current node builder.
-	 * @return {PassTextureNode}
-	 */
+
 	setup( builder ) {
 
 		const uvNode = uv();
@@ -394,8 +199,7 @@ class SSAONode extends TempNode {
 
 		const sampleNormal = ( uv ) => ( this.normalNode !== null ) ? this.normalNode.sample( uv ).rgb.normalize() : getNormalFromDepth( uv, this.depthNode.value, this._cameraProjectionMatrixInverse );
 
-		// Surface opacity at a given uv. Defaults to fully opaque when no alpha
-		// source is provided, so behaviour is unchanged unless `alphaNode` is set.
+		// Surface opacity at a given uv.
 		const sampleAlpha = ( uv ) => ( this.alphaNode !== null ) ? this.alphaNode.sample( uv ).a : float( 1 );
 
 		// From Activision GTAO paper: https://www.activision.com/cdn/research/s2016_pbs_activision_occlusion.pptx
@@ -451,8 +255,7 @@ class SSAONode extends TempNode {
 
 				} );
 
-				// Skip occlusion from transparent/faded surfaces. Their alpha is below
-				// the threshold, so treat them as empty space and keep marching.
+				// Skip occlusion from transparent/faded surfaces.
 				If( sampleAlpha( sampleUV ).lessThan( this.alphaThreshold ), () => {
 
 					Continue();
@@ -494,15 +297,14 @@ class SSAONode extends TempNode {
 
 			depth.greaterThanEqual( 1.0 ).discard();
 
-			// Surface opacity of the shaded pixel. Used to smoothly fade AO out on
-			// transparent/faded surfaces so no hard ring appears at the fade edge.
+			// Surface opacity of the shaded pixel.
 			const surfaceAlpha = sampleAlpha( uvNode ).toVar();
 
 			const viewPosition = getViewPosition( uvNode, depth, this._cameraProjectionMatrixInverse ).toVar();
 			const viewNormal = sampleNormal( uvNode ).toVar();
 			const viewDir = normalize( viewPosition.xyz.negate() ).toVar();
 
-			//
+
 
 			const noiseOffset = spatialOffsets( screenCoordinate );
 			const noiseDirection = interleavedGradientNoise( screenCoordinate );
@@ -520,7 +322,7 @@ class SSAONode extends TempNode {
 
 			If( this.useScreenSpaceSampling, () => {
 
-				stepRadius.assign( RADIUS.mul( this._resolution.x.div( 2 ) ).div( float( 16 ) ) ); // SSRT3 has a bug where stepRadius is divided by STEP_COUNT twice; fix here
+				stepRadius.assign( RADIUS.mul( this._resolution.x.div( 2 ) ).div( float( 16 ) ) ); // SSRT3 has a bug where stepRadius is divided by STEP_COUNT twice: fix here
 
 			} ).Else( () => {
 
@@ -531,7 +333,7 @@ class SSAONode extends TempNode {
 			stepRadius.divAssign( float( STEP_COUNT ).add( 1 ) );
 			const radiusVS = max( 1, float( STEP_COUNT.sub( 1 ) ) ).mul( stepRadius ).toConst();
 
-			//
+
 
 			Loop( { start: uint( 0 ), end: ROTATION_COUNT, type: 'uint', condition: '<' }, ( { i } ) => {
 
@@ -559,8 +361,7 @@ class SSAONode extends TempNode {
 			aoValue.divAssign( float( ROTATION_COUNT ) );
 			aoValue.assign( pow( aoValue.clamp().oneMinus(), AO_INTENSITY ).clamp() );
 
-			// Fade AO toward 1 (no occlusion) as the surface becomes transparent, so
-			// faded areas lose AO gradually instead of forming a hard outline.
+			// Fade AO toward 1 (no occlusion) as the surface becomes transparent, so faded areas lose AO gradually instead of forming a hard outline.
 			aoValue.assign( mix( float( 1 ), aoValue, surfaceAlpha.clamp() ) );
 
 			return vec4( aoValue, aoValue, aoValue, 1 );
@@ -570,16 +371,13 @@ class SSAONode extends TempNode {
 		this._material.colorNode = ao().context( builder.getSharedContext() );
 		this._material.needsUpdate = true;
 
-		//
+
 
 		return this._aoNode;
 
 	}
 
-	/**
-	 * Frees internal resources. This method should be called
-	 * when the effect is no longer required.
-	 */
+	/** Frees internal resources. */
 	dispose() {
 
 		this._renderTarget.dispose();
@@ -592,15 +390,5 @@ class SSAONode extends TempNode {
 
 export default SSAONode;
 
-/**
- * TSL function for creating a SSAO effect.
- *
- * @tsl
- * @function
- * @param {TextureNode} depthNode - A texture node that represents the scene's depth.
- * @param {TextureNode} normalNode - A texture node that represents the scene's normals.
- * @param {Camera} camera - The camera the scene is rendered with.
- * @param {?TextureNode} [alphaNode=null] - An optional texture node whose alpha channel represents the scene's surface opacity.
- * @returns {SSAONode}
- */
+/** TSL function for creating a SSAO effect. */
 export const ssao = ( depthNode, normalNode, camera, alphaNode = null ) => new SSAONode( depthNode, normalNode, camera, alphaNode );

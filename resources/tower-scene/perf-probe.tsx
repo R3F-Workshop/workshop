@@ -11,7 +11,7 @@ export interface PerfSample {
   ms: number;
   drawCalls: number;
   triangles: number;
-  /** Diagnostics — see the note below on why these are here. */
+  /** Diagnostics: see the note below on why these are here. */
   hasControls: boolean;
   cameraPos: [number, number, number];
   target: [number, number, number];
@@ -22,22 +22,7 @@ export interface PerfSample {
 
 const r2 = (v: number) => Math.round(v * 100) / 100;
 
-/**
- * Frame-time, geometry and camera-state readout, sampled once a second.
- *
- * The camera fields are deliberately on screen rather than in a console call.
- * This demo is being built by someone who can't see the browser, so "the camera
- * is wrong" and "the controls are dead" have been costing a round trip each to
- * distinguish. `hasControls` alone separates "CameraControls never mounted" from
- * "it mounted and is driving a camera nobody renders", which are the two
- * failures that look identical from a screenshot.
- *
- * `drawCalls`/`triangles` come from `renderer.info`. Note they report the LAST
- * render pass, so under a post-processing pipeline they describe the final
- * fullscreen quad (1 draw, 1 triangle) rather than the scene — which is exactly
- * what the panel was showing. `sceneDraws` would need sampling before the
- * pipeline runs; for now treat these as "is the pipeline presenting at all".
- */
+/** Frame-time, geometry and camera-state readout, sampled once a second. */
 export function PerfProbe({ onSample }: { onSample: (s: PerfSample) => void }) {
   const renderer = useThree((state) => state.renderer);
   const camera = useThree((state) => state.camera);

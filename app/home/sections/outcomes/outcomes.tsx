@@ -11,13 +11,7 @@ import { Card } from "@/components/ui/card";
 import { OUTCOMES, SECTION_COPY } from "@/lib/content";
 import { Section, SectionTitle, Wrap } from "@/app/home/components/section";
 
-/**
- * The visual area at the top of an outcome card.
- *
- * The label sits underneath rather than beside: a scene renders over it when
- * WebGPU is available, and shows through when it isn't. So the card is never
- * blank and never pretends a missing scene is there.
- */
+/** The visual area at the top of an outcome card. */
 function Slot({ label, children }: { label: string; children?: ReactNode }) {
   return (
     <div className="relative h-[190px] overflow-hidden border-b border-border bg-[#0b0b0e]">
@@ -31,7 +25,7 @@ function Slot({ label, children }: { label: string; children?: ReactNode }) {
   );
 }
 
-/** One slot per outcome, in card order. Each names the demo it came from. */
+/** One slot per outcome, in card order. */
 const SLOTS: { label: string; demo?: string; scene?: ReactNode }[] = [
   {
     label: "Ten, written six ways",
@@ -79,8 +73,7 @@ export function Outcomes() {
                 <div className="text-[15px] leading-[1.6] text-muted-foreground">
                   {d}
                 </div>
-                {/* `mt-auto` so the links sit on one line across the row even
-                    when the card copy runs to different lengths. */}
+                {/* `mt-auto` so the links sit on one line across the row even when the card copy runs to different lengths. */}
                 {SLOTS[i].demo ? (
                   <ExploreLink
                     href={SLOTS[i].demo}

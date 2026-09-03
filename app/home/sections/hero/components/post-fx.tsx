@@ -12,23 +12,7 @@ interface BloomPass {
   threshold: { value: number };
 }
 
-/**
- * The whole post-processing chain, in one box.
- *
- * One scene pass into a multi-render-target — colour on one attachment,
- * emissive on another — then bloom on the emissive alone, added back over
- * the colour. Only things that *emit* glow: the tower's lights and bulbs, not
- * every bright pixel. The knobs are uniforms; toggling `bloom` rebuilds the
- * graph, turning `strength` doesn't.
- *
- * The pro pipeline (`resources/tower-scene/fx.tsx`) builds on exactly this
- * scene pass, in this order:
- *   1. GTAO from a packed-normal attachment (or SSGI, which replaces it)
- *   2. sky-coloured height fog, sampling the baked sky cube per view ray
- *   3. the temporal resolver: FSR3 reconstructing from 1/1.5 res (or TRAA)
- *   4. a full-resolution lettering pass composited last, so glyphs stay crisp
- * Each is a stage you add to this graph, not a different graph.
- */
+/** The whole post-processing chain, in one box. */
 export function PostFx({
   bloom: enabled = true,
   strength = 0.45,
@@ -44,7 +28,7 @@ export function PostFx({
   const built = useRef<boolean | null>(null);
 
   const { rebuild } = useRenderPipeline(
-    // Configure the output. Runs once, and again on `rebuild()`.
+    // Configure the output.
     ({ renderPipeline, passes }) => {
       const scenePass = passes?.scenePass;
       if (!renderPipeline || !scenePass) return;
@@ -65,17 +49,17 @@ export function PostFx({
         renderPipeline.outputNode = beauty;
       }
 
-      // The presentation material has a new output node; say so.
+      // The presentation material has a new output node: say so.
       renderPipeline.needsUpdate = true;
       built.current = enabled;
     },
-    // Configure the scene pass's attachments. Runs first.
+    // Configure the scene pass's attachments.
     ({ passes }) => {
       passes?.scenePass?.setMRT(mrt({ output, emissive }));
     },
   );
 
-  // Structural change: rebuild the graph. Value change: write the uniform.
+  // Structural change: rebuild the graph.
   useEffect(() => {
     if (built.current !== null && built.current !== enabled) rebuild();
   }, [enabled, rebuild]);

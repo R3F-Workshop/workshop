@@ -15,15 +15,13 @@ import {
   WEBGPU_CHECK,
 } from "@/lib/attendees";
 
-// Obscurity, not security — but there's no reason to help a
-// crawler along.
+// This route is obscured rather than secured, so keep it out of search indexes.
 export const metadata: Metadata = {
   title: "Attendee guide · Advanced R3F Workshop",
   robots: { index: false, follow: false },
 };
 
-// Only the real codes exist as routes; anything else 404s at the edge of the
-// static build rather than rendering.
+// Only the real codes exist as routes: anything else 404s at the edge of the static build rather than rendering.
 export function generateStaticParams() {
   return ACCESS_CODES.map((code) => ({ code }));
 }

@@ -1,41 +1,4 @@
-/**
- * Turns "ten, written six ways" into geometry data for the magic box.
- *
- * Why this exists at all: the box wants real extruded meshes, and no single
- * font covers Latin + CJK + Arabic + Devanagari. Loading four fonts in the
- * browser to draw eight glyphs is absurd, and `Text3D`'s typeface JSON would
- * mean shipping four subsets plus a converter.
- *
- * So we do it here, once, and commit numbers. Each glyph run becomes a set of
- * flattened contours — plain [x, y] pairs — that the runtime feeds straight
- * into THREE.Shape and ExtrudeGeometry.
- *
- * The other reason it's points and not SVG path strings: parsing those would
- * mean `three/addons/loaders/SVGLoader.js`, which imports from `three`, while
- * this app runs on `three/webgpu`. Those are two separate builds (see three's
- * package.json exports), so mixing them yields two copies of every core class
- * and geometry that fails `instanceof` on the way back. Numbers cross that
- * boundary for free.
- *
- * Fonts are Noto throughout — one superfamily designed to hold its proportions
- * across scripts, which is the whole point when the faces sit on one cube. They
- * are read from a local directory and never shipped; only the outlines of these
- * eight glyphs end up in the repo.
- *
- * Usage:
- *   node scripts/build-glyphs.mjs <font-dir>
- *
- * The fonts are not committed — only the outlines of these few glyphs are. All
- * OFL. To refill <font-dir>:
- *
- *   B=https://raw.githubusercontent.com
- *   curl -LO $B/notofonts/notofonts.github.io/main/fonts/NotoSans/hinted/ttf/NotoSans-SemiBold.ttf
- *   curl -LO $B/notofonts/notofonts.github.io/main/fonts/NotoSansArabic/hinted/ttf/NotoSansArabic-SemiBold.ttf
- *   curl -LO $B/notofonts/notofonts.github.io/main/fonts/NotoSansDevanagari/hinted/ttf/NotoSansDevanagari-SemiBold.ttf
- *   curl -LO $B/notofonts/noto-cjk/main/Sans/SubsetOTF/KR/NotoSansKR-Bold.otf
- *   curl -LO $B/google/fonts/main/ofl/yujisyuku/YujiSyuku-Regular.ttf
- *   curl -o 'Cinzel[wght].ttf' $B/google/fonts/main/ofl/cinzel/Cinzel%5Bwght%5D.ttf
- */
+/** Turns "ten, written six ways" into geometry data for the magic box. */
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -51,27 +14,17 @@ const OUT = new URL("../lib/ten-glyphs.ts", import.meta.url);
 
 /** Curve flattening. 12 is past the point where more segments read on screen. */
 const STEPS = 12;
-/** Font units are ~1000/em; normalise so a cap-height glyph is roughly 1 unit. */
+/** Font units are ~1000/em: normalise so a cap-height glyph is roughly 1 unit. */
 const EM = 1000;
 
-/**
- * Order is the boxGeometry material-slot order — +x, -x, +y, -y, +z, -z — because
- * the runtime pairs `TEN_GLYPHS[i]` with face slot `i`. The four scripts a
- * visitor is most likely to recognise go on the four sides, where the idle
- * rotation shows them; the two that need the most explaining go top and bottom.
- *
- * Each face gets the typeface that suits its script rather than one family
- * throughout: a Roman numeral belongs in Roman inscriptional capitals, and 十 is
- * two brush strokes long before it is two rectangles.
- */
+/** Order is the boxGeometry material-slot order: +x, -x, +y, -y, +z, -z: because the runtime pairs `TEN_GLYPHS[i]` with face slot `i`. */
 const FACES = [
   {
     id: "korean",
     text: "십",
     font: "NotoSansKR-Bold.otf",
     script: "Korean",
-    // 십 is Sino-Korean — the numeral used for dates, prices and maths. Native
-    // Korean 열 is for counting objects, which is not what this cube is doing.
+    // 십 is Sino-Korean: the numeral used for dates, prices and maths.
     note: "Sino-Korean sip — the same numeral as 十, borrowed into hangul.",
   },
   {
@@ -139,7 +92,7 @@ function cubic(from, c1, c2, to, out) {
   }
 }
 
-/** opentype path commands -> closed contours of points. */
+/** opentype path commands to closed contours of points. */
 function toContours(path) {
   const contours = [];
   let current = null;
@@ -190,23 +143,7 @@ function contains(outer, pt) {
   return inside;
 }
 
-/**
- * Winding decides what's a hole, not nesting.
- *
- * Nesting looks like the obvious rule — a contour inside an odd number of others
- * is a counter — but it assumes glyphs are drawn as properly nested outlines,
- * and plenty aren't. Cinzel's X is seven *overlapping* contours: the diagonals
- * and each serif drawn separately and left to union at fill time. Testing one
- * point per contour then reports strokes as sitting "inside" each other and the
- * whole glyph classifies as holes.
- *
- * Winding survives that. Within any one font, counters are wound opposite to
- * outers; only the absolute direction differs by format (TrueType outers run
- * clockwise, CFF counter-clockwise). So take the dominant direction by total
- * signed area — outers dominate, being much larger — and call anything running
- * against it a hole. Overlapping strokes share a direction, so they all stay
- * solid and extrude as their union, which is what the designer drew.
- */
+/** Winding decides what's a hole, not nesting. */
 function classify(contours) {
   const areas = contours.map(signedArea);
   const dominant = Math.sign(areas.reduce((n, a) => n + a, 0)) || 1;
@@ -221,15 +158,12 @@ function classify(contours) {
 const round = (n) => Math.round(n * 1e4) / 1e4;
 
 function build(face) {
-  // opentype 2's `loadSync` is a no-op under ESM; parse the bytes ourselves.
+  // opentype 2's `loadSync` is a no-op under ESM: parse the bytes ourselves.
   const buf = readFileSync(join(FONT_DIR, face.font));
   const font = opentype.parse(
     buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength),
   );
-  // Deliberately not font.getPath(): its shaper walks the ccmp/bidi tables and
-  // throws on Noto's Arabic and Devanagari. None of these runs need shaping —
-  // they are independent digits with no ligatures or joining forms — so we
-  // place each glyph by its own advance width and skip the engine entirely.
+  // Deliberately not font.getPath(): its shaper walks the ccmp/bidi tables and throws on Noto's Arabic and Devanagari.
   const scale = EM / font.unitsPerEm;
   const commands = [];
   let pen = 0;
@@ -244,8 +178,7 @@ function build(face) {
 
   const classified = classify(toContours({ commands }));
 
-  // Normalise into a unit-ish box centred on the origin, so the runtime can
-  // scale every face by one number and have them optically match.
+  // Normalise into a unit-ish box centred on the origin, so the runtime can scale every face by one number and have them optically match.
   let minX = Infinity;
   let minY = Infinity;
   let maxX = -Infinity;
@@ -260,11 +193,10 @@ function build(face) {
   }
   const cx = (minX + maxX) / 2;
   const cy = (minY + maxY) / 2;
-  // Fit the larger axis; the runtime never has to think about aspect.
+  // Fit the larger axis: the runtime never has to think about aspect.
   const fit = 1 / Math.max(maxX - minX, maxY - minY);
 
-  // opentype's Y grows downward. Negating here means the runtime gets geometry
-  // that is already the right way up.
+  // opentype's Y grows downward.
   const norm = (pts) =>
     pts.map(([x, y]) => [round((x - cx) * fit), round(-(y - cy) * fit)]);
 
@@ -273,8 +205,7 @@ function build(face) {
     .sort((a, b) => b.area - a.area);
   const holes = classified.filter((c) => c.hole);
 
-  // Attach each hole to the solid that encloses it — ExtrudeGeometry wants them
-  // grouped, and a run like "10" has two solids competing for one counter.
+  // Attach each hole to the solid that encloses it: ExtrudeGeometry wants them grouped, and a run like "10" has two solids competing for one counter.
   const shapes = solids.map((solid) => ({
     contour: norm(solid.pts),
     holes: holes
@@ -325,11 +256,9 @@ ${f.shapes
 
 writeFileSync(
   OUT,
-  `// GENERATED by scripts/build-glyphs.mjs — do not edit by hand.
+  `// Generated by scripts/build-glyphs.mjs. Do not edit by hand.
 //
-// Ten, written six ways: flattened glyph contours normalised into a unit box
-// centred on the origin, Y already pointing up. Fed to THREE.Shape +
-// ExtrudeGeometry in components/three/magic-box.tsx.
+// Flattened glyph contours normalized to a centered unit box with Y pointing up.
 //
 // Regenerate with a directory holding the Noto fonts listed in the script:
 //   node scripts/build-glyphs.mjs <font-dir>
@@ -342,11 +271,11 @@ export type GlyphShape = {
 
 export type TenGlyph = {
   id: string;
-  /** The characters themselves — used for the label and the a11y text. */
+  /** Characters used for the label and accessible text. */
   text: string;
   script: string;
   note: string;
-  /** Width / height of the run, before it was fitted to the unit box. */
+  /** Source run width divided by height. */
   aspect: number;
   shapes: GlyphShape[];
 };

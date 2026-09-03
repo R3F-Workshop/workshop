@@ -33,38 +33,9 @@ import {
 } from "./geography";
 import { INTRO_COMPLETE } from "./intro";
 
-/**
- * Faraz's block city, ported from `threejs-conf-pmndrs/src/Buildings.tsx`.
- *
- * The distribution maths is his, unchanged — that is the authored look. What
- * changed is the cost of drawing it, which is where the demo's framerate went:
- *
- * 1. Trees were `<sphereGeometry args={[1]} />`. That default is 32×16 segments
- *    — 960 triangles — times 20,000 instances, for ~19.2 M triangles of
- *    shrubbery. They are ~8px on screen. Now an icosahedron at detail 1 (80
- *    tris), a ~12× reduction that is invisible at this size.
- * 2. His tree loop computed `spread` and `height` and then never applied them —
- *    `dummy.scale.set(...)` was commented out, so every tree was an identical
- *    unit sphere. The variation was written and thrown away; now it is applied.
- * 3. Trees cast shadows into a 2048² map. 20,000 shadow-casting spheres buy
- *    nothing at this scale — they receive, they no longer cast.
- *
- * Note on `frustumCulled`: he had it off, and it stays off. Each of these is a
- * *single* instanced mesh whose bounding sphere spans the whole 400-unit city,
- * so culling is all-or-nothing and never triggers while the city is in frame.
- * Turning it on would look like a fix and do nothing. Real culling here would
- * mean splitting into LOD rings, which is a bigger change than this port.
- */
+/** Faraz's block city from `threejs-conf-pmndrs/src/Buildings.tsx`. */
 
-/**
- * Deterministic PRNG (mulberry32), replacing the original's `Math.random()`.
- *
- * Two reasons. The React Compiler's `react-hooks/purity` rule rejects impure
- * calls during render and it is right to — these run inside `useMemo`, so a
- * dropped memo silently reshuffles the entire city. And more practically: every
- * stage of this demo is measured against the previous one, which is meaningless
- * if the scene is a different random city each reload. Same seed, same Paris.
- */
+/** Deterministic mulberry32 PRNG. */
 function makeRng(seed: number) {
   let a = seed >>> 0;
   return () => {
@@ -84,18 +55,13 @@ type BuildingsProps = {
   treeCount?: number;
   innerRadius?: number;
   outerRadius?: number;
-  /** Trees cast shadows. Off by default — see the note above. */
+  /** Trees cast shadows. */
   treeShadows?: boolean;
   /** Carve the river corridor out of the scatter (see geography.ts). */
   river?: boolean;
   /** Keep the park rectangle building-free (trees stay). */
   park?: boolean;
-  /**
-   * Stylized Haussmann blocks in the near ring instead of cubes. When on,
-   * the cube scatter starts at HAUSSMANN_RADIUS and the ring below it is
-   * filled by <HaussmannRing/>; when off, cubes fill all the way in as
-   * before.
-   */
+  /** Stylized Haussmann blocks in the near ring instead of cubes. */
   haussmann?: boolean;
   /** Render-time clock shared with the tower lettering. */
   introClock: RefObject<number>;
@@ -122,10 +88,7 @@ function useBuildPosition(
     if (uTime.value !== clock.current) uTime.value = clock.current;
   });
 
-  // `useLocalNodes` memoizes on the creator's identity, so an inline arrow
-  // rebuilds the whole TSL graph on every render — and a fresh `positionNode`
-  // makes R3F flag `material.needsUpdate`, which costs a full WGSL recompile
-  // of every instanced mesh. Keep the creator stable.
+  // `useLocalNodes` memoizes on the creator's identity, so an inline arrow rebuilds the whole TSL graph on every render.
   const createPositionNodes = useCallback(() => {
     return {
       positionNode: Fn(() => {
@@ -182,17 +145,7 @@ function useBuildPosition(
   return useLocalNodes(createPositionNodes).positionNode;
 }
 
-/**
- * Builds a ref callback that uploads a fixed set of instance matrices.
- *
- * Memoize the result. React detaches and re-attaches a ref whose identity
- * changed on *every* commit, so an inline callback here re-uploads every
- * matrix and re-runs `computeBoundingSphere` — a per-instance
- * `Matrix4.fromArray` + `Sphere.union` loop — each time the scene re-renders.
- * Dragging the time dial re-renders per frame, which turned ~22k static
- * placements into ~500 KB/frame of `queue.writeBuffer` traffic and the single
- * hottest leaf on the main thread.
- */
+/** Builds a ref callback that uploads a fixed set of instance matrices. */
 function instanceMatrixRef(matrices: THREE.Matrix4[]) {
   return (mesh: THREE.InstancedMesh | null) => {
     if (!mesh) return;
@@ -202,12 +155,7 @@ function instanceMatrixRef(matrices: THREE.Matrix4[]) {
   };
 }
 
-/**
- * Memoized: every prop here is fixed for the life of the canvas, so the city
- * has no reason to reconcile when the scene above it re-renders. Dragging the
- * time dial re-renders that scene every frame, and this subtree — four
- * instanced meshes plus the Haussmann ring — is the bulk of the JSX in it.
- */
+/** Memoized: every prop here is fixed for the life of the canvas, so the city has no reason to reconcile when the scene above it re-renders. */
 export const Buildings = memo(function Buildings({
   count = 300,
   lowRiseCount = 10000,
@@ -240,9 +188,7 @@ export const Buildings = memo(function Buildings({
       };
     };
 
-    // Rejection test shared by the scatter loops: geography wins over the
-    // random draw. Attempt caps keep a mis-tuned exclusion from spinning the
-    // loop forever; in practice the corridors reject a few percent.
+    // Rejection test shared by the scatter loops: geography wins over the random draw.
     const excluded = (x: number, z: number, radius: number) =>
       (river && inRiverCorridor(x, z)) ||
       (park && inPark(x, z, 2)) ||
@@ -250,8 +196,6 @@ export const Buildings = memo(function Buildings({
       (haussmann && radius < HAUSSMANN_RADIUS);
 
     // Tall / landmark high-rises: sparse and confined to the far distance.
-    // They only spawn in the outer band of the ring so the foreground stays
-    // low-rise and the skyline rises up behind it.
     const highRiseStart = innerRadius + (outerRadius - innerRadius) * 0.55;
     for (let i = 0, attempts = 0; i < count && attempts < count * 8; attempts++) {
       const angle = random() * Math.PI * 2;
@@ -341,11 +285,9 @@ export const Buildings = memo(function Buildings({
       const height = THREE.MathUtils.lerp(1, 3, random()) * sizeScale;
       const spread = THREE.MathUtils.lerp(0.5, 1.1, random()) * sizeScale;
 
-      // Geometry is a unit-radius ball centred on its origin, so lift by half
-      // the (scaled) height to sit it on the ground.
+      // Geometry is a unit-radius ball centred on its origin, so lift by half the (scaled) height to sit it on the ground.
       dummy.position.set(x, height / 2, z);
-      // Applied, unlike in the original — this is the variation the loop above
-      // was already paying to compute.
+      // Apply the scale variation computed above.
       dummy.scale.set(spread, height * 0.5, spread);
       dummy.rotation.y = random() * Math.PI * 2;
       dummy.updateMatrix();
@@ -384,9 +326,7 @@ export const Buildings = memo(function Buildings({
 
   return (
     <>
-      {/* Counts come from the *placed* matrices, not the requested totals —
-          rejection sampling can come up short, and unset instances would
-          render as identity-matrix unit cubes at the origin. */}
+      {/* Counts come from the *placed* matrices, not the requested totals: rejection sampling can come up short. */}
       <instancedMesh
         key={`blocks-${instances.matrices.length}`}
         ref={setMatrices}
@@ -401,9 +341,7 @@ export const Buildings = memo(function Buildings({
             args={[instances.delays, 1]}
           />
         </boxGeometry>
-        {/* `color` prop deliberately unused, as in the original: the materials
-            are white and the near-black defaults are dead. Keeping his rendered
-            look, not his intended one — Stage 1 relights this anyway. */}
+        {/* Keep the materials white because the near-black color defaults are unused. */}
         <meshStandardNodeMaterial
           color="white"
           roughness={0.85}
@@ -451,17 +389,7 @@ export const Buildings = memo(function Buildings({
   );
 });
 
-/**
- * The near ring, stylized: Paris-block bodies with mansard-ish roofs where
- * the cube carpet used to run right up to the tower. Two instanced meshes
- * sharing one placement pass — cream bodies, slate roof frustums — arranged
- * on concentric rings facing the tower, the way Haussmann blocks wrap their
- * arrondissement. Beyond HAUSSMANN_RADIUS the cubes take over again.
- *
- * The roof geometry is a 4-segment cylinder rotated 45° so its square cross
- * section matches the unit box footprint: radius √2/2 puts the corners at
- * the box corners, and the smaller top radius gives the mansard taper.
- */
+/** A near ring of stylized Paris blocks with mansard roofs. */
 function HaussmannRing({
   river,
   park,
@@ -483,7 +411,7 @@ function HaussmannRing({
 
     const INNER = park ? TOWER_CLEARING_RADIUS + 4 : 16;
     for (let ringR = INNER; ringR < HAUSSMANN_RADIUS; ringR += 9) {
-      // Blocks are ~4.5 wide; a 6.5-unit arc step leaves street gaps.
+      // Blocks are ~4.5 wide: a 6.5-unit arc step leaves street gaps.
       const n = Math.floor((Math.PI * 2 * ringR) / 6.5);
       for (let i = 0; i < n; i++) {
         const angle = (i / n) * Math.PI * 2 + random() * 0.06;

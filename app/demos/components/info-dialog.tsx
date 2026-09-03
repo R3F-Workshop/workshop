@@ -6,12 +6,7 @@ import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * The small "i" a demo sits behind.
- *
- * Anchored bottom-left so it stays clear of the Leva panel, which docks top
- * right, and out of the way of a drag that starts anywhere near the middle.
- */
+/** Opens the demo explanation dialog. */
 export function InfoDialog({
   title,
   subtitle,

@@ -31,9 +31,9 @@ import { Terrain } from "./terrain";
 import { Tower, type TowerMode } from "./tower";
 import { WarmupProbe } from "./warmup-probe";
 
-/** Paris. The whole point of driving the sun from a real solar position. */
+/** Paris. */
 export const PARIS_LATITUDE = 48.8566;
-/** 2026-06-25, the workshop. Sun arc is seasonal, so the date is not cosmetic. */
+/** 2026-06-25, the workshop. */
 export const CONFERENCE_DAY_OF_YEAR = 176;
 
 /** Maps solar elevation to the tower light level. */
@@ -133,29 +133,11 @@ export interface TowerCanvasProps {
   environment?: boolean;
   shadows?: boolean;
   // performance envelope
-  /**
-   * Caps the render job's rate. ProMotion phones and 120Hz monitors
-   * otherwise drive the whole pipeline at 120fps — twice the GPU work for
-   * motion this scene doesn't need, and on iOS the difference between an
-   * entrance that holds its frame budget and one that thermally sags partway
-   * through. `0` lifts the cap (the lab measures uncapped throughput).
-   */
+  /** Caps the render job's rate. */
   maxFps?: number;
-  /**
-   * Device pixel ratio range, as r3f's `dpr`. The ceiling scales the stages
-   * FSR's `renderScale` cannot touch — the reconstruction itself, the
-   * full-resolution lettering pass, and the present — so it is the knob for
-   * devices where those are the budget.
-   */
+  /** Device pixel ratio range, as r3f's `dpr`. */
   dpr?: [number, number];
-  /**
-   * Requests the widened `maxColorAttachmentBytesPerSample` device limit the
-   * five SSGI attachments need. Without SSGI the MRT layout fits WebGPU's
-   * default 32 bytes, and asking for headroom the adapter can't grant fails
-   * device creation outright — a hero that shows the fallback poster on
-   * devices that could have run it. The lab keeps the headroom so its SSGI
-   * toggle works live; surfaces that never enable SSGI should turn this off.
-   */
+  /** Requests the widened `maxColorAttachmentBytesPerSample` device limit the five SSGI attachments need. */
   reserveSsgiHeadroom?: boolean;
   // host integration
   /** Performance samples are collected only when this callback is set. */
@@ -171,7 +153,7 @@ export interface TowerCanvasProps {
   fallback?: ReactNode;
   /** Additional nodes rendered inside the canvas. */
   children?: ReactNode;
-  /** Plays the staged city and PMNDRS entrance. The demo stays immediate. */
+  /** Plays the staged city and PMNDRS entrance. */
   intro?: boolean;
   /** Fires when the in-scene lettering is far enough along to reveal the UI. */
   onUiReveal?: () => void;
@@ -336,8 +318,7 @@ export function TowerCanvas({
       />
       {tools && <FramingTools />}
 
-      {/* Everything with a physical size lives under one scale, so the metres
-          conversion is a single number rather than sprinkled constants. */}
+      {/* Everything with a physical size lives under one scale, so the metres conversion is a single number rather than sprinkled constants. */}
       <group scale={worldScale}>
         <Terrain river={river} park={park} />
 
@@ -354,9 +335,7 @@ export function TowerCanvas({
           />
         )}
 
-        {/* The group stays mounted even when the tower is hidden — it is the
-            camera's fit target, and an empty box just means the fit is skipped
-            until `onReady` fires. */}
+        {/* The group stays mounted even when the tower is hidden: it is the camera's fit target. */}
         <group ref={towerRef}>
           {tower && (
             <Tower
@@ -463,8 +442,7 @@ export function TowerCanvas({
         ) : (
           <>
             <color attach="background" args={["#0b1428"]} />
-            {/* Sky's aerial perspective replaces this once it is on — running
-                both would double up the distance falloff. */}
+            {/* Sky's aerial perspective replaces this once it is on: running both would double up the distance falloff. */}
             <fogExp2 attach="fog" args={["#0b1428", 0.001 / worldScale]} />
             {contents}
           </>

@@ -13,20 +13,7 @@ const BEAM_FLARE = 9;
 /** Beams point a little below the horizon so they rake the city. */
 const TILT = THREE.MathUtils.degToRad(12);
 
-/**
- * The summit beacon: two opposed fake-volumetric beams sweeping the city.
- *
- * The cone is shaded the way drei's `<SpotLight volumetric>` does it, ported
- * to TSL: linear fade along the beam, times a falloff on the view-space
- * normal so the tube's silhouette edges vanish and its core stays bright —
- * a hard cylinder becomes a soft shaft of light. Additive, no depth write,
- * double-sided. Inside each beam rides a real `spotLight` aimed down its
- * axis, so the houses light up where the beam lands.
- *
- * All of the motion is one line in `useFrame`: the group turns by `delta`.
- * A ref holds the real group, the loop mutates it, nothing re-renders.
- * `on` is a uniform the shader multiplies by — flipping it never recompiles.
- */
+/** The summit beacon: two opposed fake-volumetric beams sweeping the city. */
 function makeBeamOpacity(strength: THREE.UniformNode<"float", number>) {
   const along = TSL.positionLocal.y.div(BEAM_LENGTH).clamp(0, 1);
   const distanceFade = TSL.oneMinus(along);
@@ -39,7 +26,7 @@ export function Beacon({
   speed = 0.5,
 }: {
   on: boolean;
-  /** Radians per second. Multiplied by `delta`. */
+  /** Radians per second. */
   speed?: number;
 }) {
   const spin = useRef<THREE.Group>(null);
@@ -58,8 +45,7 @@ export function Beacon({
   const beam = useLocalNodes(createNodes);
 
   const geometry = useMemo(() => {
-    // High radial segmentation on purpose: the falloff shades by interpolated
-    // silhouette normals, and a coarse tube shows facets.
+    // High radial segmentation keeps the interpolated beam falloff smooth.
     const g = new THREE.CylinderGeometry(BEAM_FLARE, 0.6, BEAM_LENGTH, 64, 8, true);
     // Hub at the origin, beam extending along +y, then rolled flat below.
     g.translate(0, BEAM_LENGTH / 2, 0);
@@ -90,8 +76,7 @@ export function Beacon({
             />
           </mesh>
 
-          {/* The light inside the beam. Its target is a child of the same
-              spinning group, parked at the beam's far end. */}
+          {/* The light inside the beam. */}
           <primitive
             object={targets[i]}
             position={[

@@ -6,17 +6,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useWebGPU } from "@/lib/use-webgpu";
 import { cn } from "@/lib/utils";
 
-/**
- * The place a section's 3D goes.
- *
- * The poster is always the base layer — it holds the space, so there's no
- * layout shift and no empty box while detection runs — and a scene, if we can
- * render one, fades in over it. Anything that goes wrong just leaves the
- * poster, which is a real image rather than a broken canvas.
- *
- * Callers pass `children` already lazily imported (`next/dynamic`, `ssr:false`)
- * so no three.js reaches the initial route bundle.
- */
+/** Layers an optional 3D scene over its static poster. */
 export function SceneSlot({
   poster,
   alt,
@@ -28,16 +18,14 @@ export function SceneSlot({
   alt: string;
   sizes?: string;
   className?: string;
-  /** The canvas. Omit while a section's scene doesn't exist yet. */
+  /** Optional scene rendered above the poster. */
   children?: ReactNode;
 }) {
   const support = useWebGPU();
   const ref = useRef<HTMLDivElement>(null);
   const [near, setNear] = useState(false);
 
-  // Mount the scene a little before it's needed and unmount it well after, so
-  // scrolling past doesn't thrash renderers. Actual frame-level pausing is the
-  // scene's own job via frameloop.
+  // Mount the scene a little before it's needed and unmount it well after, so scrolling past doesn't thrash renderers.
   useEffect(() => {
     const el = ref.current;
     if (!el || support !== "yes" || !children) return;

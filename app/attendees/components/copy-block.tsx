@@ -3,11 +3,7 @@
 import { Check, Copy } from "lucide-react";
 import { useEffect, useState } from "react";
 
-/**
- * A copy-pasteable command block. These pages get read on a phone in a hallway
- * or on a laptop that is, at that moment, broken — so the commands need to come
- * out in one tap.
- */
+/** A copy-pasteable command block. */
 export function CopyBlock({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);
 
@@ -22,8 +18,7 @@ export function CopyBlock({ code }: { code: string }) {
       await navigator.clipboard.writeText(code);
       setCopied(true);
     } catch {
-      // Clipboard is blocked without a secure context or permission — the text
-      // is right there and selectable, so this is a non-event.
+      // Clipboard is blocked without a secure context or permission: the text is right there and selectable, so this is a non-event.
     }
   }
 

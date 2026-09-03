@@ -16,24 +16,11 @@ import { useWebGPU } from "@/lib/use-webgpu";
 const PRIMARY = "main";
 
 // Dark blue ground reflectance keeps the horizon saturated.
-// Stable identity prevents unnecessary sky rebakes.
 const HERO_GROUND_ALBEDO = { x: 0.025, y: 0.075, z: 0.18 } as const;
 
-/**
- * Idle this canvas without touching the frame loop.
- *
- * `frameloop` is not per-canvas — r3f writes it to the scheduler singleton,
- * and "demand" stops the one RAF the whole page shares, freezing every other
- * canvas (pmndrs/react-three-fiber#3852). So idling happens at the job level:
- * `pauseJob` skips this canvas's render pass while everything else keeps
- * being driven. Carried over verbatim from the previous hero scene.
- */
+/** Idle this canvas without touching the frame loop. */
 function useIdleWhenHidden(paused: boolean) {
-  // `useFrame` without a callback is the documented scheduler-access form,
-  // and it works *outside* `<Canvas>` too: registration is skipped and the
-  // returned `scheduler` is the same global singleton `getScheduler()`
-  // resolves to — the frame loop is page-wide, not per-canvas, which is the
-  // whole reason job-level pausing works from up here.
+  // `useFrame` without a callback is the documented scheduler-access form, and it works *outside* `<Canvas>` too.
   const { scheduler } = useFrame();
 
   useEffect(() => {
@@ -42,7 +29,7 @@ function useIdleWhenHidden(paused: boolean) {
     if (paused) scheduler.pauseJob(PRIMARY);
     else scheduler.resumeJob(PRIMARY);
 
-    // Never leave it parked on unmount — the job outlives this effect.
+    // Never leave it parked on unmount: the job outlives this effect.
     return () => {
       if (scheduler.getJobIds().includes(PRIMARY)) scheduler.resumeJob(PRIMARY);
     };
@@ -67,23 +54,12 @@ function FallbackPoster() {
   );
 }
 
-/**
- * The real hero: the verified `TowerCanvas` (FSR3 + bloom + sky fog, dusk at
- * Paris solar position, PMNDRS lettering in-scene) as the site's primary
- * canvas.
- *
- * What changed against the old low-poly hero: the sky is the @pmndrs/sky
- * atmosphere rather than a CSS gradient, so the canvas paints every pixel
- * once loaded and the DOM wordmark sandwich is retired — the lettering lives
- * in the scene now, billboarded through the tower. The CSS gradient behind
- * the canvas still earns its keep as the backdrop during the shader compile
- * (the canvas is transparent until the first frame lands).
- */
+/** The real hero: the verified `TowerCanvas` (FSR3 + bloom + sky fog, dusk at Paris solar position. */
 export function TowerHero({
   /** Time of day, 0..100, matching the hero slider. */
   value,
   reducedMotion = false,
-  /** Hero is off-screen — skip its render job, leave the loop alone. */
+  /** Hero is off-screen: skip its render job, leave the loop alone. */
   paused = false,
   onUiReveal,
 }: {
@@ -97,8 +73,7 @@ export function TowerHero({
 
   useEffect(() => {
     if (support !== "no") return;
-    // Canvas always mounts its fallback. Capability detection avoids
-    // bypassing the gate after a successful WebGPU boot.
+    // Canvas always mounts its fallback.
     heroGate.bypass();
   }, [support]);
 
@@ -141,14 +116,12 @@ export function TowerHero({
       intro={!reducedMotion}
       dpr={[1, 2]}
       renderScale={1.5}
-      // The homepage never enables SSGI, so don't let the widened device
-      // limit it needs fail canvas creation on adapters that lack it.
+      // The homepage never enables SSGI, so don't let the widened device limit it needs fail canvas creation on adapters that lack it.
       reserveSsgiHeadroom={false}
       onUiReveal={onUiReveal}
       gate={heroGate}
       canvasStyle={{ pointerEvents: "none" }}
-      // No WebGPU: the design doc's original tower plate, placed to match the
-      // 3D framing, so the hero still shows a tower.
+      // Match the static tower plate to the 3D framing when WebGPU is unavailable.
       fallback={<FallbackPoster />}
     >
       <DepthAttachmentSync />

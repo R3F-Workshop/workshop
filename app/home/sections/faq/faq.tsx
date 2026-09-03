@@ -26,8 +26,7 @@ export function Faq() {
               value={`faq-${i}`}
               className="border-b border-border not-last:border-b"
             >
-              {/* Swap the stock chevron for the design's +/– glyph. The variants
-                  hang off the trigger's own group, so no fork of the primitive. */}
+              {/* Swap the stock chevron for the design's +/– glyph. */}
               <AccordionTrigger className="items-center py-5 text-base font-medium tracking-[-0.01em] hover:text-muted-foreground hover:no-underline **:data-[slot=accordion-trigger-icon]:hidden">
                 {q}
                 <span

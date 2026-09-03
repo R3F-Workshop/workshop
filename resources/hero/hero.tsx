@@ -19,13 +19,7 @@ import { Instructors } from "@/app/home/sections/instructors/instructors";
 import { HERO, REGISTER_URL } from "@/lib/content";
 import { skyGradient, todAt } from "@/lib/time-of-day";
 
-// WebGPU has no business running during SSR, and the scene is the heaviest
-// thing on the page — keep it out of the server bundle entirely.
-//
-// This is the verified tower pipeline from the lab (`/demos/paris-hero`), not
-// the old low-poly `ParisScene`. The DOM wordmark sandwich is retired with it:
-// the sky paints every canvas pixel once loaded, and the PMNDRS lettering now
-// lives *inside* the scene, billboarded through the ironwork.
+// Keep the WebGPU scene out of SSR and the server bundle.
 const TowerHero = dynamic(
   () => import("./tower-hero").then((m) => m.TowerHero),
   { ssr: false },
@@ -49,12 +43,7 @@ const wrapTimeOfDay = (value: number) =>
 const collapseCompletedTurns = (next: number, current: number) =>
   next - Math.trunc((next - current) / DAY_CYCLE) * DAY_CYCLE;
 
-/**
- * Replays unwrapped dial input as an overdamped spring. Velocity survives
- * target changes, while the per-frame cap prevents a slow atmosphere frame
- * from becoming a visible jump. Completed turns are visually identical, so
- * they are collapsed before they can build an unbounded replay backlog.
- */
+/** Replays unwrapped dial input as an overdamped spring. */
 function useTimeOfDayReplay(initial: number, instant: boolean) {
   const [value, setValue] = useState(initial);
   const state = useRef({
@@ -83,8 +72,7 @@ function useTimeOfDayReplay(initial: number, instant: boolean) {
         REPLAY_SPRING_DAMPING * s.velocity;
       s.velocity += acceleration * seconds;
 
-      // At lower render rates the frame-distance limit also lowers velocity,
-      // keeping the spring continuous instead of clamping its position later.
+      // At lower render rates the frame-distance limit also lowers velocity, keeping the spring continuous instead of clamping its position later.
       const frameSpeedLimit = Math.min(
         REPLAY_UNITS_PER_SECOND,
         REPLAY_MAX_UNITS_PER_FRAME / seconds,
@@ -281,8 +269,7 @@ export function Hero() {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [onScreen, setOnScreen] = useState(true);
   const sectionRef = useRef<HTMLElement>(null);
-  // The scene's frame callback only flips one DOM attribute. Keeping this cue
-  // outside React avoids reconciling the entire hero during a busy GPU frame.
+  // The scene's frame callback only flips one DOM attribute.
   const revealUi = useCallback(() => {
     const root = sectionRef.current;
     if (root?.dataset.heroUiState === "out") {
@@ -327,9 +314,7 @@ export function Hero() {
     return () => query.removeEventListener("change", sync);
   }, []);
 
-  // Scrolling is an explicit signal to move on from the scene entrance. If the
-  // canvas has not reached its UI cue yet, start the UI animation immediately.
-  // This also covers browsers restoring a non-zero scroll position on load.
+  // Scrolling is an explicit signal to move on from the scene entrance.
   useEffect(() => {
     if (window.scrollY > 0) {
       revealUi();
@@ -344,8 +329,7 @@ export function Hero() {
     return () => window.removeEventListener("scroll", revealOnScroll);
   }, [revealUi]);
 
-  // Stop driving the render loop once the hero scrolls away — there is no point
-  // burning GPU on a canvas nobody can see.
+  // Stop driving the render loop once the hero scrolls away: there is no point burning GPU on a canvas nobody can see.
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;

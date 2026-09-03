@@ -20,9 +20,7 @@ export function SiteHeader() {
           : "border-transparent bg-transparent",
       )}
     >
-      {/* Slides in left -> right while it fades. Tailwind v4 translate-*
-          utilities write the `translate` property, not `transform` — the
-          transition has to name `translate` or the move snaps in one frame. */}
+      {/* Slides in left to right while it fades. */}
       <span
         aria-hidden={!shown}
         className={cn(

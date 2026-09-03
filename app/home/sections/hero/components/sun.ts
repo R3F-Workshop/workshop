@@ -1,28 +1,20 @@
 import { solarPosition } from "@pmndrs/sky";
 import * as THREE from "three/webgpu";
 
-/**
- * The one number everything reads.
- *
- * The dial gives a *solar* hour (noon = 12); this turns it into where the
- * sun is over Paris and
- * how dark it is. The sky, the sun light, the tower glow, the spotlights and
- * the stars all derive from the same call, so they can never disagree about
- * whether it is night.
- */
+/** Derives shared sun and lighting state from the time dial. */
 
 export const PARIS_LATITUDE = 48.8566;
-/** 2026-09-08, day one of the workshop. The sun's arc is seasonal. */
+/** 2026-09-08, day one of the workshop. */
 export const WORKSHOP_DAY_OF_YEAR = 251;
 
 export interface Sun {
   /** Where to put a directional light so it shines from the sun. */
   position: [number, number, number];
-  /** Degrees above the horizon. Negative after sunset. */
+  /** Degrees above the horizon. */
   elevation: number;
   /** 0 in daylight, 1 once the sun is well below the horizon. */
   lightLevel: number;
-  /** Direct sunlight strength. Zero at night. */
+  /** Direct sunlight strength. */
   intensity: number;
   /** Warms toward orange as the sun drops. */
   color: THREE.Color;

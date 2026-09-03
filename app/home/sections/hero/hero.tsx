@@ -10,21 +10,15 @@ import { HERO, REGISTER_URL } from "@/lib/content";
 import { useHeroReady } from "@/lib/hero-ready";
 import { skyGradient, todAt } from "@/lib/time-of-day";
 
-// WebGPU has no business running during SSR — keep the scene out of the
-// server bundle entirely. The pro pipeline this simplifies lives in
-// `resources/tower-scene/` and on the `final-version` branch.
+// Keep the WebGPU scene out of SSR and the server bundle.
 const HeroScene = dynamic(
   () => import("./hero-scene").then((m) => m.HeroScene),
   { ssr: false },
 );
 
-/** The dial counts 0–100 around a day; the scene wants hours. */
+/** The dial counts 0–100 around a day: the scene wants hours. */
 const DAY_CYCLE = 100;
-/**
- * Dusk. The dial is 0–100 around a day and the scene reads it as *solar*
- * hours (noon = 12), so 78 is ~18:40 solar: just after a September sunset,
- * the sky still has colour and the tower is already lit.
- */
+/** Dusk. */
 const INITIAL_DIAL = 78;
 const wrap = (v: number) => ((v % DAY_CYCLE) + DAY_CYCLE) % DAY_CYCLE;
 
@@ -71,11 +65,6 @@ function HighlightedText({
   );
 }
 
-/**
- * The hero. State lives here, in the page, outside the Canvas: the dial sets
- * a number, the scene reads it. The Canvas is just a component and props flow
- * into it like anywhere else.
- */
 export function Hero() {
   const [dial, setDial] = useState(INITIAL_DIAL);
   const hour = (wrap(dial) / DAY_CYCLE) * 24;
@@ -122,8 +111,7 @@ export function Hero() {
           </div>
         </div>
 
-        {/* The copy layer lets the pointer through to the scene beneath it;
-            only the parts you can actually interact with take it back. */}
+        {/* The copy layer lets the pointer through to the scene beneath it: only the parts you can actually interact with take it back. */}
         <div className="pointer-events-none relative z-30 col-start-1 row-start-1">
           <div className="relative z-10 flex h-svh min-h-[500px] flex-col">
             <div className="mt-auto px-4 pb-6 sm:px-8">

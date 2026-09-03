@@ -2,13 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-/**
- * WebGPU capability gate.
- *
- * The site assumes WebGPU and falls back to static posters rather than to a
- * degraded WebGL path — so this one answer decides whether any 3D renders at
- * all. Detection runs once per page load and is shared by every consumer.
- */
+/** WebGPU capability gate. */
 
 export type GpuSupport = "checking" | "yes" | "no";
 
@@ -19,9 +13,7 @@ let cached: GpuSupport | null = null;
 let inflight: Promise<GpuSupport> | null = null;
 
 async function detect(): Promise<GpuSupport> {
-  // `navigator.gpu` is missing entirely on browsers without WebGPU, and present
-  // but adapterless on some that have it (blocklisted GPU, hardware
-  // acceleration off, headless). Only requesting an adapter answers honestly.
+  // `navigator.gpu` is missing entirely on browsers without WebGPU, and present but adapterless on some that have it (blocklisted GPU.
   try {
     const gpu = (navigator as unknown as { gpu?: MinimalGpu }).gpu;
     const adapter = gpu ? await gpu.requestAdapter() : null;
@@ -43,9 +35,7 @@ export function detectWebGPU(): Promise<GpuSupport> {
 
 /** Reasons to skip 3D that we know without touching the GPU. */
 function optedOut(): boolean {
-  // Reduced motion drops to the poster tier outright — cheaper than rendering a
-  // frozen scene, and it's what the user asked for. `?no3d` is the debug and
-  // bad-projector escape hatch.
+  // Reduced motion drops to the poster tier outright: cheaper than rendering a frozen scene, and it's what the user asked for.
   return (
     window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
     new URLSearchParams(window.location.search).has("no3d")
@@ -58,9 +48,7 @@ export function useWebGPU(): GpuSupport {
   useEffect(() => {
     let alive = true;
 
-    // Deliberately async even for the synchronous opt-outs: resolving in a
-    // microtask keeps this out of the effect body, and one render either way is
-    // imperceptible against a poster that's already painted.
+    // Deliberately async even for the synchronous opt-outs: resolving in a microtask keeps this out of the effect body.
     (async () => (optedOut() ? "no" : detectWebGPU()))().then((result) => {
       if (alive) setSupport(result);
     });

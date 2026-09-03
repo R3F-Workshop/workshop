@@ -1,10 +1,6 @@
 import { LogoFull } from "@/components/brand/logo";
 
-/**
- * `z-20` for the same reason the closer has it: the physics container behind
- * this band is a sibling rather than a descendant, so the footer's own contents
- * have to be lifted over it explicitly. See `app/page.tsx`.
- */
+/** `z-20` for the same reason the closer has it: the physics container behind this band is a sibling rather than a descendant. */
 export function SiteFooter() {
   return (
     <footer className="relative z-20 flex flex-wrap items-center justify-between gap-4 border-t border-border px-4 py-9 font-mono text-xs text-faint sm:px-6 lg:px-10">

@@ -5,19 +5,7 @@ import { useFrame, useThree } from "@react-three/fiber/webgpu";
 import { useEffect, useMemo } from "react";
 import * as THREE from "three/webgpu";
 
-/**
- * `camera-controls`, wired by hand.
- *
- * drei ships a `<CameraControls>` wrapper but only from its default entry, not
- * from `@react-three/drei/webgpu`. Importing across the two entries would pull a
- * second copy of drei's internals — and its WebGL-only materials — into a WebGPU
- * page, so the ~40 lines here are cheaper than the import.
- *
- * The classes handed to `install()` come from `three/webgpu` deliberately.
- * `three` and `three/webgpu` are separate builds (see three's package.json
- * exports), so a `Vector3` from one is not `instanceof` the other's, and
- * camera-controls would silently mis-handle values the renderer hands it.
- */
+/** `camera-controls`, wired by hand. drei ships a `<CameraControls>` wrapper but only from its default entry, not from `@react-three/drei/webgpu`. */
 CameraControls.install({
   THREE: {
     Vector2: THREE.Vector2,
@@ -50,10 +38,7 @@ export function CameraRig({
   const events = useThree((s) => s.events);
   const renderer = useThree((s) => s.renderer);
 
-  // `renderer.domElement` is the *primary* canvas here — every section canvas
-  // borrows the hero's renderer, so binding to it would hand our drags to the
-  // hero. `events.connected` is the element R3F actually attached this canvas's
-  // events to, which is the one the user is pointing at.
+  // `renderer.domElement` is the *primary* canvas here: every section canvas borrows the hero's renderer.
   const element = (events.connected ??
     renderer.domElement) as unknown as HTMLElement;
 

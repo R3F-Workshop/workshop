@@ -4,16 +4,7 @@ import type { ReactNode } from "react";
 
 import { useWebGPU } from "@/lib/use-webgpu";
 
-/**
- * The gate a standalone demo sits behind.
- *
- * Sections use `SceneSlot` instead, which keeps a poster underneath and fades a
- * scene in over it. A demo page has nothing but the scene, so when WebGPU is
- * missing it needs to say so rather than show an empty screen.
- *
- * Note `useWebGPU` also reports "no" for `prefers-reduced-motion`, which is
- * deliberate — every demo here animates continuously.
- */
+/** The gate a standalone demo sits behind. */
 export function WebGPUGate({ children }: { children: ReactNode }) {
   const support = useWebGPU();
 

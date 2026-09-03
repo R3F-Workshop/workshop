@@ -1,12 +1,7 @@
-/**
- * Tunables for the block city.
- *
- * Split out of the component so the Leva dependency stays on the demo side of
- * the boundary — nothing under `components/` imports it.
- */
+/** Tunables for the block city. */
 
 export type BlockCityConfig = {
-  /** Cells across and deep. The patch is trimmed to an ellipse inside this. */
+  /** Cells across and deep. */
   cols: number;
   rows: number;
   /** Distance between cell centres, before jitter. */
@@ -65,11 +60,7 @@ export const BLOCK_CITY_DEFAULTS: BlockCityConfig = {
   skyIntensity: 1.0,
 };
 
-/**
- * The Overview slot is a wide, short card beside body copy, so the city reads
- * as a photograph of a skyline rather than as a scene you are in: dimmer, and
- * drifting slowly enough that it never competes with the text next to it.
- */
+/** The Overview slot is a wide, short card beside body copy, so the city reads as a photograph of a skyline rather than as a scene you are in: dimmer. */
 export const BLOCK_CITY_SITE: BlockCityConfig = {
   ...BLOCK_CITY_DEFAULTS,
   drift: 0.9,

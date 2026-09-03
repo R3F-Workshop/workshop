@@ -4,9 +4,7 @@ allowBuilds:
 patchedDependencies:
   '@react-three/drei@11.0.0-alpha.5': patches/@react-three__drei@11.0.0-alpha.5.patch
   '@react-three/rapier@2.2.0': patches/@react-three__rapier@2.2.0.patch
-# react-three-rapier 2.x pins its peer to R3F v9. It only reaches for `useFrame`
-# and `useThree`, both unchanged in v10 — and the patch below repoints them at the
-# WebGPU entry — so the range is stale rather than wrong.
+# The patched react-three-rapier APIs remain compatible with R3F v10.
 peerDependencyRules:
   allowedVersions:
     "@react-three/rapier>@react-three/fiber": "10"

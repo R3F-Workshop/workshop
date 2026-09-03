@@ -7,19 +7,7 @@ import { SectionCanvas } from "@/app/home/components/canvas/section-canvas";
 
 import { CONNECTORS_SITE, type ConnectorsConfig } from "./config";
 
-/**
- * The backdrop to the closing CTA and the footer.
- *
- * Self-contained: it owns the positioned wrapper as well as the canvas,
- * because the finished physics scene measures the cursor against that wrapper
- * (read off `window`, never R3F pointer events — the register button and
- * footer links above must stay clickable, hence `pointer-events: none`
- * throughout).
- *
- * Starter: renders the placeholder. The finished rapier scene is
- * `./connectors.tsx` (still fully working at /demos/connectors) — swap in
- * `<ConnectorsScene config={config} bounds={bounds} />` to bring it back.
- */
+/** The backdrop to the closing CTA and the footer. */
 export function ConnectorsCanvas({
   config = CONNECTORS_SITE,
 }: {

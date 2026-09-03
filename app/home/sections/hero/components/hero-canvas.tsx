@@ -10,12 +10,7 @@ import { Pyramid } from "./pyramid";
 import { SceneReady } from "./scene-ready";
 import { Stage, type BeaconMode } from "./stage";
 
-/**
- * This canvas's id. It matters: the hero is the site's *primary* canvas — it
- * owns the shared `WebGPURenderer`, and every `SectionCanvas` below waits on
- * `waitForPrimary("main")` before mounting. Whatever hero you build, keep the
- * id and the `<DepthAttachmentSync />` inside it.
- */
+/** This canvas's id. */
 const PRIMARY = "main";
 
 export interface HeroCanvasProps {
@@ -32,12 +27,7 @@ export interface HeroCanvasProps {
   onReady?: () => void;
 }
 
-/**
- * The hero scene: a renderer, a scene, a camera, a loop, a resize observer and
- * an event system, in one tag. `Stage` is what stays put, `Content` is what
- * you play with, `PostFx` is what makes it glow. Until the model loads, the
- * pyramid stands in.
- */
+/** The hero scene: a renderer, a scene, a camera, a loop, a resize observer and an event system, in one tag. */
 export function HeroCanvas({
   hour,
   autoRotate = true,
@@ -53,14 +43,12 @@ export function HeroCanvas({
       id={PRIMARY}
       shadows
       dpr={[1, 2]}
-      // Odd/fractional drawing buffers desync the depth attachment from the
-      // swap chain — see DepthAttachmentSync.
+      // Odd/fractional drawing buffers desync the depth attachment from the swap chain: see DepthAttachmentSync.
       forceEven
       camera={{ fov: 30, near: 1, far: 3000, position: [0, 23, 168] }}
-      // Transparent so the CSS sky behind it holds the frame until the first
-      // frame lands. Once the sky is up it paints every pixel anyway.
+      // Transparent so the CSS sky behind it holds the frame until the first frame lands.
       renderer={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
-      // Drag rotates; a one-finger touch still scrolls the page.
+      // Drag rotates: a one-finger touch still scrolls the page.
       style={{ touchAction: "pan-y" }}
     >
       <DepthAttachmentSync />

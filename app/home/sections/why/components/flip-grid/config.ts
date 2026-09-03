@@ -1,19 +1,12 @@
-/**
- * Every tunable of the flip grid, in one place.
- *
- * The demo page drives these from Leva; the site will import the defaults and
- * pass an override or two. Splitting them out of the component keeps the Leva
- * dependency on the demo side of the boundary — nothing under `components/`
- * imports it.
- */
+/** Every tunable of the flip grid, in one place. */
 export type FlipGridConfig = {
-  /** Grid resolution. Changing either remounts the scene — see `flip-grid.tsx`. */
+  /** Grid resolution. */
   cols: number;
   rows: number;
 
   /** Tile edge as a fraction of the cell, so a hairline gutter shows through. */
   fill: number;
-  /** Tile depth as a fraction of the tile edge. This is what sells the flip. */
+  /** Tile depth as a fraction of the tile edge. */
   thickness: number;
 
   /** Flip radius around the cursor, in cells. */
@@ -21,7 +14,7 @@ export type FlipGridConfig = {
   /** Seconds a tile stays flipped after the cursor has moved off it. */
   hold: number;
 
-  /** Angular spring driving the flip. Damping below ~2·sqrt(stiffness) overshoots. */
+  /** Angular spring driving the flip. */
   stiffness: number;
   damping: number;
   /** Upper bound on the per-instance mass multiplier. 0 makes every tile identical. */
@@ -29,23 +22,15 @@ export type FlipGridConfig = {
 
   /** Face colours: front (resting), back (the metal), and the four edges. */
   front: string;
-  /**
-   * Gold reflectance. The default is `Gold.mtlx`'s base_color — (1.059, 0.773,
-   * 0.307) linear — which is what physically-based gold actually is: paler and
-   * less orange than the colour most people reach for.
-   */
+  /** Gold reflectance. */
   back: string;
   edge: string;
 
-  /** Base roughness of the metal face. 0 is a mirror; the flakes add the rest. */
+  /** Base roughness of the metal face. 0 is a mirror: the flakes add the rest. */
   roughness: number;
 
-  /**
-   * Fine normal perturbation, standing in for the microfacet structure a real
-   * metal surface has. Without it a flat tile reflects exactly one direction of
-   * the environment and reads as paint. See `flip-grid.tsx`.
-   */
-  /** Grain facets across a tile. Aim for a few pixels each — see flip-grid.tsx. */
+  /** Fine normal perturbation, standing in for the microfacet structure a real metal surface has. */
+  /** Grain facets across a tile. */
   flakeCells: number;
   flakeStrength: number;
   /** How far the grain pushes roughness around per facet. */
@@ -54,23 +39,14 @@ export type FlipGridConfig = {
   toneJitter: number;
   /** Per-tile roughness spread. */
   roughJitter: number;
-  /**
-   * Per-tile lean, in normal-space units (~0.3 is a few degrees). Without it
-   * every settled tile faces the same way, reflects the same direction of a
-   * distant environment, and the grid resolves to one flat colour.
-   */
+  /** Per-tile lean, in normal-space units (~0.3 is a few degrees). */
   tiltJitter: number;
-  /**
-   * How much each tile domes across its own face. This is the curvature a flat
-   * plate doesn't have, and it's what turns a single reflected sample into a
-   * highlight gradient. 0 makes the tiles genuinely flat — and genuinely
-   * plastic-looking.
-   */
+  /** How much each tile domes across its own face. */
   curvature: number;
 
-  /** Which environment to reflect. Outdoor's hard horizon suits flat tiles. */
+  /** Which environment to reflect. */
   envPreset: "outdoor" | "studio";
-  /** Environment. Intensities are linear radiance, so >1 is expected. */
+  /** Environment. */
   ground: string;
   sky: string;
   keyIntensity: number;
@@ -99,8 +75,7 @@ export const FLIP_GRID_DEFAULTS: FlipGridConfig = {
   damping: 9,
   massJitter: 1.4,
 
-  // Darker than it looks like it needs to be: a studio bright enough to make
-  // gold glow also lights the resting faces, and these are meant to disappear.
+  // Darker than it looks like it needs to be: a studio bright enough to make gold glow also lights the resting faces, and these are meant to disappear.
   front: "#0a0a0d",
   back: "#f6cd76",
   edge: "#6b5a33",
@@ -128,26 +103,12 @@ export const FLIP_GRID_DEFAULTS: FlipGridConfig = {
   cursorLightColor: "#fff2d8",
 };
 
-/**
- * The same effect tuned to sit behind body copy.
- *
- * A demo page can afford a full-strength backdrop; a section can't. The copy
- * has to stay the thing you read, so the resting tiles go nearly black, the
- * gold comes down out of highlight range, and the cursor light — a nice touch
- * on its own, a distraction under a paragraph — is switched off.
- *
- * Tuned as *config* rather than by wrapping the canvas in a low opacity. Fading
- * the whole layer would lift the dark tiles toward the page background as much
- * as it dims the gold, which flattens exactly the contrast the effect is made
- * of.
- */
+/** The same effect tuned to sit behind body copy. */
 export const FLIP_GRID_SITE: FlipGridConfig = {
   ...FLIP_GRID_DEFAULTS,
   front: "#08080a",
   edge: "#3f351f",
-  // Enough to read as gold, not enough to pull the eye off the text. The lede
-  // sits in muted-foreground, so the ceiling here is set by what that stays
-  // legible against, not by what looks best in isolation.
+  // Enough to read as gold, not enough to pull the eye off the text.
   back: "#c9a862",
   keyIntensity: 14,
   kickIntensity: 0.8,

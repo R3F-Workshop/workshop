@@ -41,17 +41,11 @@ yarn-error.log*
 next-env.d.ts
 
 # Claude Code
-# Agent worktrees are full checkouts, each with its own node_modules — a stray
-# `git add -A` while one exists would try to commit ~700MB. Personal settings
-# are per-machine. Everything else under .claude/ (settings.json, agents/,
-# skills/, commands/) is shared project config and stays committable, which
-# matters here: this repo is teaching material, and how the agents are set up
-# is part of what's being taught.
+# Exclude full agent worktrees and local settings.
 .claude/worktrees/
 .claude/settings.local.json
 
-# Planning docs — kept local if copied over from the production repo.
-# CONTENT.md carries organiser-only plans; COPY.md is the working copy deck.
+# Local planning documents.
 CONTENT.md
 COPY.md
 
