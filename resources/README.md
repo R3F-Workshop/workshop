@@ -1,7 +1,9 @@
-# Resources — the finished pieces, ready to paste back
+# Resources — the pro pieces, ready to paste back
 
 Everything in this folder **compiles** — it is real, importable code kept out
-of the page so the site boots as the starting point. The complete finished
+of the page. The page itself runs the *simple* hero
+(`app/home/sections/hero/components/`, one file per lesson beat); this
+folder is the full production pipeline it was cut down from. The complete finished
 site also lives on the **`final-version`** branch; this folder is the
 grab-it-fast copy for live coding.
 

@@ -1,29 +1,32 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Fragment, useEffect, type ReactNode } from "react";
+import { Fragment, useEffect, useState, type ReactNode } from "react";
 
-import { Logo } from "@/components/brand/logo";
 import { RevealGroup } from "@/app/home/components/motion/reveal";
+import { TimeDial } from "@/app/home/sections/hero/time-dial";
 import { Instructors } from "@/app/home/sections/instructors/instructors";
 import { HERO, REGISTER_URL } from "@/lib/content";
+import { useHeroReady } from "@/lib/hero-ready";
 import { skyGradient, todAt } from "@/lib/time-of-day";
 
 // WebGPU has no business running during SSR — keep the scene out of the
-// server bundle entirely. The finished tower pipeline this replaces lives in
+// server bundle entirely. The pro pipeline this simplifies lives in
 // `resources/tower-scene/` and on the `final-version` branch.
-const PyramidHero = dynamic(
-  () => import("./pyramid-hero").then((m) => m.PyramidHero),
+const HeroScene = dynamic(
+  () => import("./hero-scene").then((m) => m.HeroScene),
   { ssr: false },
 );
 
+/** The dial counts 0–100 around a day; the scene wants hours. */
+const DAY_CYCLE = 100;
 /**
- * The sky behind the canvas, frozen at the dusk the finished hero boots into.
- * The full site drives this through the time dial (`./time-dial.tsx`, kept
- * here ready to wire back in) and a replay spring — see
- * `resources/hero/hero.tsx`.
+ * Dusk. The dial is 0–100 around a day and the scene reads it as *solar*
+ * hours (noon = 12), so 78 is ~18:40 solar: just after a September sunset,
+ * the sky still has colour and the tower is already lit.
  */
-const DUSK = todAt(0.85);
+const INITIAL_DIAL = 78;
+const wrap = (v: number) => ((v % DAY_CYCLE) + DAY_CYCLE) % DAY_CYCLE;
 
 function DecoratedText({
   text,
@@ -69,51 +72,59 @@ function HighlightedText({
 }
 
 /**
- * The starter hero: the same DOM as the finished site, with the scene layer
- * swapped for the placeholder pyramid. The finished version's entrance
- * choreography (loading gate, staggered UI reveal, time dial + replay spring)
- * comes back with the real scene — so here the header is simply switched on
- * once the page mounts.
+ * The hero. State lives here, in the page, outside the Canvas: the dial sets
+ * a number, the scene reads it. The Canvas is just a component and props flow
+ * into it like anywhere else.
  */
 export function Hero() {
+  const [dial, setDial] = useState(INITIAL_DIAL);
+  const hour = (wrap(dial) / DAY_CYCLE) * 24;
+  const palette = todAt(wrap(dial) / DAY_CYCLE);
+
+  // The header stays hidden until the scene is up, then fades in.
+  const ready = useHeroReady();
   useEffect(() => {
+    if (!ready) return;
     const header = document.querySelector<HTMLElement>("[data-site-header]");
     if (header) header.dataset.siteHeaderState = "in";
-  }, []);
+  }, [ready]);
 
   return (
     <section id="top" className="relative bg-background">
       <div className="grid">
         {/* The scene stays pinned while the second hero beat scrolls over it. */}
         <div className="sticky top-0 col-start-1 row-start-1 h-svh min-h-[500px] self-start overflow-hidden">
+          {/* Covers the canvas while its shaders compile. */}
           <div
             className="absolute inset-0"
-            style={{ background: skyGradient(DUSK) }}
+            style={{ background: skyGradient(palette) }}
           />
 
           <div className="absolute inset-0 z-20">
-            <PyramidHero />
+            <HeroScene hour={hour} />
           </div>
 
-          {/* The pmndrs mark, floated above the pyramid. */}
-          <div
-            className="pointer-events-none absolute inset-x-0 z-20 flex justify-center"
-            style={{ top: "clamp(72px, 16vh, 160px)" }}
-          >
-            <Logo
-              color="white"
-              className="h-14 w-14 opacity-90 sm:h-16 sm:w-16"
-            />
-          </div>
-
-          {/* Grounds the poster copy without swallowing the scene. */}
+          {/* Grounds the poster copy without swallowing the city. */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[280px] bg-gradient-to-b from-transparent via-black/50 to-black/90" />
 
           {/* Scroll adds a duskier, warmer grade as the copy takes over. */}
           <div className="hero-scroll-grade pointer-events-none absolute inset-0 z-[25]" />
         </div>
 
-        <div className="relative z-30 col-start-1 row-start-1">
+        {/* The dial alone stays pinned to the hero and fades on scroll. */}
+        <div className="hero-dial-layer pointer-events-none sticky top-0 z-40 col-start-1 row-start-1 h-svh min-h-[500px] self-start">
+          <div className="hero-scroll-dial pointer-events-auto absolute right-4 bottom-6 sm:right-8">
+            <TimeDial
+              value={dial}
+              onValueChange={setDial}
+              aria-label="Time of day"
+            />
+          </div>
+        </div>
+
+        {/* The copy layer lets the pointer through to the scene beneath it;
+            only the parts you can actually interact with take it back. */}
+        <div className="pointer-events-none relative z-30 col-start-1 row-start-1">
           <div className="relative z-10 flex h-svh min-h-[500px] flex-col">
             <div className="mt-auto px-4 pb-6 sm:px-8">
               <div className="max-w-2xl">
@@ -135,7 +146,7 @@ export function Hero() {
             </div>
           </div>
 
-          <div className="relative isolate px-4 pt-8 pb-8 sm:px-8 sm:pt-12 sm:pb-12 lg:pt-16">
+          <div className="pointer-events-auto relative isolate px-4 pt-8 pb-8 sm:px-8 sm:pt-12 sm:pb-12 lg:pt-16">
             <div className="pointer-events-none absolute inset-x-0 -top-40 bottom-0 z-0 bg-gradient-to-b from-transparent via-black/90 via-30% to-black" />
 
             <RevealGroup className="relative z-10 mx-auto max-w-[1180px]">
