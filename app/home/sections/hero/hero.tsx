@@ -1,8 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Fragment, useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 
+import {
+  DecoratedText,
+  HighlightedText,
+} from "@/app/home/components/decorated-text";
 import { RevealGroup } from "@/app/home/components/motion/reveal";
 import { TimeDial } from "@/app/home/sections/hero/time-dial";
 import { Instructors } from "@/app/home/sections/instructors/instructors";
@@ -21,49 +25,6 @@ const DAY_CYCLE = 100;
 /** Dusk. */
 const INITIAL_DIAL = 78;
 const wrap = (v: number) => ((v % DAY_CYCLE) + DAY_CYCLE) % DAY_CYCLE;
-
-function DecoratedText({
-  text,
-  phrases,
-  decorate,
-}: {
-  text: string;
-  phrases: readonly string[];
-  decorate: (phrase: string) => ReactNode;
-}) {
-  if (phrases.length === 0) return text;
-
-  const escapedPhrases = phrases.map((phrase) =>
-    phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-  );
-  const phrasePattern = new RegExp(`(${escapedPhrases.join("|")})`, "g");
-
-  return text.split(phrasePattern).map((segment, index) =>
-    phrases.includes(segment) ? (
-      <Fragment key={`${segment}-${index}`}>{decorate(segment)}</Fragment>
-    ) : (
-      segment
-    ),
-  );
-}
-
-function HighlightedText({
-  text,
-  phrases,
-}: {
-  text: string;
-  phrases: readonly string[];
-}) {
-  return (
-    <DecoratedText
-      text={text}
-      phrases={phrases}
-      decorate={(phrase) => (
-        <span className="font-medium text-white">{phrase}</span>
-      )}
-    />
-  );
-}
 
 export function Hero() {
   const [dial, setDial] = useState(INITIAL_DIAL);
