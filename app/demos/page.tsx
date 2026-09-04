@@ -12,6 +12,13 @@ export const metadata: Metadata = {
  */
 const DEMOS = [
   {
+    href: "/demos/vanilla-pyramid",
+    title: "The pyramid, by hand",
+    blurb:
+      "The starter's spinning pyramid in vanilla three.js: renderer, scene, camera, loop, resize, and the raycaster ceremony for hover and click. The forty lines one prop replaces.",
+    tags: ["vanilla three.js", "WebGPURenderer", "Raycaster"],
+  },
+  {
     href: "/demos/paris-hero",
     title: "Paris hero",
     blurb:
