@@ -14,7 +14,7 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Archived static reference that is not built.
     "reference/**",
-    // Build output copied in by `pnpm sync:sky` is not linted here.
+    // The packed sky tarball, nothing to lint.
     "vendor/**",
     // Agent worktrees, each a full checkout with its own node_modules.
     ".claude/**",

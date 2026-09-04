@@ -60,7 +60,7 @@ skips them and the build fails.
 | `components/` | True globals: shadcn `ui/`, the brand logo, header, footer, DepthAttachmentSync, LevaPanel. |
 | `lib/content.ts` | Every string on the site. |
 | `lib/time-of-day.ts` | The cyclic sky/palette model shared by the DOM gradient and the 3D lighting. |
-| `vendor/pmndrs-sky` | Vendored `@pmndrs/sky` build (`link:` dep). `pnpm sync:sky` re-copies it from a local sky checkout (`SKY_REPO`); the checked-in `dist/` means fresh clones need nothing. |
+| `vendor/pmndrs-sky` | `@pmndrs/sky` as a packed tarball (`file:` dep), since it is not on npm yet. Replace the `.tgz` and bump the path in `package.json` to update it. |
 
 ## The hero
 

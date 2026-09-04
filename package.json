@@ -6,12 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "sync:sky": "node scripts/sync-sky.mjs"
+    "lint": "eslint"
   },
   "dependencies": {
     "@pmndrs/glyph": "0.0.0-canary-57eb2ce3-20260822",
-    "@pmndrs/sky": "link:./vendor/pmndrs-sky",
+    "@pmndrs/sky": "file:./vendor/pmndrs-sky/pmndrs-sky-0.1.4.tgz",
     "@pmndrs/upscaler": "^0.2.0",
     "@react-three/drei": "11.0.0-alpha.5",
     "@react-three/fiber": "10.0.0-alpha.3",

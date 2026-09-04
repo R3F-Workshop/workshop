@@ -20,8 +20,8 @@ importers:
         specifier: 0.0.0-canary-57eb2ce3-20260822
         version: 0.0.0-canary-57eb2ce3-20260822(@react-three/fiber@10.0.0-alpha.3(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.185.1))(react@19.2.8)(three@0.185.1)
       '@pmndrs/sky':
-        specifier: link:./vendor/pmndrs-sky
-        version: link:vendor/pmndrs-sky
+        specifier: file:./vendor/pmndrs-sky/pmndrs-sky-0.1.4.tgz
+        version: file:vendor/pmndrs-sky/pmndrs-sky-0.1.4.tgz(@react-three/fiber@10.0.0-alpha.3(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.185.1))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.185.1)
       '@pmndrs/upscaler':
         specifier: ^0.2.0
         version: 0.2.0(three@0.185.1)
@@ -658,6 +658,22 @@ packages:
       react: '>=18'
       react-dom: '>=18'
     peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
+  '@pmndrs/sky@file:vendor/pmndrs-sky/pmndrs-sky-0.1.4.tgz':
+    resolution: {integrity: sha512-F6MBG4tQJjJ3Cz6IVFIrJC1/NPFtcOowwOrKtuQ+V0JD1tnvaebrCNH1jkBSjIF2Xh44uc+98SKdIYaWIZr1QA==, tarball: file:vendor/pmndrs-sky/pmndrs-sky-0.1.4.tgz}
+    version: 0.1.4
+    peerDependencies:
+      '@react-three/fiber': '>=10.0.0-0'
+      react: '>=18'
+      react-dom: '>=18'
+      three: '>=0.185.0'
+    peerDependenciesMeta:
+      '@react-three/fiber':
+        optional: true
       react:
         optional: true
       react-dom:
@@ -4645,6 +4661,14 @@ snapshots:
 
   '@pmndrs/scheduler@0.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     optionalDependencies:
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+
+  '@pmndrs/sky@file:vendor/pmndrs-sky/pmndrs-sky-0.1.4.tgz(@react-three/fiber@10.0.0-alpha.3(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.185.1))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.185.1)':
+    dependencies:
+      three: 0.185.1
+    optionalDependencies:
+      '@react-three/fiber': 10.0.0-alpha.3(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.185.1)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
 
