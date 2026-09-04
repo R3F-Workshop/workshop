@@ -1,9 +1,13 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Fragment, useEffect, type ReactNode } from "react";
+import { useEffect } from "react";
 
 import { Logo } from "@/components/brand/logo";
+import {
+  DecoratedText,
+  HighlightedText,
+} from "@/app/home/components/decorated-text";
 import { RevealGroup } from "@/app/home/components/motion/reveal";
 import { Instructors } from "@/app/home/sections/instructors/instructors";
 import { HERO, REGISTER_URL } from "@/lib/content";
@@ -24,49 +28,6 @@ const PyramidHero = dynamic(
  * `resources/hero/hero.tsx`.
  */
 const DUSK = todAt(0.85);
-
-function DecoratedText({
-  text,
-  phrases,
-  decorate,
-}: {
-  text: string;
-  phrases: readonly string[];
-  decorate: (phrase: string) => ReactNode;
-}) {
-  if (phrases.length === 0) return text;
-
-  const escapedPhrases = phrases.map((phrase) =>
-    phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-  );
-  const phrasePattern = new RegExp(`(${escapedPhrases.join("|")})`, "g");
-
-  return text.split(phrasePattern).map((segment, index) =>
-    phrases.includes(segment) ? (
-      <Fragment key={`${segment}-${index}`}>{decorate(segment)}</Fragment>
-    ) : (
-      segment
-    ),
-  );
-}
-
-function HighlightedText({
-  text,
-  phrases,
-}: {
-  text: string;
-  phrases: readonly string[];
-}) {
-  return (
-    <DecoratedText
-      text={text}
-      phrases={phrases}
-      decorate={(phrase) => (
-        <span className="font-medium text-white">{phrase}</span>
-      )}
-    />
-  );
-}
 
 /**
  * The starter hero: the same DOM as the finished site, with the scene layer
