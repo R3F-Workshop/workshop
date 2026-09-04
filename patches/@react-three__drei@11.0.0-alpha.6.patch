@@ -1,0 +1,52 @@
+diff --git a/webgpu/index.mjs b/webgpu/index.mjs
+--- a/webgpu/index.mjs
++++ b/webgpu/index.mjs
+@@ -2373,10 +2373,10 @@
+   }
+   //* Uniform Accessors --
+   get blur() {
+-    return this._blur.value;
++    return this._blur?.value;
+   }
+   set blur(v) {
+-    this._blur.value = v;
++    if (this._blur) this._blur.value = v;
+   }
+   get map() {
+     return this._map?.value;
+@@ -2385,27 +2385,28 @@
+     if (this._map) this._map.value = v ?? new THREE.Texture();
+   }
+   get sdf() {
+-    return this._sdf.value;
++    return this._sdf?.value;
+   }
+   set sdf(v) {
+-    if (v) this._sdf.value = v;
++    if (v && this._sdf) this._sdf.value = v;
+   }
+   get blend() {
+-    return this._blend.value;
++    return this._blend?.value;
+   }
+   set blend(v) {
+-    this._blend.value = v;
++    if (this._blend) this._blend.value = v;
+   }
+   get size() {
+-    return this._size.value;
++    return this._size?.value;
+   }
+   set size(v) {
+-    this._size.value = v;
++    if (this._size) this._size.value = v;
+   }
+   get resolution() {
+-    return this._resolution.value;
++    return this._resolution?.value;
+   }
+   set resolution(v) {
++    if (!this._resolution) return;
+     if (Array.isArray(v)) this._resolution.value.set(v[0], v[1]);
+     else this._resolution.value.copy(v);
+   }
