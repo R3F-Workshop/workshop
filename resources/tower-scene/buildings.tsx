@@ -5,7 +5,6 @@ import {
   useCallback,
   useMemo,
   useRef,
-  useState,
   type RefObject,
 } from "react";
 import { useFrame, useLocalNodes } from "@react-three/fiber/webgpu";
@@ -78,14 +77,14 @@ function buildDelay(x: number, z: number, outerRadius: number, phase = 0) {
 
 /** Animates each instance from its radial delay on the GPU. */
 function useBuildPosition(
-  clock: RefObject<number>,
+  clockRef: RefObject<number>,
   ground: number,
   motion: "spring" | "tree" = "spring",
 ) {
-  const [uTime] = useState(() => uniform(clock.current));
+  const uTime = useMemo(() => uniform(0), []);
 
   useFrame(() => {
-    if (uTime.value !== clock.current) uTime.value = clock.current;
+    if (uTime.value !== clockRef.current) uTime.value = clockRef.current;
   });
 
   // `useLocalNodes` memoizes on the creator's identity, so an inline arrow rebuilds the whole TSL graph on every render.

@@ -54,45 +54,55 @@ function useTimeOfDayReplay(initial: number, instant: boolean) {
     frame: 0,
   });
 
-  const step = useCallback(function replayFrame(now: number) {
+  const stepRef = useRef<FrameRequestCallback | null>(null);
+
+  useEffect(() => {
     const s = state.current;
-    const seconds = Math.min(now - s.lastFrame, MAX_FRAME_MS) / 1000;
-    s.lastFrame = now;
-    const distance = s.target - s.value;
+    function replayFrame(now: number) {
+      const seconds = Math.min(now - s.lastFrame, MAX_FRAME_MS) / 1000;
+      s.lastFrame = now;
+      const distance = s.target - s.value;
 
-    if (
-      Math.abs(distance) <= REPLAY_POSITION_EPSILON &&
-      Math.abs(s.velocity) <= REPLAY_VELOCITY_EPSILON
-    ) {
-      s.value = s.target;
-      s.velocity = 0;
-    } else if (seconds > 0) {
-      const acceleration =
-        REPLAY_SPRING_STIFFNESS * distance -
-        REPLAY_SPRING_DAMPING * s.velocity;
-      s.velocity += acceleration * seconds;
+      if (
+        Math.abs(distance) <= REPLAY_POSITION_EPSILON &&
+        Math.abs(s.velocity) <= REPLAY_VELOCITY_EPSILON
+      ) {
+        s.value = s.target;
+        s.velocity = 0;
+      } else if (seconds > 0) {
+        const acceleration =
+          REPLAY_SPRING_STIFFNESS * distance -
+          REPLAY_SPRING_DAMPING * s.velocity;
+        s.velocity += acceleration * seconds;
 
-      // At lower render rates the frame-distance limit also lowers velocity, keeping the spring continuous instead of clamping its position later.
-      const frameSpeedLimit = Math.min(
-        REPLAY_UNITS_PER_SECOND,
-        REPLAY_MAX_UNITS_PER_FRAME / seconds,
-      );
-      s.velocity = Math.max(
-        -frameSpeedLimit,
-        Math.min(frameSpeedLimit, s.velocity),
-      );
-      s.value += s.velocity * seconds;
+        // At lower render rates the frame-distance limit also lowers velocity, keeping the spring continuous instead of clamping its position later.
+        const frameSpeedLimit = Math.min(
+          REPLAY_UNITS_PER_SECOND,
+          REPLAY_MAX_UNITS_PER_FRAME / seconds,
+        );
+        s.velocity = Math.max(
+          -frameSpeedLimit,
+          Math.min(frameSpeedLimit, s.velocity),
+        );
+        s.value += s.velocity * seconds;
+      }
+
+      setValue(s.value);
+      if (
+        Math.abs(s.target - s.value) > REPLAY_POSITION_EPSILON ||
+        Math.abs(s.velocity) > REPLAY_VELOCITY_EPSILON
+      ) {
+        s.frame = requestAnimationFrame(replayFrame);
+      } else {
+        s.frame = 0;
+      }
     }
-
-    setValue(s.value);
-    if (
-      Math.abs(s.target - s.value) > REPLAY_POSITION_EPSILON ||
-      Math.abs(s.velocity) > REPLAY_VELOCITY_EPSILON
-    ) {
-      s.frame = requestAnimationFrame(replayFrame);
-    } else {
+    stepRef.current = replayFrame;
+    return () => {
+      cancelAnimationFrame(s.frame);
       s.frame = 0;
-    }
+      stepRef.current = null;
+    };
   }, []);
 
   const enqueue = useCallback(
@@ -112,12 +122,12 @@ function useTimeOfDayReplay(initial: number, instant: boolean) {
       if (Math.abs(target - s.target) < Number.EPSILON) return;
       s.target = target;
 
-      if (!s.frame) {
+      if (!s.frame && stepRef.current) {
         s.lastFrame = performance.now();
-        s.frame = requestAnimationFrame(step);
+        s.frame = requestAnimationFrame(stepRef.current);
       }
     },
-    [instant, step],
+    [instant],
   );
 
   useEffect(() => {
@@ -129,14 +139,6 @@ function useTimeOfDayReplay(initial: number, instant: boolean) {
     s.velocity = 0;
     setValue(s.target);
   }, [instant]);
-
-  useEffect(() => {
-    const s = state.current;
-    return () => {
-      cancelAnimationFrame(s.frame);
-      s.frame = 0;
-    };
-  }, []);
 
   return { value, enqueue };
 }

@@ -18,7 +18,7 @@ const MAX_DT = 1 / 20;
 const INTRO_CLOCK_PRIORITY = 50;
 
 export function IntroClock({
-  clock,
+  clock: clockRef,
   enabled,
   gate,
   onUiReveal,
@@ -43,12 +43,12 @@ export function IntroClock({
   );
 
   useEffect(() => {
-    clock.current = enabled && !gate ? 0 : INTRO_COMPLETE;
+    clockRef.current = enabled && !gate ? 0 : INTRO_COMPLETE;
     cueSent.current = !enabled;
     if (!enabled) onUiReveal?.();
     // Apply the current pose on the next frame.
     invalidate();
-  }, [clock, enabled, gate, invalidate, onUiReveal]);
+  }, [clockRef, enabled, gate, invalidate, onUiReveal]);
 
   useFrame(
     (_, delta) => {
@@ -59,7 +59,7 @@ export function IntroClock({
       };
 
       if (!enabled) {
-        clock.current = INTRO_COMPLETE;
+        clockRef.current = INTRO_COMPLETE;
         revealUi();
         if (gate?.getState() === "playing") gate.introFinished();
         return;
@@ -70,40 +70,40 @@ export function IntroClock({
 
         if (state === "warming") {
           // Hold the final pose while the scene warms behind the overlay.
-          clock.current = INTRO_COMPLETE;
+          clockRef.current = INTRO_COMPLETE;
           return;
         }
 
         if (state === "priming-intro" || state === "revealing-intro") {
           // Hold the intro at zero until the overlay exits.
-          clock.current = 0;
+          clockRef.current = 0;
           beatElapsed.current = 0;
           cueSent.current = false;
           return;
         }
 
         if (state === "armed" && eligibleForPlayback.current) {
-          clock.current = 0;
+          clockRef.current = 0;
           beatElapsed.current += Math.min(delta, MAX_DT);
           if (beatElapsed.current >= INTRO_START_BEAT) gate.beatElapsed();
           return;
         }
 
         if (state !== "playing" || !eligibleForPlayback.current) {
-          clock.current = INTRO_COMPLETE;
+          clockRef.current = INTRO_COMPLETE;
           revealUi();
           if (state === "armed" || state === "playing") gate.bypass();
           return;
         }
       }
 
-      clock.current = Math.min(
+      clockRef.current = Math.min(
         INTRO_COMPLETE,
-        clock.current + Math.min(delta, MAX_DT),
+        clockRef.current + Math.min(delta, MAX_DT),
       );
 
-      if (clock.current >= UI_REVEAL_START) revealUi();
-      if (clock.current >= INTRO_COMPLETE) gate?.introFinished();
+      if (clockRef.current >= UI_REVEAL_START) revealUi();
+      if (clockRef.current >= INTRO_COMPLETE) gate?.introFinished();
     },
     { phase: "update", priority: INTRO_CLOCK_PRIORITY },
   );

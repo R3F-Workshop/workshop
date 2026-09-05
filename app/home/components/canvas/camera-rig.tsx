@@ -2,7 +2,7 @@
 
 import CameraControls from "camera-controls";
 import { useFrame, useThree } from "@react-three/fiber/webgpu";
-import { useEffect, useMemo } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three/webgpu";
 
 /** `camera-controls`, wired by hand. drei ships a `<CameraControls>` wrapper but only from its default entry, not from `@react-three/drei/webgpu`. */
@@ -22,8 +22,8 @@ CameraControls.install({
 
 export function CameraRig({
   /** Vertical angles are clamped so the box never reads upside down. */
-  minPolar = Math.PI * 0.18,
-  maxPolar = Math.PI * 0.82,
+  minPolar,
+  maxPolar,
   minDistance = 3,
   maxDistance = 9,
   enabled = true,
@@ -42,29 +42,35 @@ export function CameraRig({
   const element = (events.connected ??
     renderer.domElement) as unknown as HTMLElement;
 
-  const controls = useMemo(
-    () => new CameraControls(camera as THREE.PerspectiveCamera, element),
-    [camera, element],
-  );
+  const controls = useRef<CameraControls | null>(null);
 
   useEffect(() => {
-    controls.minPolarAngle = minPolar;
-    controls.maxPolarAngle = maxPolar;
-    controls.minDistance = minDistance;
-    controls.maxDistance = maxDistance;
+    const instance = new CameraControls(
+      camera as THREE.PerspectiveCamera,
+      element,
+    );
+    controls.current = instance;
+    return () => {
+      controls.current = null;
+      instance.dispose();
+    };
+  }, [camera, element]);
+
+  useEffect(() => {
+    const instance = controls.current;
+    if (!instance) return;
+    instance.minPolarAngle = minPolar ?? Math.PI * 0.18;
+    instance.maxPolarAngle = maxPolar ?? Math.PI * 0.82;
+    instance.minDistance = minDistance;
+    instance.maxDistance = maxDistance;
+    instance.enabled = enabled;
     // Scrolling the page is worth more than zooming the box.
-    controls.mouseButtons.wheel = CameraControls.ACTION.NONE;
-    controls.touches.two = CameraControls.ACTION.TOUCH_ZOOM;
-  }, [controls, minPolar, maxPolar, minDistance, maxDistance]);
-
-  useEffect(() => {
-    controls.enabled = enabled;
-  }, [controls, enabled]);
-
-  useEffect(() => () => controls.dispose(), [controls]);
+    instance.mouseButtons.wheel = CameraControls.ACTION.NONE;
+    instance.touches.two = CameraControls.ACTION.TOUCH_ZOOM;
+  }, [camera, element, minPolar, maxPolar, minDistance, maxDistance, enabled]);
 
   useFrame((_, delta) => {
-    controls.update(delta);
+    controls.current?.update(delta);
   });
 
   return null;

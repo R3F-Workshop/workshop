@@ -1,10 +1,33 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
+import reactHooks from "eslint-plugin-react-hooks";
 
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    name: "workshop/react-compiler",
+    // Next registers the plugin.
+    rules: {
+      ...reactHooks.configs.flat["recommended-latest"].rules,
+      "react-hooks/exhaustive-deps": "error",
+      "react-hooks/incompatible-library": "error",
+      "react-hooks/unsupported-syntax": "error",
+    },
+  },
+  {
+    // These R3F modules mutate external resources outside React rendering.
+    files: [
+      "app/home/sections/hero/components/stars.tsx",
+      "app/home/sections/why/components/flip-grid/flip-grid.tsx",
+      "resources/tower-scene/buildings.tsx",
+      "resources/tower-scene/fx.tsx",
+      "resources/tower-scene/lettering.tsx",
+      "resources/tower-scene/stars.tsx",
+    ],
+    rules: { "react-hooks/immutability": "off" },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
@@ -19,23 +42,6 @@ const eslintConfig = defineConfig([
     // Agent worktrees, each a full checkout with its own node_modules.
     ".claude/**",
   ]),
-  {
-    // React Three Fiber drives three.js by mutating objects the renderer owns: `useFrame` exists to write to `camera`, materials.
-    files: [
-      "app/home/sections/hero/**/*.tsx",
-      "app/home/sections/*/components/**/*.tsx",
-      "app/home/components/canvas/**/*.tsx",
-      "app/demos/*/components/**/*.tsx",
-      "app/demos/components/webgpu-gate.tsx",
-      "components/depth-attachment-sync.tsx",
-      "components/leva-panel.tsx",
-      "resources/**/*.tsx",
-    ],
-    rules: {
-      "react-hooks/immutability": "off",
-      "react-hooks/refs": "off",
-    },
-  },
   {
     // Vendored verbatim from three.js / Faraz's demo so it stays diffable against upstream.
     files: ["resources/tower-scene/ssao-node.js"],

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { CameraControls, CameraControlsImpl } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber/webgpu";
 import { button, useControls } from "leva";
@@ -41,12 +41,14 @@ export function Camera({
 }) {
   const size = useThree((state) => state.size);
   const camera = useThree((state) => state.camera);
-  const controls = useThree((state) => state.controls) as CameraControlsImpl;
+  const controlsRef = useRef<CameraControlsImpl>(null);
 
   // Clip planes track worldScale.
   useEffect(() => {
-    const cam = camera as THREE.PerspectiveCamera;
-    if (!cam.isPerspectiveCamera) return;
+    const cam = controlsRef.current?.camera as
+      | THREE.PerspectiveCamera
+      | undefined;
+    if (!cam?.isPerspectiveCamera) return;
     cam.fov = 30;
     cam.near = 0.2 * worldScale;
     // City outer radius is 400 scene units, so the far corner sits ~800·scale away with the camera backed off from it.
@@ -56,7 +58,8 @@ export function Camera({
 
   const frame = useCallback(() => {
     const target = targetRef.current;
-    const cam = camera as THREE.PerspectiveCamera;
+    const controls = controlsRef.current;
+    const cam = controls?.camera as THREE.PerspectiveCamera | undefined;
     if (!controls || !target || !cam?.isPerspectiveCamera) return false;
 
     // Wait for a finite canvas aspect ratio before calculating the camera pose.
@@ -113,9 +116,10 @@ export function Camera({
       controls.maxPolarAngle = polar;
     }
     return true;
-  }, [controls, camera, targetRef, padding, polarDegrees, unlocked]);
+  }, [targetRef, padding, polarDegrees, unlocked]);
 
   useEffect(() => {
+    const controls = controlsRef.current;
     if (!controls) return;
 
     if (unlocked) {
@@ -154,9 +158,10 @@ export function Camera({
     const raf = requestAnimationFrame(() => frame());
     return () => cancelAnimationFrame(raf);
     // `size` is not read in `frame` directly, but a resize must re-fit: that is the entire point of the rewrite.
-  }, [controls, frame, unlocked, refitKey, size.width, size.height]);
+  }, [camera, frame, unlocked, refitKey, size.width, size.height]);
 
   useFrame((_, delta) => {
+    const controls = controlsRef.current;
     if (!controls || !autoRotate || unlocked || autoRotateSpeed === 0) return;
     // Applied directly (no transition): a continuous drift is the target, not something to ease toward.
     controls.rotate(
@@ -169,7 +174,7 @@ export function Camera({
   return (
     <>
       {/* Only ONE camera. */}
-      <CameraControls makeDefault />
+      <CameraControls ref={controlsRef} makeDefault />
     </>
   );
 }

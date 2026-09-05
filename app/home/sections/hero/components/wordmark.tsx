@@ -32,7 +32,7 @@ const LETTERS: {
 ];
 
 export function Wordmark({
-  size = 6 * LAYOUT_SCALE,
+  size: requestedSize,
   spread = 0.8,
 }: {
   /** Em size in world units. */
@@ -40,6 +40,7 @@ export function Wordmark({
   /** Multiplier on the authored left/right offsets. */
   spread?: number;
 }) {
+  const size = requestedSize ?? 6 * LAYOUT_SCALE;
   const font = useFont(FONT);
 
   // A paragraph's origin is its top-left corner.

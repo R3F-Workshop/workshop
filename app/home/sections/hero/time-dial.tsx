@@ -161,9 +161,9 @@ export function TimeDial({
 
   // Create the audio context during a user gesture to satisfy autoplay policy.
   const tick = useCallback(() => {
-    const audio = audioRef.current ?? createDialAudio();
+    if (audioRef.current === null) audioRef.current = createDialAudio();
+    const audio = audioRef.current;
     if (!audio) return;
-    audioRef.current = audio;
     if (audio.ctx.state === "suspended") void audio.ctx.resume();
 
     // At speed, physical detents blur into a ratchet.

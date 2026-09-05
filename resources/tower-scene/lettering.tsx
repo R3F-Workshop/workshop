@@ -322,10 +322,10 @@ function usePointerKnock(
   /** Smoothed pointer velocity, in half-heights per second. */
   const travel = useRef({ x: 0, y: 0 });
   const wobbles = useRef<Wobble[]>(LETTERS.map(restingWobble));
-  const [scratch] = useState(() => ({
+  const scratch = useMemo(() => ({
     slot: new THREE.Vector3(),
     eye: new THREE.Vector3(),
-  }));
+  }), []);
 
   useFrame(({ camera }, frameDelta) => {
     const wobbleGroups = groups.current;
@@ -515,7 +515,7 @@ function usePointerKnock(
 function AnimatedLetter({
   index,
   target,
-  clock,
+  clock: clockRef,
   reveal,
   children,
 }: {
@@ -529,9 +529,6 @@ function AnimatedLetter({
   const side = index % 2 === 0 ? -1 : 1;
   const targetX = target[0];
   const targetY = target[1];
-  const targetRef = useRef({ x: targetX, y: targetY });
-  targetRef.current.x = targetX;
-  targetRef.current.y = targetY;
 
   const pose = useRef<LetterPose>({
     x: 0,
@@ -541,17 +538,16 @@ function AnimatedLetter({
     vy: 0,
     vr: 0,
     phase: "uninitialized",
-    previousTime: clock.current,
+    previousTime: 0,
   });
 
   const applyPose = useCallback(
     (phase: "animating" | "settled") => {
       const object = group.current;
       if (!object) return;
-      const destination = targetRef.current;
       const finished = phase === "settled";
-      const x = finished ? destination.x : 0;
-      const y = finished ? destination.y : destination.y - 1.15;
+      const x = finished ? targetX : 0;
+      const y = finished ? targetY : targetY - 1.15;
       const rotation = finished ? 0 : -side * 0.18;
 
       Object.assign(pose.current, {
@@ -567,7 +563,7 @@ function AnimatedLetter({
       object.rotation.z = rotation;
       reveal.value = finished ? 1 : 0;
     },
-    [reveal, side],
+    [reveal, side, targetX, targetY],
   );
 
   /** Transform invariants: 1. */
@@ -575,14 +571,13 @@ function AnimatedLetter({
     const object = group.current;
     if (!object) return;
     const current = pose.current;
-    const destination = targetRef.current;
-    const time = clock.current;
+    const time = clockRef.current;
     const settledPoseIsValid =
       current.phase === "settled" &&
-      current.x === destination.x &&
-      current.y === destination.y &&
-      object.position.x === destination.x &&
-      object.position.y === destination.y &&
+      current.x === targetX &&
+      current.y === targetY &&
+      object.position.x === targetX &&
+      object.position.y === targetY &&
       object.position.z === 0 &&
       object.rotation.z === 0;
     const action = gateLetterPose(current, time, settledPoseIsValid);
@@ -610,7 +605,7 @@ function AnimatedLetter({
     [current.x, current.vx] = spring(
       current.x,
       current.vx,
-      destination.x,
+      targetX,
       76,
       6.7,
       dt,
@@ -618,7 +613,7 @@ function AnimatedLetter({
     [current.y, current.vy] = spring(
       current.y,
       current.vy,
-      destination.y,
+      targetY,
       88,
       7.3,
       dt,
@@ -643,8 +638,8 @@ function AnimatedLetter({
     object.rotation.z = current.rotation;
 
     const error =
-      Math.abs(current.x - destination.x) +
-      Math.abs(current.y - destination.y) +
+      Math.abs(current.x - targetX) +
+      Math.abs(current.y - targetY) +
       Math.abs(current.rotation);
     const speed =
       Math.abs(current.vx) + Math.abs(current.vy) + Math.abs(current.vr);
