@@ -21,7 +21,7 @@ hidable-section machinery, no unfinished sections, no dev harnesses, no dead
 code. The live site's repo remains the source of truth for production.
 
 Next.js 16 (App Router) · Tailwind v4 · shadcn/ui · React Three Fiber v10
-alpha (`@react-three/fiber/webgpu`) · drei 11 alpha (patched) · three r185.
+alpha (`@react-three/fiber/webgpu`) · drei 11 alpha · three r185.
 
 ## Install
 
@@ -33,9 +33,8 @@ pnpm build
 pnpm lint
 ```
 
-**pnpm, not npm.** The repo carries pnpm patches for drei and rapier in
-`patches/` (wired up in `pnpm-workspace.yaml`); installing with npm silently
-skips them and the build fails.
+**Use pnpm.** The repo carries a rapier patch in `patches/` (wired up in
+`pnpm-workspace.yaml`). Installing with npm skips it.
 
 ## Routes
 
@@ -78,8 +77,6 @@ Without WebGPU the hero (and every scene) falls back to static posters —
 
 ## Things that look odd but are load-bearing
 
-- `next.config.ts` aliases `three/addons/inspector/Inspector.js` to a stub —
-  it breaks an import cycle in the R3F v10 alpha. Remove it and the build fails.
 - The `AGENTS.md` block is written by `next dev`; commit it rather than
   fighting it.
 - `pnpm-workspace.yaml` allows rapier 2.x to peer against R3F 10 — the range
