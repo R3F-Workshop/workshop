@@ -33,8 +33,7 @@ pnpm build
 pnpm lint
 ```
 
-**Use pnpm.** The repo carries a rapier patch in `patches/` (wired up in
-`pnpm-workspace.yaml`). Installing with npm skips it.
+**Use pnpm.** Its version is pinned in `package.json`.
 
 ## Routes
 
@@ -79,9 +78,9 @@ Without WebGPU the hero (and every scene) falls back to static posters —
 
 - The `AGENTS.md` block is written by `next dev`; commit it rather than
   fighting it.
-- `pnpm-workspace.yaml` allows rapier 2.x to peer against R3F 10 — the range
-  upstream is stale, not wrong; the patch repoints its imports at the WebGPU
-  entry.
+- `pnpm-workspace.yaml` allows rapier 2.x to peer against R3F 10 prereleases.
+  The R3F canary shares its context and scheduler across entry points, so
+  Rapier's standard Fiber imports work inside the WebGPU canvas.
 - Multi-canvas: every canvas shares one `WebGPURenderer` (the hero owns it as
   `id="main"`); `components/depth-attachment-sync.tsx` works around a
   three.js multi-canvas depth bug and belongs inside every `<Canvas>`.

@@ -1,9 +1,6 @@
 allowBuilds:
   unrs-resolver: true
-
-patchedDependencies:
-  '@react-three/rapier@2.2.0': patches/@react-three__rapier@2.2.0.patch
-# The patched react-three-rapier APIs remain compatible with R3F v10.
+# Rapier 2.x uses R3F v10's shared context across entry points.
 peerDependencyRules:
   allowedVersions:
     "@react-three/rapier>@react-three/fiber": "^10.0.0-0"
