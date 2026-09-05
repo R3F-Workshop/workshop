@@ -26,7 +26,7 @@ interface SSAOPass {
   useScreenSpaceSampling: { value: boolean };
   useLinearThickness: { value: boolean };
   useTemporalFiltering: boolean;
-  getAONode(): { r: unknown };
+  getAONode(): THREE.TextureNode;
 }
 
 /** Runtime controls exposed by the SSGI node. */
@@ -37,8 +37,8 @@ interface SSGIPass {
   giIntensity: { value: number };
   aoIntensity: { value: number };
   useTemporalFiltering: boolean;
-  getAONode(): { r: unknown };
-  getGINode(): unknown;
+  getAONode(): THREE.TextureNode;
+  getGINode(): THREE.TextureNode;
 }
 
 /** Bloom texture accessor. */
@@ -325,7 +325,7 @@ export function FX({
       const color = scenePass.getTextureNode("output");
       const depth = scenePass.getTextureNode("depth");
 
-      let graph = color;
+      let graph: THREE.Node<"vec4"> = color;
 
       /** Tower bloom, reused as the light the lettering responds to. */
       let bloomTex: AnyVec4 | null = null;
@@ -343,7 +343,7 @@ export function FX({
       // Unpack byte-encoded normals through a shared sampling node.
       const sceneNormal =
         useGtao || useSsgi
-          ? TSL.sample((uv: unknown) =>
+          ? TSL.sample((uv) =>
               TSL.unpackRGBToNormal(
                 scenePass.getTextureNode("normal").sample(uv),
               ),
@@ -367,11 +367,11 @@ export function FX({
         ssgiPassRef.current = giPass;
 
         const gi = denoise(
-          giPass.getGINode() as unknown as THREE.Node,
+          giPass.getGINode(),
           depth,
           sceneNormal,
           camera as THREE.PerspectiveCamera,
-        ) as unknown as { rgb: unknown };
+        ) as unknown as THREE.Node<"vec4">;
         const albedo = scenePass.getTextureNode("diffuse");
         graph = TSL.vec4(
           graph.rgb.mul(giPass.getAONode().r).add(albedo.rgb.mul(gi.rgb)),
@@ -495,7 +495,7 @@ export function FX({
         );
         nextFsrNode = fsrNode as unknown as FSRNodeLike;
         velocityBoundRef.current = false;
-        graph = fsrNode;
+        graph = fsrNode as THREE.Node<"vec4">;
       } else {
         // Use TRAA as the temporal resolver when FSR3 is disabled.
         const traaPass = traa(

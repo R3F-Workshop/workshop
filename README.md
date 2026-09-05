@@ -21,7 +21,7 @@ hidable-section machinery, no unfinished sections, no dev harnesses, no dead
 code. The live site's repo remains the source of truth for production.
 
 Next.js 16 (App Router) · Tailwind v4 · shadcn/ui · React Three Fiber v10
-alpha (`@react-three/fiber/webgpu`) · drei 11 alpha · three r185.
+canary (`@react-three/fiber/webgpu`) · drei 11 alpha · three r185.
 
 ## Install
 

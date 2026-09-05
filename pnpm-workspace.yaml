@@ -6,4 +6,4 @@ patchedDependencies:
 # The patched react-three-rapier APIs remain compatible with R3F v10.
 peerDependencyRules:
   allowedVersions:
-    "@react-three/rapier>@react-three/fiber": "10"
+    "@react-three/rapier>@react-three/fiber": "^10.0.0-0"
