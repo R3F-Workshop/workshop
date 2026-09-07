@@ -15,7 +15,7 @@ const eslintConfig = defineConfig([
     // Archived copy of the original static port — kept for reference, not built.
     "reference/**",
     // Build output copied in by `pnpm sync:sky` — not ours to lint.
-    "vendor/**",
+    "tooling/vendor/**",
     // Agent worktrees, each a full checkout with its own node_modules. Linting
     // them buried the real output under ~18k findings.
     ".claude/**",
@@ -33,14 +33,14 @@ const eslintConfig = defineConfig([
     // of a uniform. Scenes are colocated per section, so the carve-out names
     // the scene locations rather than one big three/ folder.
     files: [
-      "app/home/sections/hero/**/*.tsx",
-      "app/home/sections/*/components/**/*.tsx",
-      "app/home/components/canvas/**/*.tsx",
-      "app/demos/*/components/**/*.tsx",
-      "app/demos/components/webgpu-gate.tsx",
-      "components/depth-attachment-sync.tsx",
-      "components/leva-panel.tsx",
-      "resources/**/*.tsx",
+      "src/app/home/sections/hero/**/*.tsx",
+      "src/app/home/sections/*/components/**/*.tsx",
+      "src/app/home/components/canvas/**/*.tsx",
+      "src/app/demos/*/components/**/*.tsx",
+      "src/app/demos/components/webgpu-gate.tsx",
+      "src/components/depth-attachment-sync.tsx",
+      "src/components/leva-panel.tsx",
+      "src/resources/**/*.tsx",
     ],
     rules: {
       "react-hooks/immutability": "off",
@@ -50,7 +50,7 @@ const eslintConfig = defineConfig([
   {
     // Vendored verbatim from three.js / Faraz's demo so it stays diffable
     // against upstream. Not ours to lint.
-    files: ["resources/tower-scene/ssao-node.js"],
+    files: ["src/resources/tower-scene/ssao-node.js"],
     rules: {
       "@typescript-eslint/no-unused-vars": "off",
       "prefer-const": "off",
