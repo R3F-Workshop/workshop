@@ -20,3 +20,21 @@ Comments should be concise and relavant to explaining the algorithm or feature. 
 # Const Policy
 
 We want reduce top level const and inline anything that is an explicit hook we need tweak often. Always ask yourself if a const needs to exist before making it. Prefer to inline.
+
+# Experiences
+
+All 3D on this site is an experience: one self contained component under `app/experiences/<slug>/` that owns its own `<Canvas>`, renderer, camera, scene, loop, and any DOM overlay, and fills whatever box it is dropped into (`absolute inset-0`). It returns null without WebGPU. No config files, no shared scene wrappers, no props unless a shell truly needs one. Tunables are literals in the file.
+
+Each folder has:
+
+- `<slug>.tsx` exporting one PascalCase component. Everything lives here. A vanilla three.js experience keeps its three.js in a sibling `.ts` file and this file is a div plus an effect.
+- `index.ts`, the `next/dynamic` `ssr: false` boundary. Shells import from the folder, never from the component file, because `@react-three/fiber/webgpu` cannot be in the server render graph.
+
+Two shells drop an experience in and add nothing else:
+
+- The demo shell, `app/demos/<slug>/page.tsx`. A server page with metadata, a title plate, optional `InfoDialog`, optional `ControlsToggle` when the experience uses Leva, and the component. Listed in `DEMOS` in `app/demos/page.tsx`.
+- The section shell, `app/home/sections/<section>/components/<slug>-canvas.tsx`. On the starter it renders the placeholder. Bringing the finished version back is replacing its body with the component.
+
+Leva knobs, when an experience has them, are a `useControls` call inline in the component with a folder named after the slug. Demo pages show the panel through `ControlsToggle`. The home page mounts `LevaPanel` hidden so a dropped in experience never spawns its own.
+
+Use the `new-experience` skill to scaffold one.

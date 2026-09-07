@@ -2,7 +2,7 @@
 //
 // Ten, written six ways: flattened glyph contours normalised into a unit box
 // centred on the origin, Y already pointing up. Fed to THREE.Shape +
-// ExtrudeGeometry in components/three/magic-box.tsx.
+// ExtrudeGeometry in app/experiences/magic-box/magic-box.tsx.
 //
 // Regenerate with a directory holding the Noto fonts listed in the script:
 //   node scripts/build-glyphs.mjs <font-dir>

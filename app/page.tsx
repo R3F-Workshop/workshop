@@ -7,6 +7,7 @@ import { Setup } from "@/app/home/sections/setup/setup";
 import { Why } from "@/app/home/sections/why/why";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { LevaPanel } from "@/components/leva-panel";
 import { ConnectorsCanvas } from "@/app/home/components/canvas/scenes";
 
 export default function Page() {
@@ -14,7 +15,10 @@ export default function Page() {
     <>
       {/* The finished hero pairs with <LoadingScreen /> here (still in
           app/home/components/, driven by lib/hero-gate.ts) — bring both back with the
-          real scene. See resources/README.md. */}
+          real scene. See app/experiences/paris-tower/site-hero.tsx. */}
+      {/* Hidden unless the URL has ?debug. Experiences that carry Leva knobs
+          would otherwise spawn their own panel when dropped into a section. */}
+      <LevaPanel />
       <SiteHeader />
       <Hero />
       <main className="relative z-10 bg-background">

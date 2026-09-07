@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
+import { ControlsToggle } from "@/app/demos/components/controls-toggle";
 import { InfoDialog, InfoSection } from "@/app/demos/components/info-dialog";
 
-import { FlipGridDemo } from "./flip-grid-demo";
+import { FlipGrid } from "@/app/experiences/flip-grid";
 
 export const metadata: Metadata = {
   title: "A grid that flips to gold — R3F v10 demo",
@@ -16,7 +17,8 @@ export const metadata: Metadata = {
 export default function FlipGridDemoPage() {
   return (
     <main className="relative h-dvh w-full overflow-hidden bg-background">
-      <FlipGridDemo />
+      <FlipGrid />
+      <ControlsToggle />
 
       {/* Title plate. pointer-events-none so it never intercepts the cursor the
           grid is reading. */}

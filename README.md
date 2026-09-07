@@ -9,7 +9,7 @@ the PMNDRS workshop at Gobelins, Paris, September 8–9 2026.
   header, footer, sections, and multi-canvas plumbing are real; every canvas
   renders a dead-simple placeholder (the hero is a spinning pyramid under the
   pmndrs mark) designed to be replaced during the workshop. The finished
-  pieces sit in [`resources/`](resources/README.md) ready to paste back, and
+  pieces sit in `app/experiences/paris-tower/` ready to paste back, and
   `/demos/*` still runs every finished scene.
 - **`final-version`** — the complete site with the real hero and section
   scenes. `git switch final-version` to see it, or
@@ -56,7 +56,7 @@ skips them and the build fails.
 | `app/home/sections/hero/` | The starter hero shell and pyramid scene, plus the time dial kept ready to wire back in. |
 | `app/home/components/` | Shared by home sections only: the section shell, reveal, loading screen (wired out), and `canvas/` (SectionCanvas, the scenes.tsx client boundary, PlaceholderScene, camera rig, studio env). |
 | `app/demos/<x>/` | Each demo page with its own components; the finished heavy scenes live in the section folders that own them. |
-| `resources/` | The finished hero pipeline (`tower-scene/`) and shell, compiling and importable — see `resources/README.md`. Powers `/demos/paris-hero`. |
+| `app/experiences/paris-tower/` | The finished hero pipeline and shell (`site-hero.tsx`, `site-tower-hero.tsx`), compiling and importable. Powers `/demos/paris-hero`. |
 | `components/` | True globals: shadcn `ui/`, the brand logo, header, footer, DepthAttachmentSync, LevaPanel. |
 | `lib/content.ts` | Every string on the site. |
 | `lib/time-of-day.ts` | The cyclic sky/palette model shared by the DOM gradient and the 3D lighting. |
@@ -69,8 +69,8 @@ mark, kept to the smallest possible primary canvas. The finished hero (on
 `final-version`, and live at `/demos/paris-hero`) is a full R3F v10 WebGPU
 scene: the tower in a block city, a time-of-day dial driving sun position,
 sky, fog, window emissive, and the star field; the wordmark extruded in-scene
-(`resources/tower-scene/lettering.tsx`) so the tower can occlude it; post as a
-single MRT graph in `resources/tower-scene/fx.tsx` (bloom, AO, sky haze, FSR3
+(`app/experiences/paris-tower/lettering.tsx`) so the tower can occlude it; post as a
+single MRT graph in `app/experiences/paris-tower/fx.tsx` (bloom, AO, sky haze, FSR3
 as the temporal resolver).
 
 Without WebGPU the hero (and every scene) falls back to static posters —

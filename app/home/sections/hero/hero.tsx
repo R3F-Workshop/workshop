@@ -13,11 +13,13 @@ import { Instructors } from "@/app/home/sections/instructors/instructors";
 import { HERO, REGISTER_URL } from "@/lib/content";
 import { skyGradient, todAt } from "@/lib/time-of-day";
 
-// WebGPU has no business running during SSR — keep the scene out of the
-// server bundle entirely. The finished tower pipeline this replaces lives in
-// `resources/tower-scene/` and on the `final-version` branch.
-const PyramidHero = dynamic(
-  () => import("./pyramid-hero").then((m) => m.PyramidHero),
+import { VanillaPyramid } from "@/app/experiences/vanilla-pyramid";
+
+// Only here for the vanilla morning. When the hero moves to R3F, swap the two
+// components below for `<ParisHeroR3f />` from `@/app/experiences/paris-hero-r3f`
+// and delete `./primary-canvas-stub.tsx`.
+const PrimaryCanvasStub = dynamic(
+  () => import("./primary-canvas-stub").then((m) => m.PrimaryCanvasStub),
   { ssr: false },
 );
 
@@ -25,16 +27,16 @@ const PyramidHero = dynamic(
  * The sky behind the canvas, frozen at the dusk the finished hero boots into.
  * The full site drives this through the time dial (`./time-dial.tsx`, kept
  * here ready to wire back in) and a replay spring — see
- * `resources/hero/hero.tsx`.
+ * `app/experiences/paris-tower/site-hero.tsx`.
  */
 const DUSK = todAt(0.85);
 
 /**
  * The starter hero: the same DOM as the finished site, with the scene layer
- * swapped for the placeholder pyramid. The finished version's entrance
+ * swapped for the vanilla three.js pyramid. The finished version's entrance
  * choreography (loading gate, staggered UI reveal, time dial + replay spring)
- * comes back with the real scene — so here the header is simply switched on
- * once the page mounts.
+ * comes back with the real scene, see `app/experiences/paris-tower/site-hero.tsx`.
+ * Here the header is simply switched on once the page mounts.
  */
 export function Hero() {
   useEffect(() => {
@@ -53,7 +55,8 @@ export function Hero() {
           />
 
           <div className="absolute inset-0 z-20">
-            <PyramidHero />
+            <VanillaPyramid />
+            <PrimaryCanvasStub />
           </div>
 
           {/* The pmndrs mark, floated above the pyramid. */}

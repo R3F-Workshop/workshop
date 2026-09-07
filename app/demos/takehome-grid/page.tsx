@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { ControlsToggle } from "@/app/demos/components/controls-toggle";
 import { InfoDialog, InfoSection } from "@/app/demos/components/info-dialog";
 
-import { TakehomeGridDemo } from "./takehome-grid-demo";
+import { TakehomeGrid } from "@/app/experiences/takehome-grid";
 
 export const metadata: Metadata = {
   title: "A directory, turning over — R3F v10 demo",
@@ -17,7 +18,8 @@ export const metadata: Metadata = {
 export default function TakehomeGridDemoPage() {
   return (
     <main className="relative h-dvh w-full overflow-hidden bg-background">
-      <TakehomeGridDemo />
+      <ControlsToggle />
+      <TakehomeGrid />
 
       {/* Title plate. pointer-events-none so it never intercepts the cursor. */}
       <div className="pointer-events-none absolute top-5 left-5 z-30 max-w-[min(430px,calc(100vw-2.5rem))]">

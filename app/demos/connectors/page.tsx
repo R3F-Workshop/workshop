@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { ControlsToggle } from "@/app/demos/components/controls-toggle";
 import { InfoDialog, InfoSection } from "@/app/demos/components/info-dialog";
 
-import { ConnectorsDemo } from "./connectors-demo";
+import { Connectors } from "@/app/experiences/connectors";
 
 export const metadata: Metadata = {
   title: "A container with no walls — R3F v10 demo",
@@ -17,7 +18,8 @@ export const metadata: Metadata = {
 export default function ConnectorsDemoPage() {
   return (
     <main className="relative h-dvh w-full overflow-hidden bg-background">
-      <ConnectorsDemo />
+      <Connectors />
+      <ControlsToggle />
 
       {/* Title plate. pointer-events-none so it never intercepts the cursor the
           scene is reading — or the click that cycles the accent. */}

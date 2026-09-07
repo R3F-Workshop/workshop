@@ -1,0 +1,120 @@
+"use client";
+
+/*
+Model generated with https://github.com/pmndrs/gltfjsx
+Author: SDC PERFORMANCE™️ (https://sketchfab.com/Lambo_SC04)
+License: CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+Source: https://sketchfab.com/3d-models/free-la-tour-eiffel-8553f94d06e24cb4b0fde1080f281674
+Title: ( FREE ) La tour Eiffel
+*/
+
+import { useCallback, useMemo, useState } from "react";
+import { useGLTF } from "@react-three/drei";
+import {
+  useLocalNodes,
+  useUniforms,
+  type ThreeElements,
+} from "@react-three/fiber/webgpu";
+import * as TSL from "three/tsl";
+import * as THREE from "three/webgpu";
+
+import { makeSparkleNode } from "./tower-sparkle";
+
+const MODEL_URL = "/hero-demo/free__la_tour_eiffel.glb";
+const TOWER_MESHES = ["Object_4", "Object_5", "Object_6"] as const;
+/** The model is 121 units tall: at 0.55 it is ~66, and the city is sized to that. */
+const MODEL_SCALE = 0.55;
+const MODEL_YAW = THREE.MathUtils.degToRad(30);
+
+type Knobs = Record<"lightLevel" | "boost", THREE.UniformNode<"float", number>>;
+
+/** Renders the interactive Eiffel Tower model. */
+export function Tower({
+  lightLevel = 1,
+  sparkle = true,
+  ...props
+}: {
+  /** 0 in daylight, 1 at night. */
+  lightLevel?: number;
+  /** The hourly glitter, as a fragment shader. */
+  sparkle?: boolean;
+} & Omit<ThreeElements["group"], "ref">) {
+  const { nodes } = useGLTF(MODEL_URL) as unknown as {
+    nodes: Record<string, THREE.Mesh>;
+  };
+
+  const [hovered, setHovered] = useState(false);
+  const [lit, setLit] = useState(false);
+
+  // Values the shader reads every frame.
+  const knobs = useUniforms(
+    { lightLevel, boost: lit ? 2.2 : 1 },
+    "heroTower",
+  ) as unknown as Knobs;
+
+  // `useLocalNodes` memoizes on the creator's identity: an inline arrow would rebuild the graph (and recompile the shader) on every render.
+  const createNodes = useCallback(() => {
+    const glow = TSL.color("#ff9f3f").mul(knobs.lightLevel.mul(0.55));
+    const emissive = sparkle
+      ? glow.add(makeSparkleNode(knobs.lightLevel))
+      : glow;
+    return { emissiveNode: emissive.mul(knobs.boost) };
+  }, [knobs.lightLevel, knobs.boost, sparkle]);
+  const { emissiveNode } = useLocalNodes(createNodes);
+
+  // Bronze paint by day, dark iron under its own lights at night.
+  const color = useMemo(
+    () =>
+      new THREE.Color(hovered ? "#c98a5a" : "#a96843").lerp(
+        new THREE.Color(hovered ? "#5a4225" : "#3a2a15"),
+        lightLevel,
+      ),
+    [hovered, lightLevel],
+  );
+
+  return (
+    <group
+      {...props}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        setHovered(true);
+      }}
+      onPointerOut={() => setHovered(false)}
+      onClick={(e) => {
+        e.stopPropagation();
+        setLit((v) => !v);
+      }}
+    >
+      {/* Shared GLB buffers outlive this component: don't dispose them. */}
+      <group dispose={null} scale={MODEL_SCALE} rotation-y={MODEL_YAW}>
+        {/* Kept mounted with its intensity driven to zero by day: mounting a light rebuilds every material's shader. */}
+        <pointLight
+          position={[0, 10, 0]}
+          color="#ffb35c"
+          intensity={120 * lightLevel}
+          distance={100}
+          decay={2}
+        />
+
+        {TOWER_MESHES.map((name) => (
+          <mesh
+            key={name}
+            castShadow
+            receiveShadow
+            geometry={nodes[name].geometry}
+          >
+            <meshStandardNodeMaterial
+              color={color}
+              metalness={THREE.MathUtils.lerp(0.18, 0.8, lightLevel)}
+              roughness={THREE.MathUtils.lerp(0.55, 0.45, lightLevel)}
+              envMapIntensity={THREE.MathUtils.lerp(1.5, 1, lightLevel)}
+              emissiveNode={emissiveNode}
+            />
+          </mesh>
+        ))}
+      </group>
+    </group>
+  );
+}
+
+useGLTF.preload(MODEL_URL);

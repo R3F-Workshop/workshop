@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { InfoDialog, InfoSection } from "@/app/demos/components/info-dialog";
 
-import { BlendingCubeDemo } from "./blending-cube-demo";
+import { BlendingCube } from "@/app/experiences/blending-cube";
 
 export const metadata: Metadata = {
   title: "One box, four imports — R3F v10 demo",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default function BlendingCubeDemoPage() {
   return (
     <main className="relative h-dvh w-full overflow-hidden bg-background">
-      <BlendingCubeDemo />
+      <BlendingCube />
 
       {/* Title plate. pointer-events-none so it never intercepts the cursor. */}
       <div className="pointer-events-none absolute top-5 left-5 z-30 max-w-[min(420px,calc(100vw-2.5rem))]">

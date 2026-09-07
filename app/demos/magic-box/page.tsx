@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { ControlsToggle } from "@/app/demos/components/controls-toggle";
 import { InfoDialog, InfoSection } from "@/app/demos/components/info-dialog";
-import { MagicBoxStandalone } from "./standalone";
+import { MagicBox } from "@/app/experiences/magic-box";
 import { TEN_GLYPHS } from "@/lib/ten-glyphs";
 
 export const metadata: Metadata = {
@@ -17,7 +18,8 @@ export const metadata: Metadata = {
 export default function MagicBoxDemoPage() {
   return (
     <main className="relative h-dvh w-full overflow-hidden bg-background">
-      <MagicBoxStandalone />
+      <MagicBox />
+      <ControlsToggle />
 
       {/* Title plate. pointer-events-none so it never intercepts a drag. */}
       <div className="pointer-events-none absolute top-5 left-5 z-30 max-w-[min(420px,calc(100vw-2.5rem))]">
@@ -106,7 +108,7 @@ export default function MagicBoxDemoPage() {
             because a numeral has to stay legible.
           </p>
           <p>
-            Add <code>?debug</code> to the URL for a{" "}
+            Open the controls, top right, for a{" "}
             <a
               href="https://github.com/pmndrs/leva"
               className="text-foreground underline underline-offset-4"

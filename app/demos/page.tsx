@@ -19,6 +19,20 @@ const DEMOS = [
     tags: ["vanilla three.js", "WebGPURenderer", "Raycaster"],
   },
   {
+    href: "/demos/paris-hero-r3f",
+    title: "Paris hero, R3F",
+    blurb:
+      "The hero rebuilt in React Three Fiber during the workshop. Starts as a transparent canvas and two lights.",
+    tags: ["R3F v10", "built live"],
+  },
+  {
+    href: "/demos/hero-simple",
+    title: "Paris hero, the simple version",
+    blurb:
+      "The target for the day one build: the tower over an instanced city under a physical sky driven by one number, a wordmark in the scene, and one bloom pass. About seven hundred lines, one file per beat.",
+    tags: ["@pmndrs/sky", "instancing", "one bloom pass"],
+  },
+  {
     href: "/demos/paris-hero",
     title: "Paris hero",
     blurb:

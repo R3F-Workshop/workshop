@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { InfoDialog, InfoSection } from "@/app/demos/components/info-dialog";
 
-import { VanillaPyramid } from "./vanilla-pyramid";
+import { VanillaPyramid } from "@/app/experiences/vanilla-pyramid";
 
 export const metadata: Metadata = {
   title: "The pyramid, in vanilla three.js — R3F v10 demo",

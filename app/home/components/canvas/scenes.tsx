@@ -9,8 +9,7 @@ import dynamic from "next/dynamic";
  * cannot appear anywhere in the server render graph — importing a scene
  * directly from a section breaks the build. Sections import from here instead;
  * this module only pulls in `next/dynamic`, and the scenes load client-side.
- * (The demo pages carry their own boundaries — see `standalone.tsx` next to
- * each demo's `page.tsx`.)
+ * (Each experience carries its own boundary in `app/experiences/<slug>/index.ts`.)
  *
  * It also keeps three.js out of the initial route bundle.
  */
@@ -18,7 +17,7 @@ import dynamic from "next/dynamic";
 /** The "Why now" backdrop. Brings its own wrapper — see the component. */
 export const FlipGridCanvas = dynamic(
   () =>
-    import("@/app/home/sections/why/components/flip-grid/flip-grid-canvas").then(
+    import("@/app/home/sections/why/components/flip-grid-canvas").then(
       (m) => m.FlipGridCanvas,
     ),
   { ssr: false },
@@ -27,7 +26,7 @@ export const FlipGridCanvas = dynamic(
 export const MagicBoxCanvas = dynamic(
   () =>
     import(
-      "@/app/home/sections/outcomes/components/magic-box/magic-box-canvas"
+      "@/app/home/sections/outcomes/components/magic-box-canvas"
     ).then((m) => m.MagicBoxCanvas),
   { ssr: false },
 );
@@ -39,7 +38,7 @@ export const MagicBoxCanvas = dynamic(
 export const ConnectorsCanvas = dynamic(
   () =>
     import(
-      "@/app/home/sections/closer/components/connectors/connectors-canvas"
+      "@/app/home/sections/closer/components/connectors-canvas"
     ).then((m) => m.ConnectorsCanvas),
   { ssr: false },
 );
@@ -48,7 +47,7 @@ export const ConnectorsCanvas = dynamic(
 export const BlockCityCanvas = dynamic(
   () =>
     import(
-      "@/app/home/sections/overview/components/block-city/block-city-canvas"
+      "@/app/home/sections/overview/components/block-city-canvas"
     ).then((m) => m.BlockCityCanvas),
   { ssr: false },
 );
@@ -57,7 +56,7 @@ export const BlockCityCanvas = dynamic(
 export const TakehomeGridCanvas = dynamic(
   () =>
     import(
-      "@/app/home/sections/outcomes/components/takehome-grid/takehome-grid-canvas"
+      "@/app/home/sections/outcomes/components/takehome-grid-canvas"
     ).then((m) => m.TakehomeGridCanvas),
   { ssr: false },
 );
@@ -66,7 +65,7 @@ export const TakehomeGridCanvas = dynamic(
 export const BlendingCubeCanvas = dynamic(
   () =>
     import(
-      "@/app/home/sections/outcomes/components/blending-cube/blending-cube-canvas"
+      "@/app/home/sections/outcomes/components/blending-cube-canvas"
     ).then((m) => m.BlendingCubeCanvas),
   { ssr: false },
 );
