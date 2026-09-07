@@ -7,10 +7,10 @@ settings:
 patchedDependencies:
   '@react-three/drei@11.0.0-alpha.5':
     hash: 68f392780bbfcfe6cdb06489a4800b64ad9ece8a329d9f12600af534010b47b7
-    path: patches/@react-three__drei@11.0.0-alpha.5.patch
+    path: tooling/patches/@react-three__drei@11.0.0-alpha.5.patch
   '@react-three/rapier@2.2.0':
     hash: 801ccc7a6a79c3b4e6ae17d7b079fcffdebea20cf46245cb858a5f69051398d2
-    path: patches/@react-three__rapier@2.2.0.patch
+    path: tooling/patches/@react-three__rapier@2.2.0.patch
 
 importers:
 
@@ -20,8 +20,8 @@ importers:
         specifier: 0.0.0-canary-57eb2ce3-20260822
         version: 0.0.0-canary-57eb2ce3-20260822(@react-three/fiber@10.0.0-alpha.3(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(three@0.185.1))(react@19.2.8)(three@0.185.1)
       '@pmndrs/sky':
-        specifier: link:./vendor/pmndrs-sky
-        version: link:vendor/pmndrs-sky
+        specifier: link:./tooling/vendor/pmndrs-sky
+        version: link:tooling/vendor/pmndrs-sky
       '@pmndrs/upscaler':
         specifier: ^0.2.0
         version: 0.2.0(three@0.185.1)

@@ -9,7 +9,7 @@ the PMNDRS workshop at Gobelins, Paris, September 8–9 2026.
   header, footer, sections, and multi-canvas plumbing are real; every canvas
   renders a dead-simple placeholder (the hero is a spinning pyramid under the
   pmndrs mark) designed to be replaced during the workshop. The finished
-  pieces sit in [`resources/`](resources/README.md) ready to paste back, and
+  pieces sit in [`src/resources/`](src/resources/README.md) ready to paste back, and
   `/demos/*` still runs every finished scene.
 - **`final-version`** — the complete site with the real hero and section
   scenes. `git switch final-version` to see it, or
@@ -20,7 +20,7 @@ This repo is the production site with the production overhead removed: no
 hidable-section machinery, no unfinished sections, no dev harnesses, no dead
 code. The live site's repo remains the source of truth for production.
 
-Next.js 16 (App Router) · Tailwind v4 · shadcn/ui · React Three Fiber v10
+Next.js 16 (App Router) · Tailwind v4 · Radix UI · React Three Fiber v10
 alpha (`@react-three/fiber/webgpu`) · drei 11 alpha (patched) · three r185.
 
 ## Install
@@ -34,8 +34,8 @@ pnpm lint
 ```
 
 **pnpm, not npm.** The repo carries pnpm patches for drei and rapier in
-`patches/` (wired up in `pnpm-workspace.yaml`); installing with npm silently
-skips them and the build fails.
+`tooling/patches/` (wired up in `pnpm-workspace.yaml`); installing with npm
+silently skips them and the build fails.
 
 ## Routes
 
@@ -51,16 +51,14 @@ skips them and the build fails.
 
 | Path | What it is |
 | --- | --- |
-| `app/page.tsx` | The `/` route; composes the home sections. |
-| `app/home/sections/<x>/` | One folder per section: its component, plus a `components/` folder for anything only it uses — each section's scene slot lives with it (block-city under overview, flip-grid under why, …). |
-| `app/home/sections/hero/` | The starter hero shell and pyramid scene, plus the time dial kept ready to wire back in. |
-| `app/home/components/` | Shared by home sections only: the section shell, reveal, loading screen (wired out), and `canvas/` (SectionCanvas, the scenes.tsx client boundary, PlaceholderScene, camera rig, studio env). |
-| `app/demos/<x>/` | Each demo page with its own components; the finished heavy scenes live in the section folders that own them. |
-| `resources/` | The finished hero pipeline (`tower-scene/`) and shell, compiling and importable — see `resources/README.md`. Powers `/demos/paris-hero`. |
-| `components/` | True globals: shadcn `ui/`, the brand logo, header, footer, DepthAttachmentSync, LevaPanel. |
-| `lib/content.ts` | Every string on the site. |
-| `lib/time-of-day.ts` | The cyclic sky/palette model shared by the DOM gradient and the 3D lighting. |
-| `vendor/pmndrs-sky` | Vendored `@pmndrs/sky` build (`link:` dep). `pnpm sync:sky` re-copies it from a local sky checkout (`SKY_REPO`); the checked-in `dist/` means fresh clones need nothing. |
+| `src/app/page.tsx` | The `/` route; composes the home sections. |
+| `src/app/home/sections/<x>/` | One folder per section with its component and section-only components. |
+| `src/app/home/components/` | Components shared only by home sections, including the multi-canvas plumbing. |
+| `src/app/demos/<x>/` | Each demo page with its own components. |
+| `src/resources/` | The finished hero pipeline and shell, compiling and importable. See `src/resources/README.md`. |
+| `src/components/` | Site-wide UI, brand, and shared canvas helpers. |
+| `src/lib/` | Site content, utilities, browser gates, and shared models. |
+| `tooling/` | Maintenance scripts, pnpm patches, and the vendored `@pmndrs/sky` build. |
 
 ## The hero
 
@@ -69,12 +67,12 @@ mark, kept to the smallest possible primary canvas. The finished hero (on
 `final-version`, and live at `/demos/paris-hero`) is a full R3F v10 WebGPU
 scene: the tower in a block city, a time-of-day dial driving sun position,
 sky, fog, window emissive, and the star field; the wordmark extruded in-scene
-(`resources/tower-scene/lettering.tsx`) so the tower can occlude it; post as a
-single MRT graph in `resources/tower-scene/fx.tsx` (bloom, AO, sky haze, FSR3
+(`src/resources/tower-scene/lettering.tsx`) so the tower can occlude it; post as a
+single MRT graph in `src/resources/tower-scene/fx.tsx` (bloom, AO, sky haze, FSR3
 as the temporal resolver).
 
 Without WebGPU the hero (and every scene) falls back to static posters —
-`lib/use-webgpu.ts` is the one gate. `?no3d` forces the fallback.
+`src/lib/use-webgpu.ts` is the one gate. `?no3d` forces the fallback.
 
 ## Things that look odd but are load-bearing
 
@@ -86,5 +84,5 @@ Without WebGPU the hero (and every scene) falls back to static posters —
   upstream is stale, not wrong; the patch repoints its imports at the WebGPU
   entry.
 - Multi-canvas: every canvas shares one `WebGPURenderer` (the hero owns it as
-  `id="main"`); `components/depth-attachment-sync.tsx` works around a
+  `id="main"`); `src/components/depth-attachment-sync.tsx` works around a
   three.js multi-canvas depth bug and belongs inside every `<Canvas>`.
