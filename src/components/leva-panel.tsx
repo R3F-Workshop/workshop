@@ -29,7 +29,5 @@ export function LevaPanel({
 
   const show = alwaysOpen || debug;
 
-  return (
-    <Leva hidden={!show} collapsed={!alwaysOpen} titleBar={{ title: "tune" }} />
-  );
+  return <Leva hidden={!show} titleBar={{ title: "tune" }} />;
 }
