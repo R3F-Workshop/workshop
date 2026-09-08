@@ -4,6 +4,7 @@ import { SceneSlot } from "@/app/home/sections/overview/components/scene-slot";
 import { BlockCityCanvas } from "@/app/home/components/canvas/scenes";
 import { FACTS, SECTION_COPY } from "@/lib/content";
 import { Section, SectionTitle, Wrap } from "@/app/home/components/section";
+import { asset } from "@/lib/asset";
 
 export function Overview() {
   return (
@@ -45,7 +46,7 @@ export function Overview() {
                 component rather than the hero's: that one is shaped around the
                 tower it stands in, and leaves a hole in the middle here. */}
             <SceneSlot
-              poster="/concept/city-wide.png"
+              poster={asset("/concept/city-wide.png")}
               alt="Concept frame of the block city at mid distance"
               sizes="(max-width: 768px) 100vw, 50vw"
               className="h-[240px] opacity-85 md:h-[300px] lg:h-[360px]"

@@ -2,6 +2,7 @@
 
 import { Environment } from "@react-three/drei/webgpu";
 import type { ColorRepresentation } from "three";
+import { asset } from "@/lib/asset";
 
 /**
  * Ported from `threejs-conf-pmndrs/src/Lights.tsx`.
@@ -43,7 +44,7 @@ export function Lights({
       {environment && (
         <Environment
           files={["px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"]}
-          path="/hero-demo/sky_81_cubemap_2k/"
+          path={asset("/hero-demo/sky_81_cubemap_2k/")}
           environmentIntensity={0.12}
           blur={0.5}
         />

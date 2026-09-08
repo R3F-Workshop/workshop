@@ -14,6 +14,9 @@ import { ImageResponse } from "next/og";
  * and the gold rather than on distinctive type.
  */
 
+// The static export cannot render on request, so the card is built once at build time.
+export const dynamic = "force-static";
+
 export const alt =
   "Advanced React Three Fiber — a pmndrs workshop. Gobelins, Paris, September 8 and 9, 2026.";
 export const size = { width: 1200, height: 630 };

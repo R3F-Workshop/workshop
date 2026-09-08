@@ -59,6 +59,8 @@ import { useWebGPU } from "@/lib/use-webgpu";
  * `instanceIndex` to place and colour each instance.
  */
 
+//* Tunables and uniforms ======================================================
+
 const COUNT = 32768;
 
 type Uniforms = {
@@ -77,6 +79,21 @@ type Uniforms = {
   dt: UniformNode<"float", number>;
 };
 
+//* GPU build ==================================================================
+
+/**
+ * The creator, run once by `useLocalNodes`. Two passes and a material come
+ * out of it. `init` and `update` write the buffers, `positionNode` and
+ * `colorNode` read them, and all four hold the same `positions` and
+ * `velocities` handles, found in the store by the names `useGPUStorage`
+ * gave them. That is the point: the passes and the material agree on the
+ * data because they share the nodes, not because anything is copied.
+ *
+ * `launch` is a plain JavaScript function that returns a TSL node. Calling
+ * it inside `init` and again inside `update` pastes the same graph into
+ * both kernels. That is how a formula is shared between passes, with a
+ * helper that builds nodes, not a GPU function call.
+ */
 function build({ uniforms, gpuStorage }: CreatorState) {
   const u = uniforms.scope("computePersist") as unknown as Uniforms;
   const positions =
@@ -144,6 +161,17 @@ function build({ uniforms, gpuStorage }: CreatorState) {
   };
 }
 
+//* Scene ======================================================================
+
+/**
+ * The scene. Registers uniforms and buffers, builds the nodes, and drives
+ * the simulation from `useFrame`. Dispatch happens in the frame loop rather
+ * than an effect because `renderer.compute` needs an initialised renderer,
+ * and only the loop guarantees one.
+ *
+ * `floor` and `dt` are uniforms with no Leva dial. They are spread in next
+ * to the controls so the creator finds them in the same scope.
+ */
 function Fountain() {
   const values = useControls("compute · persist", {
     gravity: { value: 9.8, min: 0, max: 30, step: 0.1 },
@@ -208,6 +236,13 @@ function Fountain() {
   );
 }
 
+//* Experience =================================================================
+
+/**
+ * The experience root. Owns the Canvas and the camera, fills whatever box
+ * the shell mounts it in, and returns null without WebGPU because compute
+ * has no WebGL fallback.
+ */
 export function ComputePersist() {
   // No WebGPU, no experience. The shell around this decides what to show instead.
   if (useWebGPU() !== "yes") return null;

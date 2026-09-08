@@ -30,6 +30,8 @@ import {
   viewZToPerspectiveDepth,
 } from "three/tsl";
 
+import { asset } from "@/lib/asset";
+
 import type { TextLayer } from "./fx";
 import { INTRO_COMPLETE, LETTER_CHAIN_START } from "./intro";
 
@@ -39,7 +41,7 @@ import { INTRO_COMPLETE, LETTER_CHAIN_START } from "./intro";
  */
 
 const FONT_REQUEST = {
-  input: { baked: "/hero-demo/Geist-ExtraBold.font.glb" },
+  input: { baked: asset("/hero-demo/Geist-ExtraBold.font.glb") },
   raster: { technique: msdf },
 } as const;
 

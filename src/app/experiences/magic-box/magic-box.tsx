@@ -9,6 +9,7 @@ import * as THREE from "three/webgpu";
 import { CameraRig } from "@/app/home/components/canvas/camera-rig";
 import { TEN_GLYPHS, type TenGlyph } from "@/lib/ten-glyphs";
 import { useWebGPU } from "@/lib/use-webgpu";
+import { asset } from "@/lib/asset";
 
 /**
  * Ten, written six ways — one per face of a portal cube.
@@ -30,7 +31,7 @@ import { useWebGPU } from "@/lib/use-webgpu";
  * why they arrive as raw points instead of a font.
  */
 
-const MODEL = "/models/aobox.glb";
+const MODEL = asset("/models/aobox.glb");
 
 /**
  * One entry per boxGeometry material slot, in three's order: +x, -x, +y, -y,

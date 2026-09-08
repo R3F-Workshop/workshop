@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { ArrowUpRightIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -23,8 +25,9 @@ export function ExploreLink({
   className?: string;
 }) {
   return (
-    <a
+    <Link
       href={href}
+      prefetch={false}
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
@@ -36,6 +39,6 @@ export function ExploreLink({
     >
       {label}
       <ArrowUpRightIcon className="size-3" aria-hidden />
-    </a>
+    </Link>
   );
 }

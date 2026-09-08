@@ -71,6 +71,8 @@ import { useWebGPU } from "@/lib/use-webgpu";
  * to 0..1, and a wave needs to go negative.
  */
 
+//* Tunables and uniforms ======================================================
+
 const SIZE = 256;
 /** The sheet's edge, in world units. */
 const WORLD = 8;
@@ -89,6 +91,20 @@ type Uniforms = {
   crest: UniformNode<"color", Color>;
 };
 
+//* GPU build ==================================================================
+
+/**
+ * The creator, run once by `useLocalNodes`. `step` is a factory: hand it a
+ * source and a destination and it returns a pass that reads one and writes
+ * the other. Calling it twice, with the textures swapped, is the whole
+ * ping-pong. `splash` is a JavaScript boolean read while the kernel is
+ * built, so the drop code is compiled into the first pass and absent from
+ * the second. That is the difference between an `if` and a TSL `If`.
+ *
+ * The material samples texture A with `texture()`, the same node a loaded
+ * image would use. Once a storage texture has been written it is just a
+ * texture, and the rest of the scene need not know how it was made.
+ */
 function build({ uniforms, gpuStorage }: CreatorState) {
   const u = uniforms.scope("computeNeighbors") as unknown as Uniforms;
   const a = gpuStorage.computeNeighborsA as unknown as StorageTexture;
@@ -159,6 +175,14 @@ function build({ uniforms, gpuStorage }: CreatorState) {
   };
 }
 
+//* Scene ======================================================================
+
+/**
+ * The scene. Allocates the two textures, builds the passes, and runs both
+ * every frame. Rain is a CPU decision written into the `drop` uniform, and
+ * the pointer writes the same uniform, so the GPU sees one source of drops
+ * and does not care where they came from.
+ */
 function Sheet() {
   const { rain, ...values } = useControls("compute · neighbors", {
     spread: { value: 3, min: 1, max: 12, step: 0.5 },
@@ -238,6 +262,13 @@ function Sheet() {
   );
 }
 
+//* Experience =================================================================
+
+/**
+ * The experience root. Owns the Canvas and the camera, fills whatever box
+ * the shell mounts it in, and returns null without WebGPU because compute
+ * has no WebGL fallback.
+ */
 export function ComputeNeighbors() {
   // No WebGPU, no experience. The shell around this decides what to show instead.
   if (useWebGPU() !== "yes") return null;

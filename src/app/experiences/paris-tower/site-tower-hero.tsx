@@ -18,6 +18,7 @@ import {
 import { TowerCanvas } from "./tower-canvas";
 import { heroGate } from "@/lib/hero-gate";
 import { useWebGPU } from "@/lib/use-webgpu";
+import { asset } from "@/lib/asset";
 
 /** This canvas's id, which is also the id of the render job r3f registers. */
 const PRIMARY = "main";
@@ -65,7 +66,7 @@ function FallbackPoster() {
         top: "clamp(40px, 7vh, 80px)",
         width: "min(430px, 74vw)",
         height: "min(660px, 64vh)",
-        backgroundImage: "url(/concept/tower-cutout.png)",
+        backgroundImage: `url(${asset("/concept/tower-cutout.png")})`,
         backgroundSize: "contain",
         backgroundPosition: "center bottom",
         backgroundRepeat: "no-repeat",

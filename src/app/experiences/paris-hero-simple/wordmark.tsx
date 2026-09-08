@@ -6,11 +6,12 @@ import { useFrame } from "@react-three/fiber/webgpu";
 import { Text, useFont } from "@pmndrs/glyph/react";
 import type { Text as TextObject } from "@pmndrs/glyph/three";
 import { msdf } from "@pmndrs/glyph/three/msdf";
+import { asset } from "@/lib/asset";
 
 /** The PMNDRS wordmark, threaded through the tower. */
 
 const FONT = {
-  input: { baked: "/hero-demo/Geist-ExtraBold.font.glb" },
+  input: { baked: asset("/hero-demo/Geist-ExtraBold.font.glb") },
   raster: { technique: msdf },
 } as const;
 

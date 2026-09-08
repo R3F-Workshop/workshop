@@ -1,3 +1,5 @@
+import { asset } from "./asset";
+
 /**
  * Every piece of copy on the site, in one place.
  * Lifted from the `renderVals()` block of the original design doc.
@@ -157,28 +159,28 @@ export const PEOPLE: readonly Instructor[] = [
     role: "pmndrs core",
     bio: "Author of React Three Fiber v10 and builds production R3F for a living.",
     github: "https://github.com/DennisSmolek",
-    image: "/instructors/dennis-smolek.jpg",
+    image: asset("/instructors/dennis-smolek.jpg"),
   },
   {
     name: "Kris Baumgartner",
     role: "pmndrs core",
     bio: "Poimandres organizer, Koota author, and maintainer of the ecosystem.",
     github: "https://github.com/krispya",
-    image: "/instructors/kris-baumgartner.png",
+    image: asset("/instructors/kris-baumgartner.png"),
   },
   {
     name: "Faraz Shaikh",
     role: "pmndrs contributor",
     bio: "Senior graphics programmer, technical artist, and maintainer at Poimandres.",
     github: "https://github.com/farazzshaikh",
-    image: "/instructors/faraz-shaikh.jpg",
+    image: asset("/instructors/faraz-shaikh.jpg"),
   },
   {
     name: "Ava Lehner",
     role: "Interactive developer",
     bio: "Former education lobbyist turned creative developer working with Poimandres.",
     github: "https://github.com/avalehner",
-    image: "/instructors/ava-lehner.jpg",
+    image: asset("/instructors/ava-lehner.jpg"),
   },
 ];
 

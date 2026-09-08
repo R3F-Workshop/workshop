@@ -18,12 +18,13 @@ import {
 import { useGLTF } from "@react-three/drei/webgpu";
 import * as TSL from "three/tsl";
 import * as THREE from "three/webgpu";
+import { asset } from "@/lib/asset";
 
 /**
  * Ported from `threejs-conf-pmndrs/src/Tower.tsx`. Vite's `import.meta.env.BASE_URL`
  * becomes a plain public path; the asset lives at `public/hero-demo/`.
  */
-const MODEL_URL = "/hero-demo/free__la_tour_eiffel.glb";
+const MODEL_URL = asset("/hero-demo/free__la_tour_eiffel.glb");
 
 const TOWER_MESHES = ["Object_4", "Object_5", "Object_6"] as const;
 

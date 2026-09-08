@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { CLOSER, REGISTER_URL } from "@/lib/content";
+import { asset } from "@/lib/asset";
 
 /**
  * The closing call to action.
@@ -15,7 +16,7 @@ export function Closer() {
   return (
     <section className="relative overflow-hidden border-t border-border">
       <Image
-        src="/concept/city-far.png"
+        src={asset("/concept/city-far.png")}
         alt=""
         aria-hidden
         fill

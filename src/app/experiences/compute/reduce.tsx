@@ -62,6 +62,8 @@ import { useWebGPU } from "@/lib/use-webgpu";
  * more than the loop it replaced.
  */
 
+//* Tunables and uniforms ======================================================
+
 const COUNT = 65536;
 const BINS = 48;
 /** The line's length, in world units. */
@@ -74,6 +76,19 @@ type Uniforms = {
   tip: UniformNode<"color", Color>;
 };
 
+//* GPU build ==================================================================
+
+/**
+ * The creator, run once by `useLocalNodes`. Four passes come out of it,
+ * meant to run in order every frame: `clear` zeroes the bins, `move`
+ * wanders the points, `count` bins them with atomics, and `scale` copies
+ * the counts into a float buffer the bars can read. The order matters and
+ * it is the caller's job. A creator returns passes, it does not run them.
+ *
+ * Two materials read the result. `pointNode` places a sprite from the
+ * positions buffer. `barNode` and `barColor` size and tint a bar from the
+ * heights buffer, the float copy, because the atomic buffer is compute only.
+ */
 function build({ uniforms, gpuStorage }: CreatorState) {
   const u = uniforms.scope("computeReduce") as unknown as Uniforms;
   const positions =
@@ -131,6 +146,15 @@ function build({ uniforms, gpuStorage }: CreatorState) {
   };
 }
 
+//* Scene ======================================================================
+
+/**
+ * The scene. Registers uniforms and the three buffers, builds the passes,
+ * dispatches them in order, and keeps one readback in flight. The readback
+ * is the demo's second half. `getArrayBufferAsync` returns a promise, the
+ * loop must never wait on it, so the next request only goes out after the
+ * last one has answered and the frame count between them is the latency.
+ */
 function Line({ onReport }: { onReport: (line: string) => void }) {
   const values = useControls("compute · reduce", {
     drift: { value: 0.6, min: 0, max: 3, step: 0.05 },
@@ -205,6 +229,17 @@ function Line({ onReport }: { onReport: (line: string) => void }) {
   );
 }
 
+//* Experience =================================================================
+
+/**
+ * The experience root. Owns the Canvas and the camera, fills whatever box
+ * the shell mounts it in, and returns null without WebGPU because compute
+ * has no WebGL fallback.
+ *
+ * The report state lives here, above the Canvas, because the text that
+ * shows it and the component that writes it are on opposite sides of
+ * the Canvas boundary.
+ */
 export function ComputeReduce() {
   const [report, setReport] = useState("waiting for the first readback");
 
