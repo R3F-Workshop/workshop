@@ -5,7 +5,6 @@ import { folder, useControls } from "leva";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three/webgpu";
 
-import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 import { useWebGPU } from "@/lib/use-webgpu";
 
 /**
@@ -192,7 +191,7 @@ function Scene({ config }: { config: TakehomeGridConfig }) {
     viewport.height,
   ]);
 
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     clock.current += Math.min(delta, MAX_DT);
 
     const { stagger, turn, hold, close, overshoot } = config;
@@ -322,13 +321,9 @@ export function TakehomeGrid() {
         // here needs a parallel projection, the tiles sit on one plane.
         camera={{ position: [0, 0, 6], fov: 35 }}
         dpr={[1, 2]}
-        // Odd or fractional drawing buffers desync the depth attachment from
-        // the swap chain, see DepthAttachmentSync.
-        forceEven
         renderer={{ alpha: false, antialias: true }}
         style={{ pointerEvents: "none" }}
       >
-        <DepthAttachmentSync />
         <color attach="background" args={["#08080a"]} />
         {/* Remounting on a grid-size change is deliberate: the label textures
             are built per tile, and rebuilding the rank is simpler to reason

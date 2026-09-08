@@ -13,7 +13,6 @@ import { useEffect, useRef, useState } from "react";
 import { mix, positionLocal, sin } from "three/tsl";
 import type { Color, Mesh, UniformNode } from "three/webgpu";
 
-import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 import { useWebGPU } from "@/lib/use-webgpu";
 
 /**
@@ -58,7 +57,7 @@ function Dials() {
   const u = useUniforms({ ...values, pulse: 0 }, "hooksCanvases") as unknown as Shared;
 
   const t = useRef(0);
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     t.current += delta;
     u.pulse.value = Math.sin(t.current * rate) * 0.5 + 0.5;
   });
@@ -77,7 +76,7 @@ function build({ uniforms }: CreatorState) {
 
 function Spinning({ children }: { children: React.ReactNode }) {
   const ref = useRef<Mesh>(null);
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     if (!ref.current) return;
     ref.current.rotation.x += delta * 0.25;
     ref.current.rotation.y += delta * 0.4;
@@ -147,10 +146,8 @@ export function HooksCanvases() {
           id={PRIMARY}
           camera={{ position: [0, 0, 6], fov: 35 }}
           dpr={[1, 2]}
-          forceEven
           renderer={{ alpha: false, antialias: true }}
         >
-          <DepthAttachmentSync />
           <color attach="background" args={["#08080a"]} />
           <Lights />
           <Dials />
@@ -162,7 +159,6 @@ export function HooksCanvases() {
           <Canvas
             camera={{ position: [0, 0, 6], fov: 35 }}
             dpr={[1, 2]}
-            forceEven
             renderer={{
               alpha: false,
               antialias: true,
@@ -171,7 +167,6 @@ export function HooksCanvases() {
               scheduler: { after: PRIMARY },
             }}
           >
-            <DepthAttachmentSync />
             <color attach="background" args={["#0c0c10"]} />
             <Lights />
             <Right />

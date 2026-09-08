@@ -3,7 +3,7 @@
 /**
  * The finished site's scene layer, kept for reference. Not wired into the site.
  *
- * This is what the scene layer in app/home/sections/hero/hero.tsx becomes once the real
+ * This is what the scene layer in src/app/home/sections/hero/hero.tsx becomes once the real
  * scene goes in: TowerCanvas mounted as the primary canvas (id "main") with
  * the loading gate and a poster fallback. site-hero.tsx mounts it.
  */
@@ -11,7 +11,6 @@
 import { useEffect } from "react";
 import { useFrame } from "@react-three/fiber/webgpu";
 
-import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 import {
   PARIS_ATMOSPHERE_DEFAULTS,
   PARIS_HOMEPAGE_CITY_DEFAULTS,
@@ -159,7 +158,6 @@ export function TowerHero({
       // 3D framing, so the hero still shows a tower.
       fallback={<FallbackPoster />}
     >
-      <DepthAttachmentSync />
     </TowerCanvas>
   );
 }

@@ -13,30 +13,30 @@ export const metadata: Metadata = {
 const DEMOS = [
   {
     href: "/demos/vanilla-pyramid",
-    title: "The pyramid, by hand",
+    title: "The starter: a pyramid in vanilla three.js",
     blurb:
-      "The starter's spinning pyramid in vanilla three.js: renderer, scene, camera, loop, resize, and the raycaster ceremony for hover and click. The forty lines one prop replaces.",
+      "Where the workshop starts. The spinning pyramid by hand: renderer, scene, camera, loop, resize, and the raycaster ceremony for hover and click. The forty lines one prop replaces.",
     tags: ["vanilla three.js", "WebGPURenderer", "Raycaster"],
   },
   {
     href: "/demos/paris-hero-r3f",
-    title: "Paris hero, R3F",
+    title: "The build: Paris hero in R3F, from a blank canvas",
     blurb:
-      "The hero rebuilt in React Three Fiber during the workshop. Starts as a transparent canvas and two lights.",
+      "Where the R3F version starts. A transparent canvas and two lights, built up live on day one toward the simple hero below.",
     tags: ["R3F v10", "built live"],
   },
   {
     href: "/demos/hero-simple",
-    title: "Paris hero, the simple version",
+    title: "The target: Paris hero, the simple version",
     blurb:
-      "The target for the day one build: the tower over an instanced city under a physical sky driven by one number, a wordmark in the scene, and one bloom pass. About seven hundred lines, one file per beat.",
+      "Where day one ends. The tower over an instanced city under a physical sky driven by one number, a wordmark in the scene, and one bloom pass. About seven hundred lines, one file per beat.",
     tags: ["@pmndrs/sky", "instancing", "one bloom pass"],
   },
   {
     href: "/demos/paris-hero",
-    title: "Paris hero",
+    title: "The reference: Paris hero, the full version",
     blurb:
-      "The site's hero on its own: the tower over a generated Paris under a physical @pmndrs/sky atmosphere, FSR3 reconstruction, bloom, and a height fog that samples the sky for its color. Every knob live.",
+      "Where it can go. The production hero: the tower over a generated Paris under a physical @pmndrs/sky atmosphere, FSR3 reconstruction, bloom, and a height fog that samples the sky for its colour. About six thousand lines, every knob live. Not built in the workshop.",
     tags: ["FSR3", "@pmndrs/sky", "MRT post pipeline"],
   },
   {
@@ -50,8 +50,8 @@ const DEMOS = [
     href: "/demos/tsl-hooks/uniform",
     title: "TSL hooks, one at a time",
     blurb:
-      "Four small scenes, one idea each: a uniform, a scope of uniforms shared by several components, a node graph shared the same way, and a second canvas borrowing the first's renderer and store. The path to the grain gradient and the flip grid.",
-    tags: ["useUniforms", "useNodes", "useLocalNodes", "primaryCanvas"],
+      "Seven small scenes, one idea each: a uniform, a scope of uniforms shared by several components, a node graph shared the same way, a second canvas borrowing the first's renderer and store, a CPU buffer drawn as instances, the texture registry with a render target in it, and a storage texture written by compute. The path to the grain gradient and the flip grid.",
+    tags: ["useUniforms", "useNodes", "useBuffers", "useTextures", "useGPUStorage"],
   },
   {
     href: "/demos/grain-gradient",
@@ -61,18 +61,18 @@ const DEMOS = [
     tags: ["TSL", "static grain", "tunable"],
   },
   {
-    href: "/demos/flip-grid/meshes",
-    title: "The flip grid, built up",
-    blurb:
-      "The same grid four times, each one step further from the CPU: one mesh per tile, then one instanced mesh, then the angle in a storage buffer the vertex stage reads, and finally the integrator in a compute pass. The loop never changes; where it runs does.",
-    tags: ["compute, step by step", "InstancedMesh", "storage buffer"],
-  },
-  {
     href: "/demos/flip-grid",
     title: "A grid that flips to gold",
     blurb:
       "Tiles that flip as the cursor sweeps them and hold the pose before falling back. Angle, velocity and hold timer live in a storage buffer a compute pass integrates — the CPU writes five floats a frame however many tiles there are.",
     tags: ["compute shader", "storage buffer", "TSL struct"],
+  },
+  {
+    href: "/demos/compute/parallel",
+    title: "Compute, one reason at a time",
+    blurb:
+      "Six standalone scenes, each the smallest thing that needs a compute pass: a million points built with no loop, a fountain whose state the CPU never sees, a grid that remembers the cursor, a wave where texels read their neighbours, a histogram summed with atomics and read back late, and a terrain baked once and sampled by everything on it. The flip grid, taken apart.",
+    tags: ["renderer.compute", "instancedArray", "StorageTexture", "atomics", "readback"],
   },
   {
     href: "/demos/connectors",
@@ -113,7 +113,7 @@ const DEMOS = [
 
 export default function DemosPage() {
   return (
-    <main className="mx-auto max-w-[900px] px-5 py-16 sm:px-8 md:py-24">
+    <main className="mx-auto max-w-[900px] px-5 pt-28 pb-16 sm:px-8 md:pt-36 md:pb-24">
       <div className="font-mono text-[11px] tracking-[0.13em] text-faint uppercase">
         Demos
       </div>

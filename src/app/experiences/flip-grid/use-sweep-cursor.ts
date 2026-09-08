@@ -8,8 +8,8 @@ export const AWAY = 1e6;
 /**
  * The cursor, in scene units, measured against an element's bounds.
  *
- * Every version of the flip grid reads the cursor the same way, so this is
- * the one piece they all share. It hands back two refs rather than state:
+ * Kept out of the grid so the grid can be about the simulation. It hands
+ * back two refs rather than state:
  * the frame loop reads them, and nothing should re-render when the mouse
  * moves.
  *

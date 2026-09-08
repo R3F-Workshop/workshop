@@ -17,7 +17,7 @@ import type { Mesh } from "three";
 export function PlaceholderScene({ scale = 1 }: { scale?: number }) {
   const ref = useRef<Mesh>(null);
 
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     if (!ref.current) return;
     ref.current.rotation.x += delta * 0.25;
     ref.current.rotation.y += delta * 0.4;

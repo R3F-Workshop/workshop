@@ -10,7 +10,7 @@ import { SectionCanvas } from "@/app/home/components/canvas/section-canvas";
  * through.
  *
  * Starter: renders the placeholder. The finished experience is
- * `app/experiences/takehome-grid` (still fully working at /demos/takehome-grid).
+ * `src/app/experiences/takehome-grid` (still fully working at /demos/takehome-grid).
  * Replace this component's body with `<TakehomeGrid />` to bring it back.
  */
 export function TakehomeGridCanvas({

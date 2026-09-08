@@ -8,7 +8,7 @@ import type { Mesh } from "three";
 export function Pyramid(props: ThreeElements["group"]) {
   const ref = useRef<Mesh>(null);
 
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     if (ref.current) ref.current.rotation.y += delta * 0.5;
   });
 

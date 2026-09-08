@@ -6,7 +6,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three/webgpu";
 
 import { createStudioEnvironment, type StudioOptions } from "@/app/home/components/canvas/studio-env";
-import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 import { useWebGPU } from "@/lib/use-webgpu";
 
 /**
@@ -118,7 +117,7 @@ function Scene({ onStage }: { onStage: (index: number) => void }) {
   const plain = useMemo(() => new THREE.Color("#8a8a93"), []);
   const metal = useMemo(() => new THREE.Color("#c9a862"), []);
 
-  useFrame((state, delta) => {
+  useFrame(({ scene, delta }) => {
     clock.current += Math.min(delta, MAX_DT);
 
     const span = STAGES.length * STAGE_SECONDS;
@@ -167,7 +166,7 @@ function Scene({ onStage }: { onStage: (index: number) => void }) {
 
     // Mutated straight on the scene rather than through `EnvironmentMap`'s
     // prop, which would mean a React render per frame.
-    state.scene.environmentIntensity = 1.15 * envAmt;
+    scene.environmentIntensity = 1.15 * envAmt;
 
     const line = edges.current as
       (THREE.Object3D & { material?: THREE.Material }) | null;
@@ -239,9 +238,6 @@ export function BlendingCube() {
       <Canvas
         camera={{ position: [3.9, 2.7, 4.8], fov: 30 }}
         dpr={[1, 2]}
-        // Odd or fractional drawing buffers desync the depth attachment from
-        // the swap chain, see DepthAttachmentSync.
-        forceEven
         renderer={{
           alpha: false,
           antialias: true,
@@ -252,7 +248,6 @@ export function BlendingCube() {
         }}
         style={{ pointerEvents: "none" }}
       >
-        <DepthAttachmentSync />
         <color attach="background" args={["#08080a"]} />
         <Scene onStage={setStage} />
       </Canvas>

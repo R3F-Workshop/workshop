@@ -435,7 +435,6 @@ export function TowerCanvas({
         ...(maxFps ? { scheduler: { fps: maxFps } } : {}),
       }}
       dpr={dpr}
-      forceEven
       style={canvasStyle}
       fallback={fallback}
       // The Camera component owns the default camera and clip planes.

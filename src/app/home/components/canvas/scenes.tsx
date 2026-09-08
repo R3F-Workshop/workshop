@@ -9,7 +9,7 @@ import dynamic from "next/dynamic";
  * cannot appear anywhere in the server render graph — importing a scene
  * directly from a section breaks the build. Sections import from here instead;
  * this module only pulls in `next/dynamic`, and the scenes load client-side.
- * (Each experience carries its own boundary in `app/experiences/<slug>/index.ts`.)
+ * (Each experience carries its own boundary in `src/app/experiences/<slug>/index.ts`.)
  *
  * It also keeps three.js out of the initial route bundle.
  */

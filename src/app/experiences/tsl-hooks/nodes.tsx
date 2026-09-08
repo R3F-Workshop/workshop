@@ -13,7 +13,6 @@ import { useRef } from "react";
 import { cos, Fn, positionLocal, sin, time, uv, vec3 } from "three/tsl";
 import type { Mesh, Node, UniformNode } from "three/webgpu";
 
-import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 import { useWebGPU } from "@/lib/use-webgpu";
 
 /**
@@ -121,7 +120,7 @@ function sheetBuild({ nodes }: CreatorState) {
 function Bars() {
   const nodes = useLocalNodes(barsBuild);
   const ref = useRef<Mesh>(null);
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     if (ref.current) ref.current.rotation.y += delta * 0.3;
   });
   return (
@@ -161,10 +160,8 @@ export function HooksNodes() {
       <Canvas
         camera={{ position: [0, 0, 8], fov: 35 }}
         dpr={[1, 2]}
-        forceEven
         renderer={{ alpha: false, antialias: true }}
       >
-        <DepthAttachmentSync />
         <color attach="background" args={["#08080a"]} />
         <ambientLight intensity={0.6} color="#b8c4ee" />
         <directionalLight position={[4, 6, 3]} intensity={2} color="#fff4e0" />

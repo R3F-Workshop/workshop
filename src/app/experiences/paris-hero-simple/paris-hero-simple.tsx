@@ -4,7 +4,6 @@ import { Canvas } from "@react-three/fiber/webgpu";
 import { useControls } from "leva";
 import { Suspense } from "react";
 
-import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 import { useWebGPU } from "@/lib/use-webgpu";
 import { Content } from "./content";
 import { PostFx } from "./post-fx";
@@ -68,15 +67,11 @@ export function ParisHeroSimple() {
         id="main"
         shadows
         dpr={[1, 2]}
-        // Odd or fractional drawing buffers desync the depth attachment from
-        // the swap chain, see DepthAttachmentSync.
-        forceEven
         camera={{ fov: 30, near: 1, far: 3000, position: [0, 23, 168] }}
         renderer={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
         // Drag rotates. A one finger touch still scrolls the page.
         style={{ touchAction: "pan-y" }}
       >
-        <DepthAttachmentSync />
 
         <Suspense fallback={<Pyramid position={[0, 12, 0]} scale={11} />}>
           <Stage hour={hour} autoRotate={autoRotate} beacon={beacon} />

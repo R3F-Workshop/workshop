@@ -5,14 +5,12 @@ import {
   useFrame,
   useLocalNodes,
   useUniforms,
-  type CreatorState,
 } from "@react-three/fiber/webgpu";
 import { useControls } from "leva";
 import { useRef } from "react";
 import { mix, positionLocal, sin, time } from "three/tsl";
 import type { Color, Mesh, UniformNode } from "three/webgpu";
 
-import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 import { useWebGPU } from "@/lib/use-webgpu";
 
 /**
@@ -29,10 +27,17 @@ import { useWebGPU } from "@/lib/use-webgpu";
  *    uniform per key. Hex strings become Colors. On every render it compares
  *    and writes the values, so a slider drag changes a number on the GPU and
  *    never touches the graph.
- *  - `useLocalNodes(build)` runs a builder that reads the scope back out of
- *    the store and returns nodes for the material. The builder is a module
- *    level function with no closure, which is what lets the hook build it
- *    once and keep it.
+ *  - `useLocalNodes(builder)` runs a builder with the whole root state,
+ *    `uniforms`, `nodes`, `buffers`, `gpuStorage`, `camera` and the rest,
+ *    and returns whatever the builder returns. Here that is one node for the
+ *    material, built from the scope the line above just filled.
+ *
+ * The builder is written inline, which is the natural first shape and the
+ * one to read. It has a cost worth knowing: `useLocalNodes` memoises on the
+ * builder's identity, and an inline arrow is a new function every render,
+ * so this component rebuilds its graph on every slider tick. The material
+ * does not recompile, three keys it by structure, so for one mesh nobody
+ * notices. The next demo hoists the builder and says when that matters.
  *
  * `time` is a TSL built in, so the bands drift with no CPU work per frame.
  * The rotation is ordinary `useFrame` on the mesh, which is where CPU
@@ -51,15 +56,6 @@ type Uniforms = {
   speed: UniformNode<"float", number>;
 };
 
-function build({ uniforms }: CreatorState) {
-  const u = uniforms.scope("hooksUniform") as unknown as Uniforms;
-  // A sine along local y, sliding with time, mapped to 0..1.
-  const band = sin(positionLocal.y.mul(u.bands).add(time.mul(u.speed)))
-    .mul(0.5)
-    .add(0.5);
-  return { colorNode: mix(u.base, u.tip, band) };
-}
-
 function Knot() {
   // Namespaced, because Leva's store is global and every demo shares it.
   const params = useControls("tsl hooks · uniform", {
@@ -72,10 +68,20 @@ function Knot() {
   // The Leva object goes in as it is. The keys are the uniform names.
   useUniforms(params, "hooksUniform");
 
-  const { colorNode } = useLocalNodes(build);
+  // The store is filled synchronously by the line above, so the builder
+  // never sees a missing uniform. The cast restores the types the store
+  // drops.
+  const { colorNode } = useLocalNodes(({ uniforms }) => {
+    const u = uniforms.scope("hooksUniform") as unknown as Uniforms;
+    // A sine along local y, sliding with time, mapped to 0..1.
+    const band = sin(positionLocal.y.mul(u.bands).add(time.mul(u.speed)))
+      .mul(0.5)
+      .add(0.5);
+    return { colorNode: mix(u.base, u.tip, band) };
+  });
 
   const ref = useRef<Mesh>(null);
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     if (!ref.current) return;
     ref.current.rotation.x += delta * 0.25;
     ref.current.rotation.y += delta * 0.4;
@@ -102,10 +108,8 @@ export function HooksUniform() {
       <Canvas
         camera={{ position: [0, 0, 6], fov: 35 }}
         dpr={[1, 2]}
-        forceEven
         renderer={{ alpha: false, antialias: true }}
       >
-        <DepthAttachmentSync />
         <color attach="background" args={["#08080a"]} />
         <ambientLight intensity={0.5} color="#b8c4ee" />
         <directionalLight position={[4, 6, 3]} intensity={2} color="#ffd9a0" />

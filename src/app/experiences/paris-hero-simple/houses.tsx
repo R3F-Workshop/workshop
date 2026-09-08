@@ -4,7 +4,7 @@ import { createInstances, useSurfaceSampler } from "@react-three/drei/webgpu";
 import { useMemo, useRef } from "react";
 import * as THREE from "three/webgpu";
 
-import { makeRng } from "./scatter";
+import { groundRing, makeRng, samplePositions } from "./scatter";
 
 /**
  * The same shape as `Trees` with a box instead of a ball and a height that
@@ -51,11 +51,7 @@ function SampledHouses({
 }) {
   // drei types the sampler ref as non null. The mesh is attached before the layout effect that reads it.
   const ground = useRef<THREE.Mesh>(null!);
-  const ring = useMemo(
-    () =>
-      new THREE.RingGeometry(clearing, radius, 64, 16).rotateX(-Math.PI / 2),
-    [clearing, radius],
-  );
+  const ring = useMemo(() => groundRing(clearing, radius), [clearing, radius]);
   // Unit box lifted onto its base, so scale y is the full height.
   const block = useMemo(
     () => new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0),
@@ -68,14 +64,12 @@ function SampledHouses({
     const random = makeRng(seed);
     const cream = new THREE.Color("#d8cfbf");
     const slate = new THREE.Color("#8d8a84");
-    const m = samples.array as Float32Array;
-    return Array.from({ length: count }, (_, i) => {
-      const x = m[i * 16 + 12];
-      const z = m[i * 16 + 14];
+    return samplePositions(samples, count).map((position) => {
+      const [x, , z] = position;
       // Taller toward the edge, so the near ring stays low and the skyline rises behind it.
       const distance = Math.hypot(x, z) / radius;
       return {
-        position: [x, m[i * 16 + 13], z] as [number, number, number],
+        position,
         width: THREE.MathUtils.lerp(2.5, 5, random()),
         height: 2.5 + random() ** 1.6 * 9 * (0.5 + distance),
         depth: THREE.MathUtils.lerp(2.5, 5, random()),

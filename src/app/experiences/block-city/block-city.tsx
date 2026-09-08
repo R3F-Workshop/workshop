@@ -5,7 +5,6 @@ import { folder, useControls } from "leva";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three/webgpu";
 
-import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 import { useWebGPU } from "@/lib/use-webgpu";
 
 /**
@@ -305,7 +304,7 @@ function Scene({ config }: { config: BlockCityConfig }) {
   const texture = useMemo(() => makeWindowTexture(), []);
   useEffect(() => () => texture.dispose(), [texture]);
 
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     clock.current += Math.min(delta, MAX_DT);
     if (group.current) {
       group.current.rotation.y =
@@ -395,13 +394,9 @@ export function BlockCity() {
         // recede behind them, and it reads as a skyline.
         camera={{ position: [0, 8.5, 66], fov: 26 }}
         dpr={[1, 2]}
-        // Odd or fractional drawing buffers desync the depth attachment from
-        // the swap chain, see DepthAttachmentSync.
-        forceEven
         renderer={{ alpha: false, antialias: true }}
         style={{ pointerEvents: "none" }}
       >
-        <DepthAttachmentSync />
         <color attach="background" args={["#0a0c14"]} />
         {/* Remounting on a layout change is deliberate: the block set is
             generated once and the instance buffers are sized to it. */}

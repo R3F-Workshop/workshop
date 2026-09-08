@@ -3,7 +3,7 @@ import { Fragment, type ReactNode } from "react";
 /**
  * Wraps phrases inside a plain string.
  *
- * `lib/content.ts` keeps every string on the site as a string, so copy can be
+ * `src/lib/content.ts` keeps every string on the site as a string, so copy can be
  * edited without touching JSX. When a sentence needs a link or a bold word,
  * the section names the phrase and these find it and wrap it.
  */

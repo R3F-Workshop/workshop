@@ -37,7 +37,7 @@ export type Shape = {
 /**
  * The pmndrs mark, as a 3×3 grid of cubes.
  *
- * Read off `components/brand/logo.tsx`: in that 800-unit viewBox the squares are
+ * Read off `src/components/brand/logo.tsx`: in that 800-unit viewBox the squares are
  * 240 wide on a 280 pitch, at columns 0/280/560 and the same rows. Six cells are
  * filled — the three `<rect>`s, plus the three the `<path>` traces as a single
  * polygon. Normalising by the pitch puts the cells on integer coordinates and

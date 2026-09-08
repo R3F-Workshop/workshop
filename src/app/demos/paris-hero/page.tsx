@@ -7,7 +7,7 @@ import { InfoDialog, InfoSection } from "@/app/demos/components/info-dialog";
 import { ParisTower } from "@/app/experiences/paris-tower";
 
 export const metadata: Metadata = {
-  title: "Paris hero — R3F v10 demo",
+  title: "The reference: Paris hero, the full version — R3F v10 demo",
   description:
     "The site's hero scene on its own: the Eiffel Tower over a generated Paris, a physical @pmndrs/sky atmosphere, FSR3 upscaling, bloom, and sky-sampled height fog — every knob live.",
   robots: { index: false, follow: false },
@@ -26,7 +26,7 @@ export default function ParisHeroDemoPage() {
           Demo · made with R3F v10
         </div>
         <h1 className="mt-1.5 text-[22px] leading-[1.15] font-semibold tracking-[-0.03em] text-white sm:text-[26px]">
-          Paris hero
+          The reference: Paris hero, the full version
         </h1>
         <p className="mt-1.5 text-[13.5px] leading-[1.5] text-white/60">
           The hero scene with every dial exposed. First load compiles the

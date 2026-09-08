@@ -41,7 +41,6 @@ import {
 } from "three/webgpu";
 
 import type { EnvPreset } from "@/app/home/components/canvas/studio-env";
-import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 import { useWebGPU } from "@/lib/use-webgpu";
 
 import { Environment } from "./environment";
@@ -57,10 +56,10 @@ import { AWAY, useSweepCursor } from "./use-sweep-cursor";
  * box and it fills it. The root element is also what the cursor is measured
  * against.
  *
- * This is the last of four versions. The three before it live in `steps/`,
- * and each moves one thing: meshes to instances, the state onto the GPU, and
- * finally the integrator into a compute pass. Read them in order and this
- * file is the destination. The gold itself is in `tile-surface.ts` so that
+ * This is the payoff of the compute lesson. Every piece of it is taught on
+ * its own under `src/app/experiences/compute/`: the persistent buffer, the
+ * cursor as a uniform, the hashed per instance variation, the swept segment.
+ * Here they are together. The gold itself is in `tile-surface.ts` so that
  * this file can be about the simulation.
  *
  * The whole simulation lives on the GPU. A storage buffer holds one `Tile`
@@ -287,9 +286,8 @@ function Scene({
       /**
        * The integrator. One invocation per tile, every frame, on the GPU.
        *
-       * Read this against the `useFrame` loop in `steps/03-storage.tsx`: it
-       * is the same maths line for line, with `state.angle[i]` become
-       * `tile.get("angle")` and `i` become `instanceIndex`.
+       * The same integrator as the persist demo's fountain, with a spring in
+       * place of gravity and a struct in place of two buffers.
        */
       const update = Fn(() => {
         const tile = tiles.element(instanceIndex);
@@ -360,7 +358,7 @@ function Scene({
   const { pointer, warped } = useSweepCursor(bounds);
   const cursorLight = useRef<PointLight>(null);
 
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     // The largest timestep the spring integrator is allowed to see. A
     // backgrounded tab or a long frame hitch would otherwise hand it a delta
     // big enough to explode a semi-implicit Euler step.
@@ -534,9 +532,6 @@ export function FlipGrid() {
         orthographic
         camera={{ position: [0, 0, 10], zoom: 1 }}
         dpr={[1, 2]}
-        // Odd/fractional drawing buffers desync the depth attachment from the
-        // swap chain, see DepthAttachmentSync.
-        forceEven
         renderer={{
           alpha: true,
           antialias: true,
@@ -548,7 +543,6 @@ export function FlipGrid() {
         }}
         style={{ pointerEvents: "none" }}
       >
-        <DepthAttachmentSync />
         <Environment
           preset={config.envPreset}
           ground={config.ground}

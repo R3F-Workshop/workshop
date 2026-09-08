@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
  *   </RevealGroup>
  *
  * The hidden state lives in CSS behind `@media (scripting: enabled)`, so markup
- * still renders visible when scripting is off. See `app/globals.css`.
+ * still renders visible when scripting is off. See `src/app/globals.css`.
  */
 
 const OPTIONS: IntersectionObserverInit = {

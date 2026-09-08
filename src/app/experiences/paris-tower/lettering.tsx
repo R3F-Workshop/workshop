@@ -9,7 +9,7 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
-import { Billboard } from "@react-three/drei";
+import { Billboard } from "@react-three/drei/webgpu";
 import { createPortal, useFrame, useThree } from "@react-three/fiber/webgpu";
 import { Text, TextGroup, useFont } from "@pmndrs/glyph/react";
 import { defineTextMaterial } from "@pmndrs/glyph/three";
@@ -345,7 +345,7 @@ function usePointerKnock(
     eye: new THREE.Vector3(),
   }));
 
-  useFrame(({ camera }, frameDelta) => {
+  useFrame(({ camera, delta: frameDelta }) => {
     const wobbleGroups = groups.current;
     const step = Math.min(frameDelta, MAX_STEP);
     const view = camera as THREE.PerspectiveCamera;
@@ -598,7 +598,7 @@ function AnimatedLetter({
    * 2. Only `applyPose` and this frame step write the transform.
    * 3. A settled pose is held unless the clock rewinds or its target changes.
    */
-  useFrame((_, frameDelta) => {
+  useFrame(({ delta: frameDelta }) => {
     const object = group.current;
     if (!object) return;
     const current = pose.current;

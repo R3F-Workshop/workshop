@@ -8,7 +8,7 @@ import { MathUtils } from "three/webgpu";
 export function AutoRotate({ speed = 1 }: { speed?: number }) {
   const controls = useThree((state) => state.controls) as CameraControlsImpl | null;
 
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     if (!controls || speed === 0) return;
     controls.rotate(MathUtils.degToRad(speed) * delta, 0, false);
   });

@@ -2,7 +2,7 @@
  * Content for the gated attendee guide at /attendees/<code>.
  *
  * Sourced from Notion — see the @notion tags per block. This is a build-time
- * copy, same model as `lib/content.ts`; re-pull by hand when Notion changes.
+ * copy, same model as `src/lib/content.ts`; re-pull by hand when Notion changes.
  */
 
 /**

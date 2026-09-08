@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Billboard } from "@react-three/drei";
+import { Billboard } from "@react-three/drei/webgpu";
 import { useFrame } from "@react-three/fiber/webgpu";
 import { Text, useFont } from "@pmndrs/glyph/react";
 import type { Text as TextObject } from "@pmndrs/glyph/three";

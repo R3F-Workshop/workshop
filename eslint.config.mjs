@@ -15,7 +15,7 @@ const eslintConfig = defineConfig([
     // Archived copy of the original static port — kept for reference, not built.
     "reference/**",
     // Build output copied in by `pnpm sync:sky` — not ours to lint.
-    "vendor/**",
+    "tooling/vendor/**",
     // Agent worktrees, each a full checkout with its own node_modules. Linting
     // them buried the real output under ~18k findings.
     ".claude/**",
@@ -30,16 +30,15 @@ const eslintConfig = defineConfig([
     //
     // The scene folders are the same story one level up: TSL uniforms are
     // mutable handles you write to from `useFrame`, which is the entire point
-    // of a uniform. Every scene lives under app/experiences, and the section
+    // of a uniform. Every scene lives under src/app/experiences, and the section
     // shells and canvas helpers around them mutate the same handles.
     files: [
-      "app/home/sections/hero/**/*.tsx",
-      "app/home/sections/*/components/**/*.tsx",
-      "app/experiences/**/*.tsx",
-      "app/home/components/canvas/**/*.tsx",
-      "app/demos/components/webgpu-gate.tsx",
-      "components/depth-attachment-sync.tsx",
-      "components/leva-panel.tsx",
+      "src/app/home/sections/hero/**/*.tsx",
+      "src/app/home/sections/*/components/**/*.tsx",
+      "src/app/experiences/**/*.tsx",
+      "src/app/home/components/canvas/**/*.tsx",
+      "src/app/demos/components/webgpu-gate.tsx",
+      "src/components/leva-panel.tsx",
     ],
     rules: {
       "react-hooks/immutability": "off",
@@ -49,7 +48,7 @@ const eslintConfig = defineConfig([
   {
     // Vendored verbatim from three.js / Faraz's demo so it stays diffable
     // against upstream. Not ours to lint.
-    files: ["app/experiences/paris-tower/ssao-node.js"],
+    files: ["src/app/experiences/paris-tower/ssao-node.js"],
     rules: {
       "@typescript-eslint/no-unused-vars": "off",
       "prefer-const": "off",

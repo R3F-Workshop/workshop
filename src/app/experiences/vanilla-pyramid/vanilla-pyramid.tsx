@@ -7,8 +7,9 @@ import { mountPyramid } from "./pyramid";
 
 /**
  * The starter's pyramid in vanilla three.js. All of the three.js lives in
- * `pyramid.ts`. React owns the canvas and one effect mounts the scene into it
- * and disposes the three.js resources on unmount.
+ * `pyramid.ts`. React owns the canvas element, the same one `<Canvas>` would
+ * make for you, and one effect mounts the scene into it and disposes the
+ * three.js resources on unmount.
  *
  * Editing `pyramid.ts` does not hot reload. Refresh the page.
  */

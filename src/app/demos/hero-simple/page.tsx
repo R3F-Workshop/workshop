@@ -7,7 +7,7 @@ import { ParisHeroSimple } from "@/app/experiences/paris-hero-simple";
 import { skyGradient, todAt } from "@/lib/time-of-day";
 
 export const metadata: Metadata = {
-  title: "Paris hero, the simple version — R3F v10 demo",
+  title: "The target: Paris hero, the simple version — R3F v10 demo",
   description:
     "The workshop's hero as it is built during the day: the tower over an instanced city under a physical sky, a wordmark in the scene, and one bloom pass. About seven hundred lines.",
   robots: { index: false, follow: false },
@@ -26,7 +26,7 @@ export default function HeroSimpleDemoPage() {
           Demo · made with R3F v10
         </div>
         <h1 className="mt-1.5 text-[22px] leading-[1.15] font-semibold tracking-[-0.03em] text-white sm:text-[26px]">
-          Paris hero, the simple version
+          The target: Paris hero, the simple version
         </h1>
         <p className="mt-1.5 text-[13.5px] leading-[1.5] text-white/60">
           The hero you build on day one. Drag to orbit; the first load compiles
@@ -37,7 +37,7 @@ export default function HeroSimpleDemoPage() {
       <InfoDialog title="The simple hero" subtitle="WebGPU · @pmndrs/sky · one bloom pass">
         <InfoSection heading="What it is">
           <p>
-            Every file under <code>app/experiences/paris-hero-simple/</code> is
+            Every file under <code>src/app/experiences/paris-hero-simple/</code> is
             one beat of the morning: the Canvas, the tower component, the stage,
             two instanced meshes, a sky driven by one number, a{" "}
             <code>useFrame</code> on the beacon, and a <code>PostFx</code> box
@@ -61,7 +61,7 @@ export default function HeroSimpleDemoPage() {
             resolution, and a full-resolution lettering pass with authored
             depth. Plus a river, a park, a Haussmann ring, real constellations
             and a six-second launch. It is{" "}
-            <code>app/experiences/paris-tower/</code>, running at the Paris hero
+            <code>src/app/experiences/paris-tower/</code>, running at the Paris hero
             demo.
           </p>
         </InfoSection>

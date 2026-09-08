@@ -15,8 +15,9 @@ import { cn } from "@/lib/utils";
  * always up.
  *
  * Anchored top-right, which is where Leva docks, so the button sits over the
- * panel's own corner instead of somewhere unrelated. `InfoDialog` takes the
- * opposite corner.
+ * panel's own corner instead of somewhere unrelated. The site menu holds the
+ * corner itself, this sits just left of it. `InfoDialog` takes the opposite
+ * corner.
  *
  * The panel itself is `LevaPanel`, so there is exactly one thing on the site
  * that mounts `<Leva>` and the `?debug` gate keeps working here too. It stays
@@ -37,7 +38,7 @@ export function ControlsToggle({ className }: { className?: string }) {
         aria-pressed={open}
         title={open ? "Hide controls" : "Show controls"}
         className={cn(
-          "fixed top-5 right-5 z-40 grid size-9 place-items-center rounded-full",
+          "fixed top-5 right-16 z-40 grid size-9 place-items-center rounded-full",
           "border border-border bg-background/80 backdrop-blur-md",
           "transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
           open

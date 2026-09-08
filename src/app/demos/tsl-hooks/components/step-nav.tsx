@@ -1,7 +1,7 @@
 import { StepNav } from "@/app/demos/components/step-nav";
 
 /**
- * The hooks lesson, in order. The four small demos, then the two experiences
+ * The hooks lesson, in order. The seven small demos, then the two experiences
  * that put them to work.
  */
 const STEPS = [
@@ -9,8 +9,11 @@ const STEPS = [
   { href: "/demos/tsl-hooks/shared", label: "2 shared uniforms" },
   { href: "/demos/tsl-hooks/nodes", label: "3 shared nodes" },
   { href: "/demos/tsl-hooks/canvases", label: "4 across canvases" },
-  { href: "/demos/grain-gradient", label: "5 grain gradient" },
-  { href: "/demos/flip-grid/meshes", label: "6 flip grid" },
+  { href: "/demos/tsl-hooks/buffers", label: "5 buffers" },
+  { href: "/demos/tsl-hooks/textures", label: "6 textures" },
+  { href: "/demos/tsl-hooks/storage", label: "7 storage" },
+  { href: "/demos/grain-gradient", label: "8 grain gradient" },
+  { href: "/demos/compute/parallel", label: "9 compute" },
 ];
 
 export function HooksSteps({ current }: { current: string }) {

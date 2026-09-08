@@ -12,7 +12,7 @@ import { SectionCanvas } from "@/app/home/components/canvas/section-canvas";
  * anyway.
  *
  * Starter: renders the placeholder. The finished experience is
- * `app/experiences/flip-grid` (still fully working at /demos/flip-grid).
+ * `src/app/experiences/flip-grid` (still fully working at /demos/flip-grid).
  * Replace this component's body with `<FlipGrid />` to bring it back. The
  * camera here is orthographic at zoom 1, so 1 unit is about 1 px, hence the
  * placeholder's scale.

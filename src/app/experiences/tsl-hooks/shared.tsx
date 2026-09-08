@@ -12,7 +12,6 @@ import { useRef } from "react";
 import { float, mix, normalView, sin, uv } from "three/tsl";
 import type { Color, Mesh, UniformNode } from "three/webgpu";
 
-import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 import { useWebGPU } from "@/lib/use-webgpu";
 
 /**
@@ -34,9 +33,20 @@ import { useWebGPU } from "@/lib/use-webgpu";
  * object every render and mutate it instead; the flip grid's cursor does
  * that.
  *
- * The readers use the builder form of `useLocalNodes`. The other way to read
- * a scope is `useUniforms("hooksShared")`, which hands the nodes back for
- * use outside a builder.
+ * The builders are hoisted to module level this time, and that is the
+ * second lesson. `useLocalNodes` memoises on the builder's identity. The
+ * inline arrow in the first demo is a new function every render, so the
+ * graph is rebuilt on every slider tick; a module level function is the
+ * same function forever, so the graph is built once. It loses nothing by
+ * moving: the builder is handed the whole root state either way. When a
+ * builder needs values from the component, `useCallback` with those values
+ * as deps is the same idea; the flip grid does that. The other hooks do not
+ * have this rule. `useUniforms`, `useNodes`, `useBuffers` and
+ * `useGPUStorage` run their creator once per scope and keep it, so an inline
+ * creator is fine there.
+ *
+ * The other way to read a scope is `useUniforms("hooksShared")`, which hands
+ * the nodes back for use outside a builder.
  */
 
 /** The scope, as the store hands it back. */
@@ -61,7 +71,7 @@ function Dials() {
   const u = useUniforms({ ...values, pulse: 0 }, "hooksShared") as unknown as Shared;
 
   const t = useRef(0);
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     t.current += delta;
     u.pulse.value = Math.sin(t.current * rate) * 0.5 + 0.5;
   });
@@ -105,7 +115,7 @@ function Orb() {
 function Slab() {
   const nodes = useLocalNodes(slabBuild);
   const ref = useRef<Mesh>(null);
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     if (ref.current) ref.current.rotation.y += delta * 0.4;
   });
   return (
@@ -119,7 +129,7 @@ function Slab() {
 function Ring() {
   const nodes = useLocalNodes(ringBuild);
   const ref = useRef<Mesh>(null);
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     if (ref.current) ref.current.rotation.x += delta * 0.5;
   });
   return (
@@ -139,10 +149,8 @@ export function HooksShared() {
       <Canvas
         camera={{ position: [0, 0, 8], fov: 35 }}
         dpr={[1, 2]}
-        forceEven
         renderer={{ alpha: false, antialias: true }}
       >
-        <DepthAttachmentSync />
         <color attach="background" args={["#08080a"]} />
         <ambientLight intensity={0.5} color="#b8c4ee" />
         <directionalLight position={[4, 6, 3]} intensity={2} color="#ffd9a0" />

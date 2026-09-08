@@ -54,7 +54,7 @@ export function IntroClock({
   }, [clock, enabled, gate, invalidate, onUiReveal]);
 
   useFrame(
-    (_, delta) => {
+    ({ delta }) => {
       const revealUi = () => {
         if (cueSent.current) return;
         cueSent.current = true;

@@ -21,7 +21,6 @@ import {
 } from "three/tsl";
 import * as THREE from "three/webgpu";
 
-import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 import { useWebGPU } from "@/lib/use-webgpu";
 import { hash } from "./hash";
 import { makeTerrain } from "./terrain";
@@ -181,10 +180,8 @@ export function DreiTrees() {
         shadows
         camera={{ position: [0, 24, 62], fov: 40, near: 0.5, far: 500 }}
         dpr={[1, 2]}
-        forceEven
         renderer={{ alpha: false, antialias: true }}
       >
-        <DepthAttachmentSync />
         <color attach="background" args={["#c9d6e4"]} />
         <fog attach="fog" args={["#c9d6e4", 70, 220]} />
         {/* The sampler sizes its buffer once, so a new count or terrain is a new scene. */}

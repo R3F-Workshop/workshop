@@ -6,7 +6,7 @@ import { InfoDialog, InfoSection } from "@/app/demos/components/info-dialog";
 import { VanillaPyramid } from "@/app/experiences/vanilla-pyramid";
 
 export const metadata: Metadata = {
-  title: "The pyramid, in vanilla three.js — R3F v10 demo",
+  title: "The starter: a pyramid in vanilla three.js — R3F v10 demo",
   description:
     "The starter's spinning pyramid built with three.js alone: renderer, scene, camera, loop, resize, and the raycaster ceremony for hover and click.",
   robots: { index: false, follow: false },
@@ -22,7 +22,7 @@ export default function VanillaPyramidPage() {
           Demo · vanilla three.js
         </div>
         <h1 className="mt-1.5 text-[22px] leading-[1.15] font-semibold tracking-[-0.03em] sm:text-[26px]">
-          The pyramid, by hand
+          The starter: a pyramid in vanilla three.js
         </h1>
         <p className="mt-1.5 text-[13.5px] leading-[1.5] text-muted-foreground">
           Hover it, click it. Then count the lines.

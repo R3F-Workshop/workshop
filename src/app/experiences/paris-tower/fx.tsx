@@ -37,7 +37,7 @@ interface SSGIPass {
   giIntensity: { value: number };
   aoIntensity: { value: number };
   useTemporalFiltering: boolean;
-  getAONode(): { r: unknown };
+  getAONode(): { r: THREE.Node<"float"> };
   getGINode(): unknown;
 }
 
@@ -334,7 +334,9 @@ export function FX({
       const color = scenePass.getTextureNode("output");
       const depth = scenePass.getTextureNode("depth");
 
-      let graph = color;
+      // Every stage below reads and writes a vec4 node. The pass texture is only
+      // the first of them, so the variable is typed as the node, not the texture.
+      let graph: THREE.Node<"vec4"> = color as unknown as THREE.Node<"vec4">;
 
       /** Tower bloom, reused as the light the lettering responds to. */
       let bloomTex: AnyVec4 | null = null;
@@ -352,7 +354,7 @@ export function FX({
       // Unpack byte-encoded normals through a shared sampling node.
       const sceneNormal =
         useGtao || useSsgi
-          ? TSL.sample((uv: unknown) =>
+          ? TSL.sample((uv: THREE.Node) =>
               TSL.unpackRGBToNormal(
                 scenePass.getTextureNode("normal").sample(uv),
               ),
@@ -380,7 +382,7 @@ export function FX({
           depth,
           sceneNormal,
           camera as THREE.PerspectiveCamera,
-        ) as unknown as { rgb: unknown };
+        ) as unknown as { rgb: THREE.Node<"vec3"> };
         const albedo = scenePass.getTextureNode("diffuse");
         graph = TSL.vec4(
           graph.rgb.mul(giPass.getAONode().r).add(albedo.rgb.mul(gi.rgb)),
@@ -406,7 +408,8 @@ export function FX({
         aoPass.useTemporalFiltering = true;
         aoPass.useLinearThickness.value = true;
 
-        graph = TSL.vec4(graph.rgb.mul(aoPass.getAONode().r), graph.a);
+        const ao = (aoPass.getAONode() as { r: THREE.Node<"float"> }).r;
+        graph = TSL.vec4(graph.rgb.mul(ao), graph.a);
       }
 
       if (haze && sky) {
@@ -504,7 +507,7 @@ export function FX({
         );
         nextFsrNode = fsrNode as unknown as FSRNodeLike;
         velocityBoundRef.current = false;
-        graph = fsrNode;
+        graph = fsrNode as unknown as THREE.Node<"vec4">;
       } else {
         // Use TRAA as the temporal resolver when FSR3 is disabled.
         const traaPass = traa(
@@ -514,7 +517,7 @@ export function FX({
           camera,
         );
         traaPass.useSubpixelCorrection = true;
-        graph = traaPass;
+        graph = traaPass as unknown as THREE.Node<"vec4">;
       }
 
       // Apply matching fog to lettering before the final composite.

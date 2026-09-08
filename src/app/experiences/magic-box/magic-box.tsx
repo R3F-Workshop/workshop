@@ -7,7 +7,6 @@ import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three/webgpu";
 
 import { CameraRig } from "@/app/home/components/canvas/camera-rig";
-import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 import { TEN_GLYPHS, type TenGlyph } from "@/lib/ten-glyphs";
 import { useWebGPU } from "@/lib/use-webgpu";
 
@@ -27,7 +26,7 @@ import { useWebGPU } from "@/lib/use-webgpu";
  * genuinely separate scene rather than a texture. Ours is dark, and each portal
  * holds an extruded numeral instead of a platonic solid.
  *
- * The glyph outlines are generated offline — see scripts/build-glyphs.mjs for
+ * The glyph outlines are generated offline — see tooling/scripts/build-glyphs.mjs for
  * why they arrive as raw points instead of a font.
  */
 
@@ -49,7 +48,7 @@ const MODEL = "/models/aobox.glb";
  */
 const FACES = [
   // Slot order below is fixed by three; the glyph on each one is decided in
-  // scripts/build-glyphs.mjs, which emits TEN_GLYPHS in this same order.
+  // tooling/scripts/build-glyphs.mjs, which emits TEN_GLYPHS in this same order.
   // +x · Korean 십
   { accent: "#79c9a8", room: [0, 0, 0], facing: [0, Math.PI / 2, 0] },
   // -x · Roman X
@@ -266,7 +265,7 @@ function Box() {
     edges: true,
   });
 
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     if (!group.current || !autoRotate) return;
     group.current.rotation.y += delta * rotateSpeed;
     // A touch of X keeps the top and bottom faces in the rotation rather than
@@ -312,9 +311,6 @@ export function MagicBox() {
         // The box is 2 units and this framing keeps all of it in view.
         camera={{ position: [-4.2, 2.0, 4.8], fov: 40 }}
         dpr={[1, 2]}
-        // Odd or fractional drawing buffers desync the depth attachment from
-        // the swap chain, see DepthAttachmentSync.
-        forceEven
         renderer={{
           alpha: false,
           antialias: true,
@@ -322,7 +318,6 @@ export function MagicBox() {
         }}
         style={{ touchAction: "none", cursor: "grab" }}
       >
-        <DepthAttachmentSync />
         {/* Opaque: it covers whatever it is dropped over rather than
             compositing with it. */}
         <color attach="background" args={["#0b0b0e"]} />

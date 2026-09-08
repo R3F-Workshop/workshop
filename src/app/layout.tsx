@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import "./globals.css";
 
+import { SiteHeader } from "@/components/site-header";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -54,7 +56,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       // Dark-only by design — there is no theme toggle, so the class is fixed.
       className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <SiteHeader />
+        {children}
+      </body>
     </html>
   );
 }

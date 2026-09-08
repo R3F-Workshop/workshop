@@ -78,7 +78,7 @@ export function CameraRig({
 
   useEffect(() => () => controls.dispose(), [controls]);
 
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     controls.update(delta);
   });
 

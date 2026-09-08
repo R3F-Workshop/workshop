@@ -1,6 +1,6 @@
 "use client";
 
-import { Environment } from "@react-three/drei";
+import { Environment } from "@react-three/drei/webgpu";
 import type { ColorRepresentation } from "three";
 
 /**

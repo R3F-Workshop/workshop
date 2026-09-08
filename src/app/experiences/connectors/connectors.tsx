@@ -26,7 +26,6 @@ import {
 } from "three/webgpu";
 
 import { createStudioEnvironment, STUDIO_DEFAULT } from "@/app/home/components/canvas/studio-env";
-import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 import { useWebGPU } from "@/lib/use-webgpu";
 
 import { getShape, shapeRadius, type ShapeKind } from "./shapes";
@@ -293,7 +292,7 @@ function Bodies({ config }: { config: Config }) {
 
   const palette = [config.dark, config.light, config.accent];
 
-  useFrame(({ viewport }, delta) => {
+  useFrame(({ viewport, delta }) => {
     const reach = (viewport.width / 2) * config.spreadX;
 
     bodies.forEach((body, i) => {
@@ -451,7 +450,7 @@ function Cursor({
     };
   }, [bounds]);
 
-  useFrame(({ viewport }, delta) => {
+  useFrame(({ viewport, delta }) => {
     const at = ndc.current;
     const next = target.current;
 
@@ -549,9 +548,6 @@ export function Connectors() {
       <Canvas
         camera={{ position: [0, 0, 15], fov: 17.5, near: 1, far: 40 }}
         dpr={[1, 2]}
-        // Odd/fractional drawing buffers desync the depth attachment from the
-        // swap chain — see DepthAttachmentSync.
-        forceEven
         renderer={{
           alpha: false,
           antialias: true,
@@ -566,7 +562,6 @@ export function Connectors() {
         style={{ pointerEvents: "none" }}
       >
         <color attach="background" args={["#08080a"]} />
-        <DepthAttachmentSync />
         <Scene config={config} bounds={bounds} />
       </Canvas>
     </div>

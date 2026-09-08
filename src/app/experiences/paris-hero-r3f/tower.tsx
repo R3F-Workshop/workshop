@@ -9,7 +9,7 @@ Title: ( FREE ) La tour Eiffel
 */
 
 import { Suspense, useRef } from "react";
-import { useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei/webgpu";
 import { useFrame, type ThreeElements } from "@react-three/fiber/webgpu";
 import type { Mesh } from "three";
 
@@ -68,7 +68,7 @@ function Model({ glow, ...props }: { glow: number } & ThreeElements["group"]) {
 function Pyramid(props: ThreeElements["group"]) {
   const ref = useRef<Mesh>(null);
 
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     if (ref.current) ref.current.rotation.y += delta * 0.5;
   });
 

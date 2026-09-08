@@ -7,23 +7,27 @@ import * as THREE from "three/webgpu";
  * the raycaster ceremony for hover and click. Everything `<Canvas>` and one
  * `onClick` prop are about to replace.
  *
+ * The canvas comes from the caller. The renderer draws into it rather than
+ * making its own, so React keeps ownership of the element and CSS keeps
+ * ownership of its layout. `setSize` gets `false` for that reason: it sizes
+ * the drawing buffer and leaves the style alone.
+ *
  * Returns a dispose function. WebGPU initialises asynchronously, so the
  * function keeps an `alive` flag and the caller can dispose before the first
  * frame ever renders.
  */
-export function mountPyramid(container: HTMLElement) {
+export function mountPyramid(canvas: HTMLCanvasElement) {
   let alive = true;
 
-  const renderer = new THREE.WebGPURenderer({ antialias: true, alpha: true });
+  const renderer = new THREE.WebGPURenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setSize(container.clientWidth, container.clientHeight);
-  container.appendChild(renderer.domElement);
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
 
   const scene = new THREE.Scene();
 
   const camera = new THREE.PerspectiveCamera(
     40,
-    container.clientWidth / container.clientHeight,
+    canvas.clientWidth / canvas.clientHeight,
     0.1,
     100,
   );
@@ -101,14 +105,14 @@ export function mountPyramid(container: HTMLElement) {
   renderer.domElement.addEventListener("click", onClick);
 
   const resize = new ResizeObserver(() => {
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
     if (width === 0 || height === 0) return;
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    renderer.setSize(width, height);
+    renderer.setSize(width, height, false);
   });
-  resize.observe(container);
+  resize.observe(canvas);
 
   // Multiply by delta, always. Same speed on every screen.
   let last = performance.now();
@@ -135,7 +139,7 @@ export function mountPyramid(container: HTMLElement) {
     renderer.domElement.removeEventListener("click", onClick);
     geometry.dispose();
     material.dispose();
+    // The canvas is React's to remove. Only the GPU side goes here.
     renderer.dispose();
-    renderer.domElement.remove();
   };
 }

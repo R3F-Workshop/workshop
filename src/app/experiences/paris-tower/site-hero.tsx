@@ -3,7 +3,7 @@
 /**
  * The finished site hero shell, kept for reference. Not wired into the site.
  *
- * This is what app/home/sections/hero/hero.tsx becomes once the real scene
+ * This is what src/app/home/sections/hero/hero.tsx becomes once the real scene
  * goes in: the same DOM and copy, plus the loading gate choreography, the
  * staggered UI reveal, and the time dial with its replay spring. The starter
  * hero drops all of that and mounts the placeholder pyramid instead.

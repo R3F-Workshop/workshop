@@ -27,7 +27,7 @@ const PrimaryCanvasStub = dynamic(
  * The sky behind the canvas, frozen at the dusk the finished hero boots into.
  * The full site drives this through the time dial (`./time-dial.tsx`, kept
  * here ready to wire back in) and a replay spring — see
- * `app/experiences/paris-tower/site-hero.tsx`.
+ * `src/app/experiences/paris-tower/site-hero.tsx`.
  */
 const DUSK = todAt(0.85);
 
@@ -35,7 +35,7 @@ const DUSK = todAt(0.85);
  * The starter hero: the same DOM as the finished site, with the scene layer
  * swapped for the vanilla three.js pyramid. The finished version's entrance
  * choreography (loading gate, staggered UI reveal, time dial + replay spring)
- * comes back with the real scene, see `app/experiences/paris-tower/site-hero.tsx`.
+ * comes back with the real scene, see `src/app/experiences/paris-tower/site-hero.tsx`.
  * Here the header is simply switched on once the page mounts.
  */
 export function Hero() {

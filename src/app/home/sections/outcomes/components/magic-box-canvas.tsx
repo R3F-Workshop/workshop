@@ -7,7 +7,7 @@ import { SectionCanvas } from "@/app/home/components/canvas/section-canvas";
  * The card slot for the magic box.
  *
  * Starter: renders the placeholder. The finished experience is
- * `app/experiences/magic-box` (still fully working at /demos/magic-box).
+ * `src/app/experiences/magic-box` (still fully working at /demos/magic-box).
  * Replace this component's body with `<MagicBox />` to bring it back.
  *
  * Stays `interactive` at 60fps because it is the one thing on the page you

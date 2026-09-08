@@ -31,7 +31,7 @@ export function Beacon({
 }) {
   const spin = useRef<THREE.Group>(null);
 
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     if (spin.current) spin.current.rotation.y += delta * speed;
   });
 

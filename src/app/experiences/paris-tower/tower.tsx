@@ -15,7 +15,7 @@ import {
   useLocalNodes,
   useUniforms,
 } from "@react-three/fiber/webgpu";
-import { useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei/webgpu";
 import * as TSL from "three/tsl";
 import * as THREE from "three/webgpu";
 
@@ -259,7 +259,7 @@ function Beacon({
   // Both beams share one graph and light uniform.
   const beam = useLocalNodes(createBeamNodes);
 
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     if (spinRef.current) spinRef.current.rotation.y += delta * speed;
   });
 

@@ -47,7 +47,7 @@ export function WarmupProbe({
   const frameRate = maxFps > 0 ? { fps: maxFps } : {};
 
   useFrame(
-    ({ renderer }, delta) => {
+    ({ renderer, delta }) => {
       const gateState = gate.getState();
 
       if (

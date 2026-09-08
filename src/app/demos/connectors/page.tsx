@@ -90,7 +90,7 @@ export default function ConnectorsDemoPage() {
           <p>
             The default shape is the pmndrs mark: six cubes on the 3×3 grid its
             SVG describes, read straight off the same coordinates{" "}
-            <code>components/brand/logo.tsx</code> draws. One geometry is built
+            <code>src/components/brand/logo.tsx</code> draws. One geometry is built
             for all of them, and the collider set is derived from the same cell
             list — a collider that disagrees with its mesh is how these scenes
             end up looking haunted, with shapes bouncing off nothing.

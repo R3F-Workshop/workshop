@@ -50,7 +50,7 @@ export function PerfProbe({ onSample }: { onSample: (s: PerfSample) => void }) {
     report.current = onSample;
   }, [onSample]);
 
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     frames.current += 1;
     accum.current += delta;
 

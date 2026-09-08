@@ -17,7 +17,7 @@ import {
 } from "three/tsl";
 import * as THREE from "three/webgpu";
 
-import { makeRng } from "./scatter";
+import { groundRing, makeRng, samplePositions } from "./scatter";
 
 /**
  * Every tree is one instance of one mesh: one geometry, one material, N
@@ -26,6 +26,7 @@ import { makeRng } from "./scatter";
  * the keep-out around the tower. `Instances` turns the list of `<Tree>`
  * elements into the InstancedMesh, and `InstancedAttribute` gives each tree a
  * `phase` float that the sway shader reads with `attribute("phase")`.
+ * `SimpleTrees` is the same thing without the colour, the phase and the sway.
  */
 
 /** `createInstances` gives a typed pair, so `<Tree phase={...}>` type checks. */
@@ -68,31 +69,21 @@ function SampledTrees({
 }) {
   // drei types the sampler ref as non null. The mesh is attached before the layout effect that reads it.
   const ground = useRef<THREE.Mesh>(null!);
-  const ring = useMemo(
-    () =>
-      new THREE.RingGeometry(clearing, radius, 64, 16).rotateX(-Math.PI / 2),
-    [clearing, radius],
-  );
+  const ring = useMemo(() => groundRing(clearing, radius), [clearing, radius]);
   // Unit ball lifted onto its base, so the shader's height ramp runs from the ground up.
   const ball = useMemo(
     () => new THREE.IcosahedronGeometry(1, 1).translate(0, 1, 0),
     [],
   );
 
-  // One matrix per point, in the ring's local space. Only the translation is used.
   const samples = useSurfaceSampler(ground, count);
 
   const trees = useMemo(() => {
     const random = makeRng(seed);
     const dark = new THREE.Color("#22381f");
     const light = new THREE.Color("#4d7a3a");
-    const m = samples.array as Float32Array;
-    return Array.from({ length: count }, (_, i) => ({
-      position: [m[i * 16 + 12], m[i * 16 + 13], m[i * 16 + 14]] as [
-        number,
-        number,
-        number,
-      ],
+    return samplePositions(samples, count).map((position) => ({
+      position,
       spread: THREE.MathUtils.lerp(0.8, 1.5, random()),
       height: THREE.MathUtils.lerp(1.4, 3.4, random()),
       turn: random() * Math.PI * 2,

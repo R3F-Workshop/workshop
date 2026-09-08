@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { ControlsToggle } from "@/app/demos/components/controls-toggle";
 import { InfoDialog, InfoSection } from "@/app/demos/components/info-dialog";
-import { FlipGridSteps } from "@/app/demos/flip-grid/components/step-nav";
+import { ComputeSteps } from "@/app/demos/compute/components/step-nav";
 
 import { FlipGrid } from "@/app/experiences/flip-grid";
 
@@ -33,7 +33,7 @@ export default function FlipGridDemoPage() {
         <p className="mt-1.5 text-[13.5px] leading-[1.5] text-muted-foreground">
           Sweep the cursor across it. Tiles hold the pose before falling back.
         </p>
-        <FlipGridSteps current="/demos/flip-grid" />
+        <ComputeSteps current="/demos/flip-grid" />
       </div>
 
       <InfoDialog

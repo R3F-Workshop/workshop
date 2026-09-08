@@ -230,7 +230,7 @@ export function Camera({
     // is the entire point of the rewrite.
   }, [controls, frame, unlocked, refitKey, size.width, size.height]);
 
-  useFrame((_, delta) => {
+  useFrame(({ delta }) => {
     if (!controls || !autoRotate || unlocked || autoRotateSpeed === 0) return;
     // Applied directly (no transition) — a continuous drift is the target, not
     // something to ease toward. Also gives the temporal passes real motion to

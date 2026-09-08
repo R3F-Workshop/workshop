@@ -2,7 +2,6 @@
 
 import { Canvas } from "@react-three/fiber/webgpu";
 
-import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 import { useWebGPU } from "@/lib/use-webgpu";
 
 /**
@@ -22,11 +21,9 @@ export function ParisHeroR3f() {
         id="main"
         camera={{ position: [0, 0.7, 5.2], fov: 40 }}
         dpr={[1, 2]}
-        forceEven
         renderer={{ alpha: true, antialias: true }}
         style={{ pointerEvents: "none" }}
       >
-        <DepthAttachmentSync />
         <ambientLight intensity={0.55} color="#b8c4ee" />
         <directionalLight position={[4, 6, 3]} intensity={2.2} color="#ffd9a0" />
       </Canvas>

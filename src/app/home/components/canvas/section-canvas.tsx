@@ -11,7 +11,6 @@ import {
   type ReactNode,
 } from "react";
 
-import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 
 import { useWebGPU } from "@/lib/use-webgpu";
 
@@ -152,10 +151,10 @@ export function SectionCanvas({
       dpr={[1, 1.75]}
       // Sections are laid out on a fractional grid, so a bare
       // getBoundingClientRect flaps between e.g. 148.4 and 148.6 as the page
-      // scrolls — each flip resizes the swap chain and desyncs the depth
-      // attachment. Snapping to even integers makes the measured size stable,
-      // and since these canvases are pointer-events: none, re-measuring on
-      // scroll buys us nothing to begin with.
+      // scrolls, and each flip reconfigures the swap chain for nothing.
+      // Snapping to even integers makes the measured size stable. Since these
+      // canvases are pointer-events: none, re-measuring on scroll buys nothing
+      // to begin with. The experiences fill integer sized boxes and skip this.
       forceEven
       // Interactive canvases keep it: R3F maps pointer coordinates through
       // size.top/left, which goes stale the moment the page scrolls.
@@ -177,7 +176,6 @@ export function SectionCanvas({
       }
     >
       <IdleWhenHidden jobId={jobId} hidden={!onScreen} />
-      <DepthAttachmentSync />
       <OnScreenContext.Provider value={onScreen}>
         {children}
       </OnScreenContext.Provider>

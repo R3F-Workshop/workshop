@@ -7,7 +7,7 @@ import { SectionCanvas } from "@/app/home/components/canvas/section-canvas";
  * The card slot for the blending cube.
  *
  * Starter: renders the placeholder. The finished experience is
- * `app/experiences/blending-cube` (still fully working at /demos/blending-cube).
+ * `src/app/experiences/blending-cube` (still fully working at /demos/blending-cube).
  * Replace this component's body with `<BlendingCube />` to bring it back.
  */
 export function BlendingCubeCanvas({

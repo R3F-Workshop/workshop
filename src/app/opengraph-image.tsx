@@ -4,7 +4,7 @@ import { ImageResponse } from "next/og";
  * The share card.
  *
  * Generated rather than drawn, so it never drifts from the copy: the kicker and
- * the title come from the same `lib/content.ts` the page renders.
+ * the title come from the same `src/lib/content.ts` the page renders.
  *
  * Two constraints shape the design. Satori has no WebGPU, so none of the real
  * scenes can appear here — the gold band is a still approximation of the flip

@@ -9,7 +9,7 @@ Title: ( FREE ) La tour Eiffel
 */
 
 import { useCallback, useMemo, useState } from "react";
-import { useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei/webgpu";
 import {
   useLocalNodes,
   useUniforms,

@@ -9,7 +9,6 @@ import {
 } from "@react-three/fiber/webgpu";
 import { useControls } from "leva";
 
-import { DepthAttachmentSync } from "@/components/depth-attachment-sync";
 import { useWebGPU } from "@/lib/use-webgpu";
 
 import { grainNodes } from "./nodes/grain";
@@ -107,13 +106,9 @@ export function GrainGradient() {
         // but on its own there is nothing behind it to lift.
         renderer={{ alpha: false, antialias: false }}
         dpr={[1, 2]}
-        // Odd or fractional drawing buffers desync the depth attachment from
-        // the swap chain, see DepthAttachmentSync.
-        forceEven
         orthographic
         camera={{ position: [0, 0, 10], zoom: 1 }}
       >
-        <DepthAttachmentSync />
         <color attach="background" args={["#08080a"]} />
         <GrainField />
       </Canvas>

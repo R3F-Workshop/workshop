@@ -11,7 +11,7 @@ import { SectionCanvas } from "@/app/home/components/canvas/section-canvas";
  * `pointer-events: none` throughout.
  *
  * Starter: renders the placeholder. The finished rapier experience is
- * `app/experiences/connectors` (still fully working at /demos/connectors).
+ * `src/app/experiences/connectors` (still fully working at /demos/connectors).
  * Replace this component's body with `<Connectors />` to bring it back.
  */
 export function ConnectorsCanvas() {
