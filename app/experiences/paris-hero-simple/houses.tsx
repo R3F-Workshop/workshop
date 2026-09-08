@@ -1,11 +1,19 @@
 "use client";
 
-import { useLayoutEffect, useMemo, useRef } from "react";
+import { createInstances, useSurfaceSampler } from "@react-three/drei/webgpu";
+import { useMemo, useRef } from "react";
 import * as THREE from "three/webgpu";
 
-import { makeRng, scatterOnDisc } from "./scatter";
+import { makeRng } from "./scatter";
 
-/** The same shape as `Trees` with a box instead of a ball and a height that varies. */
+/**
+ * The same shape as `Trees` with a box instead of a ball and a height that
+ * varies. Nothing moves, so there is no custom attribute and no shader, just
+ * the sampler for placement and `Instances` for the one draw call.
+ */
+
+const [Town, House] = createInstances();
+
 export function Houses({
   count = 1200,
   radius = 150,
@@ -18,55 +26,87 @@ export function Houses({
   clearing?: number;
   seed?: number;
 }) {
-  const ref = useRef<THREE.InstancedMesh>(null);
+  // The sampler sizes its buffer once, so a new count or a new ring is a new town.
+  return (
+    <SampledHouses
+      key={`${count}:${radius}:${clearing}`}
+      count={count}
+      radius={radius}
+      clearing={clearing}
+      seed={seed}
+    />
+  );
+}
 
-  const placed = useMemo(() => {
+function SampledHouses({
+  count,
+  radius,
+  clearing,
+  seed,
+}: {
+  count: number;
+  radius: number;
+  clearing: number;
+  seed: number;
+}) {
+  // drei types the sampler ref as non null. The mesh is attached before the layout effect that reads it.
+  const ground = useRef<THREE.Mesh>(null!);
+  const ring = useMemo(
+    () =>
+      new THREE.RingGeometry(clearing, radius, 64, 16).rotateX(-Math.PI / 2),
+    [clearing, radius],
+  );
+  // Unit box lifted onto its base, so scale y is the full height.
+  const block = useMemo(
+    () => new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0),
+    [],
+  );
+
+  const samples = useSurfaceSampler(ground, count);
+
+  const houses = useMemo(() => {
     const random = makeRng(seed);
-    const points = scatterOnDisc(count, radius, clearing, random);
-    const dummy = new THREE.Object3D();
-    const matrices: THREE.Matrix4[] = [];
-    const colors: THREE.Color[] = [];
     const cream = new THREE.Color("#d8cfbf");
     const slate = new THREE.Color("#8d8a84");
-
-    for (let i = 0; i < count; i++) {
-      const x = points[i * 2];
-      const z = points[i * 2 + 1];
+    const m = samples.array as Float32Array;
+    return Array.from({ length: count }, (_, i) => {
+      const x = m[i * 16 + 12];
+      const z = m[i * 16 + 14];
       // Taller toward the edge, so the near ring stays low and the skyline rises behind it.
       const distance = Math.hypot(x, z) / radius;
-      const height = 2.5 + random() ** 1.6 * 9 * (0.5 + distance);
-      const width = THREE.MathUtils.lerp(2.5, 5, random());
-      const depth = THREE.MathUtils.lerp(2.5, 5, random());
-      dummy.position.set(x, height / 2, z);
-      dummy.scale.set(width, height, depth);
-      dummy.rotation.y = random() * Math.PI * 2;
-      dummy.updateMatrix();
-      matrices.push(dummy.matrix.clone());
-      colors.push(cream.clone().lerp(slate, random()));
-    }
-    return { matrices, colors };
-  }, [count, radius, clearing, seed]);
-
-  useLayoutEffect(() => {
-    const mesh = ref.current;
-    if (!mesh) return;
-    placed.matrices.forEach((m, i) => mesh.setMatrixAt(i, m));
-    placed.colors.forEach((c, i) => mesh.setColorAt(i, c));
-    mesh.instanceMatrix.needsUpdate = true;
-    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-  }, [placed]);
+      return {
+        position: [x, m[i * 16 + 13], z] as [number, number, number],
+        width: THREE.MathUtils.lerp(2.5, 5, random()),
+        height: 2.5 + random() ** 1.6 * 9 * (0.5 + distance),
+        depth: THREE.MathUtils.lerp(2.5, 5, random()),
+        turn: random() * Math.PI * 2,
+        color: cream.clone().lerp(slate, random()),
+      };
+    });
+  }, [samples, count, radius, seed]);
 
   return (
-    <instancedMesh
-      key={count}
-      ref={ref}
-      args={[undefined, undefined, count]}
-      castShadow
-      receiveShadow
-      frustumCulled={false}
-    >
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color="white" roughness={0.85} metalness={0.05} />
-    </instancedMesh>
+    <>
+      <mesh ref={ground} geometry={ring} visible={false} />
+
+      <Town
+        limit={count}
+        geometry={block}
+        castShadow
+        receiveShadow
+        frustumCulled={false}
+      >
+        <meshStandardMaterial color="white" roughness={0.85} metalness={0.05} />
+        {houses.map((h, i) => (
+          <House
+            key={i}
+            position={h.position}
+            scale={[h.width, h.height, h.depth]}
+            rotation-y={h.turn}
+            color={h.color}
+          />
+        ))}
+      </Town>
+    </>
   );
 }

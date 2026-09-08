@@ -47,11 +47,25 @@ const DEMOS = [
     tags: ["MeshPortalMaterial", "ExtrudeGeometry", "multi-canvas"],
   },
   {
+    href: "/demos/tsl-hooks/uniform",
+    title: "TSL hooks, one at a time",
+    blurb:
+      "Four small scenes, one idea each: a uniform, a scope of uniforms shared by several components, a node graph shared the same way, and a second canvas borrowing the first's renderer and store. The path to the grain gradient and the flip grid.",
+    tags: ["useUniforms", "useNodes", "useLocalNodes", "primaryCanvas"],
+  },
+  {
     href: "/demos/grain-gradient",
     title: "Grain gradient",
     blurb:
       "Drifting blobs under a static sheet of grain. The grain feeds the colour ramp rather than sitting over it, so it brightens as it nears a blob. Every dial is live.",
     tags: ["TSL", "static grain", "tunable"],
+  },
+  {
+    href: "/demos/flip-grid/meshes",
+    title: "The flip grid, built up",
+    blurb:
+      "The same grid four times, each one step further from the CPU: one mesh per tile, then one instanced mesh, then the angle in a storage buffer the vertex stage reads, and finally the integrator in a compute pass. The loop never changes; where it runs does.",
+    tags: ["compute, step by step", "InstancedMesh", "storage buffer"],
   },
   {
     href: "/demos/flip-grid",
@@ -87,6 +101,13 @@ const DEMOS = [
     blurb:
       "A few hundred instanced blocks rising out of the ground in a wave and settling. The layout is a hash of the instance index rather than an array, and the frame loop latches off once the last block lands.",
     tags: ["InstancedMesh", "deterministic layout", "emissive maps"],
+  },
+  {
+    href: "/demos/drei-trees",
+    title: "A forest, the drei way",
+    blurb:
+      "Thousands of trees scattered over a hill by drei's surface sampler and drawn as one InstancedMesh through Instances. A per instance attribute drives the sway in a TSL shader, and a vertex weight keeps the clearing empty.",
+    tags: ["drei Instances", "useSurfaceSampler", "InstancedAttribute"],
   },
 ];
 

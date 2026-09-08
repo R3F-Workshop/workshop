@@ -89,6 +89,14 @@ export default function GrainGradientDemoPage() {
             controls immediate. It costs a little more setup and is the right
             trade the moment anything is tunable.
           </p>
+          <p>
+            The setup is one hook. The Leva values go straight into{" "}
+            <code>useUniforms</code> under a named scope, which makes a uniform
+            per key and writes its value whenever the input changes. The shader
+            functions live in their own files and take those uniforms as
+            arguments, so the graph builder reads the scope back out of the
+            store and never waits on anything.
+          </p>
         </InfoSection>
 
         <InfoSection heading="Where it runs">
