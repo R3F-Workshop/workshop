@@ -22,7 +22,6 @@ This is the Next.js workshop site. Its 3D pieces are self-contained experiences 
 - `pnpm lint` runs ESLint.
 - `pnpm build` creates the production build.
 - `pnpm start` runs the production build.
-- `pnpm sync:sky` rebuilds the linked `@pmndrs/sky` package from `SKY_REPO`.
 
 For substantive changes, type-check, lint, and build. A compiler is not visual verification. Open the affected page in a WebGPU browser, confirm the console is clean, and exercise changed controls, pointer behavior, and transitions. For shell or fallback work, also verify `?no3d`. For shared-renderer work, verify the affected secondary canvas while resizing and scrolling away and back.
 
@@ -30,12 +29,12 @@ For substantive changes, type-check, lint, and build. A compiler is not visual v
 
 - Next.js 16.3.0 with the App Router.
 - React and React DOM 19.2.8.
-- `@react-three/fiber` 10.0.0-alpha.4.
+- `@react-three/fiber` 10.0.0-alpha.5.
 - `@react-three/drei` 11.0.0-alpha.7.
 - Three.js 0.185.1 with `@types/three` 0.185.4.
 - `@react-three/rapier` 2.2.0 with a local WebGPU-entry patch and an allowed v10 peer range.
 - Leva 0.10.x, camera-controls 3.1.x, Tailwind 4, and TypeScript strict mode.
-- `@pmndrs/sky` is a linked checked-in build under `tooling/vendor/pmndrs-sky`.
+- `@pmndrs/sky` uses the published package from the npm registry.
 
 Treat `package.json`, `pnpm-lock.yaml`, and `pnpm-workspace.yaml` as authoritative. Alpha APIs move quickly. Read installed source and declarations before applying advice from another version.
 

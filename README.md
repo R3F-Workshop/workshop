@@ -61,7 +61,7 @@ skips it and the build fails.
 | `components/` | True globals: shadcn `ui/`, the brand logo, header, footer, LevaPanel. |
 | `src/lib/content.ts` | Every string on the site. |
 | `src/lib/time-of-day.ts` | The cyclic sky/palette model shared by the DOM gradient and the 3D lighting. |
-| `tooling/` | Maintenance scripts, the pnpm patch, and the vendored `@pmndrs/sky` build (`link:` dep). `pnpm sync:sky` re-copies it from a local sky checkout (`SKY_REPO`); the checked-in `dist/` means fresh clones need nothing. |
+| `tooling/` | Maintenance scripts and the pnpm patch. |
 
 ## The hero
 
@@ -86,6 +86,5 @@ Without WebGPU the hero (and every scene) falls back to static posters —
   entry.
 - Multi-canvas: every canvas shares one `WebGPURenderer` (the hero owns it as
   `id="main"`). Fiber keeps each canvas's depth attachment in step with its
-  swap chain itself since the `10.0.0-canary.af75fd4` build, which is why the
-  pin is a canary and not a tagged alpha. Earlier alphas needed a helper inside
+  swap chain itself in `10.0.0-alpha.5`. Earlier alphas needed a helper inside
   every `<Canvas>` for that; see pmndrs/react-three-fiber#3847 and #3905.

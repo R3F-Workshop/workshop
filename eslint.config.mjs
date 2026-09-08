@@ -14,8 +14,6 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Archived copy of the original static port — kept for reference, not built.
     "reference/**",
-    // Build output copied in by `pnpm sync:sky` — not ours to lint.
-    "tooling/vendor/**",
     // Agent worktrees, each a full checkout with its own node_modules. Linting
     // them buried the real output under ~18k findings.
     ".claude/**",
