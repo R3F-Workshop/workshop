@@ -71,6 +71,8 @@ import { useWebGPU } from "@/lib/use-webgpu";
  * `mapUv`, and both the bake and every sampler go through it.
  */
 
+//* Tunables and uniforms ======================================================
+
 const SIZE = 256;
 /** The terrain's edge, in world units. */
 const WORLD = 14;
@@ -98,6 +100,19 @@ type Uniforms = {
 /** World xz to a texel address in 0..1. The one convention everything shares. */
 const mapUv = (xz: Node<"vec2">) => xz.div(WORLD).add(0.5);
 
+//* GPU build ==================================================================
+
+/**
+ * The creator, run once by `useLocalNodes`. One pass, `bake`, writes the
+ * map. Everything else it returns is a read: node graphs that go through
+ * `sample` and feed five materials. Building them in one place is what
+ * keeps them on one convention, and it is why the plane, the trees, and the
+ * ground never disagree about how high the terrain is.
+ *
+ * `noiseAt` is only called inside `bake`. If a material called it, the
+ * noise would be back in the vertex stage, every vertex every frame, and
+ * the demo would have nothing to say.
+ */
 function build({ uniforms, gpuStorage }: CreatorState) {
   const u = uniforms.scope("computeTerrain") as unknown as Uniforms;
   const map = gpuStorage.computeTerrainMap as unknown as StorageTexture;
@@ -179,6 +194,15 @@ function build({ uniforms, gpuStorage }: CreatorState) {
   };
 }
 
+//* Scene ======================================================================
+
+/**
+ * The scene. Registers the uniforms and the map, builds the nodes, and
+ * decides when to bake. An effect on the dials that feed the bake sets a
+ * dirty flag, and the loop clears it with one dispatch, so dragging a
+ * slider costs one bake per change rather than one per frame. The plane's
+ * circuit is ordinary CPU animation and shares the same loop.
+ */
 function Landscape({ onBake }: { onBake: () => void }) {
   const { speed, ...values } = useControls("compute · terrain", {
     frequency: { value: 0.22, min: 0.05, max: 0.6, step: 0.01 },
@@ -318,6 +342,16 @@ function Landscape({ onBake }: { onBake: () => void }) {
   );
 }
 
+//* Experience =================================================================
+
+/**
+ * The experience root. Owns the Canvas and the camera, fills whatever box
+ * the shell mounts it in, and returns null without WebGPU because compute
+ * has no WebGL fallback.
+ *
+ * The bake counter lives here so the overlay outside the Canvas can show
+ * it. It is only a number: the map itself never leaves the GPU.
+ */
 export function ComputeTerrain() {
   const [bakes, setBakes] = useState(0);
 

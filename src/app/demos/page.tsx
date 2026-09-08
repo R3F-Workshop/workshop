@@ -54,6 +54,13 @@ const DEMOS = [
     tags: ["useUniforms", "useNodes", "useBuffers", "useTextures", "useGPUStorage"],
   },
   {
+    href: "/demos/tsl-basics/normal-inject",
+    title: "Injecting into a loaded material",
+    blurb:
+      "The damaged helmet promoted to a node material, its normalNode swapped for one that wraps materialNormal, the normal map the material already samples, with a ripple around the cursor. Nothing about the file's material is lost.",
+    tags: ["materialNormal", "normalNode", "MeshStandardNodeMaterial", "pointer uniform"],
+  },
+  {
     href: "/demos/grain-gradient",
     title: "Grain gradient",
     blurb:

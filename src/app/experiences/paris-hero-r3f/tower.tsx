@@ -12,6 +12,7 @@ import { Suspense, useRef } from "react";
 import { useGLTF } from "@react-three/drei/webgpu";
 import { useFrame, type ThreeElements } from "@react-three/fiber/webgpu";
 import type { Mesh } from "three";
+import { asset } from "@/lib/asset";
 
 /**
  * The tower, the simple way.
@@ -40,7 +41,7 @@ export function Tower({
 }
 
 function Model({ glow, ...props }: { glow: number } & ThreeElements["group"]) {
-  const { nodes } = useGLTF("/hero-demo/free__la_tour_eiffel.glb") as unknown as {
+  const { nodes } = useGLTF(asset("/hero-demo/free__la_tour_eiffel.glb")) as unknown as {
     nodes: Record<string, Mesh>;
   };
 
@@ -87,4 +88,4 @@ function Pyramid(props: ThreeElements["group"]) {
   );
 }
 
-useGLTF.preload("/hero-demo/free__la_tour_eiffel.glb");
+useGLTF.preload(asset("/hero-demo/free__la_tour_eiffel.glb"));

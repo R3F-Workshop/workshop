@@ -18,9 +18,11 @@ import {
 import * as TSL from "three/tsl";
 import * as THREE from "three/webgpu";
 
+import { asset } from "@/lib/asset";
+
 import { makeSparkleNode } from "./tower-sparkle";
 
-const MODEL_URL = "/hero-demo/free__la_tour_eiffel.glb";
+const MODEL_URL = asset("/hero-demo/free__la_tour_eiffel.glb");
 const TOWER_MESHES = ["Object_4", "Object_5", "Object_6"] as const;
 /** The model is 121 units tall: at 0.55 it is ~66, and the city is sized to that. */
 const MODEL_SCALE = 0.55;

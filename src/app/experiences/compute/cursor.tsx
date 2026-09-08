@@ -57,6 +57,8 @@ import { useWebGPU } from "@/lib/use-webgpu";
  * plane hands back a world point, and the loop copies it into the uniform.
  */
 
+//* Tunables and uniforms ======================================================
+
 const COLS = 96;
 const ROWS = 96;
 /** Cell spacing, in world units. */
@@ -77,6 +79,18 @@ type Uniforms = {
   dt: UniformNode<"float", number>;
 };
 
+//* GPU build ==================================================================
+
+/**
+ * The creator, run once by `useLocalNodes`. One pass eases every cell's
+ * `lift` toward the cursor, and the material reads the same buffer to
+ * stretch and tint each box. Compute writes, the vertex stage reads, and
+ * the buffer is the only thing between them.
+ *
+ * `centre` is called twice, once inside the kernel and once outside it for
+ * the material. Each call builds its own copy of the maths, so the pass and
+ * the vertex stage agree on where a cell sits without sharing a variable.
+ */
 function build({ uniforms, gpuStorage }: CreatorState) {
   const u = uniforms.scope("computeCursor") as unknown as Uniforms;
   const lifts =
@@ -118,6 +132,15 @@ function build({ uniforms, gpuStorage }: CreatorState) {
   };
 }
 
+//* Scene ======================================================================
+
+/**
+ * The scene. Registers uniforms and the lift buffer, builds the nodes, and
+ * dispatches `update` every frame. The pointer never touches React state.
+ * The handlers write into a `Vector3` the uniform holds by reference, so a
+ * mouse move costs nothing on the React side and the GPU sees the new value
+ * on its next frame.
+ */
 function Grid() {
   const values = useControls("compute · cursor", {
     radius: { value: 1.2, min: 0.2, max: 4, step: 0.05 },
@@ -183,6 +206,13 @@ function Grid() {
   );
 }
 
+//* Experience =================================================================
+
+/**
+ * The experience root. Owns the Canvas and the camera, fills whatever box
+ * the shell mounts it in, and returns null without WebGPU because compute
+ * has no WebGL fallback.
+ */
 export function ComputeCursor() {
   // No WebGPU, no experience. The shell around this decides what to show instead.
   if (useWebGPU() !== "yes") return null;

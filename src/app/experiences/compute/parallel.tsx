@@ -56,6 +56,8 @@ import { useWebGPU } from "@/lib/use-webgpu";
  * work either way: the points are built once and then only drawn.
  */
 
+//* Tunables and uniforms ======================================================
+
 const COUNT = 1 << 20;
 const TAU = Math.PI * 2;
 
@@ -68,6 +70,8 @@ type Uniforms = {
 };
 
 /** Runs `fn` and returns how long the main thread spent inside it. */
+//* CPU build ==================================================================
+
 function timed(fn: () => void) {
   const t0 = performance.now();
   fn();
@@ -104,6 +108,23 @@ function fillOnCpu(out: Float32Array, seed: number) {
   }
 }
 
+//* GPU build ==================================================================
+
+/**
+ * The creator. `useLocalNodes` calls this once, on the first render, and
+ * keeps what it returns for the life of the component. All the TSL lives
+ * here: the compute pass and the material nodes that read what it wrote.
+ *
+ * It finds its inputs by name rather than by prop. `uniforms.scope` looks
+ * up the values `useUniforms` registered under "computeParallel", and
+ * `gpuStorage` holds the buffer `useGPUStorage` allocated. Both hooks run
+ * before this does, so the names resolve. The casts are the price of that
+ * lookup, the store is untyped and this file knows what it put in.
+ *
+ * `fill` is the pass. `Fn(() => {})()` builds the kernel, `.compute(COUNT)`
+ * turns it into a dispatch of COUNT invocations. Nothing runs yet. The
+ * result is a description the renderer executes when asked.
+ */
 function build({ uniforms, gpuStorage }: CreatorState) {
   const u = uniforms.scope("computeParallel") as unknown as Uniforms;
   const positions =
@@ -141,6 +162,17 @@ function build({ uniforms, gpuStorage }: CreatorState) {
   };
 }
 
+//* Scene ======================================================================
+
+/**
+ * The scene. Registers the uniforms and the buffer the creator reads, builds
+ * the nodes, and wires the two buttons to the two builds. The hook order is
+ * deliberate: uniforms and storage first, so they exist by the time
+ * `useLocalNodes` runs `build`.
+ *
+ * `onReport` sends a line up to the DOM overlay. That lives outside the
+ * Canvas, because there is no HTML inside one.
+ */
 function Cloud({ onReport }: { onReport: (line: string) => void }) {
   const values = useControls("compute · parallel", {
     seed: { value: 1, min: 0, max: 100, step: 1 },
@@ -210,6 +242,17 @@ function Cloud({ onReport }: { onReport: (line: string) => void }) {
   );
 }
 
+//* Experience =================================================================
+
+/**
+ * The experience root. Owns the Canvas and the camera, fills whatever box
+ * the shell mounts it in, and returns null without WebGPU because compute
+ * has no WebGL fallback.
+ *
+ * The report state lives here, above the Canvas, because the text that
+ * shows it and the component that writes it are on opposite sides of
+ * the Canvas boundary.
+ */
 export function ComputeParallel() {
   const [report, setReport] = useState("building on the GPU");
 
