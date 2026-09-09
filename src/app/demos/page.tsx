@@ -61,6 +61,27 @@ const DEMOS = [
     tags: ["materialNormal", "normalNode", "MeshStandardNodeMaterial", "pointer uniform"],
   },
   {
+    href: "/demos/tsl-materials/mix",
+    title: "TSL materials, one step at a time",
+    blurb:
+      "Four scenes on one stage. A colour mix on a sphere driven by uniforms, then a box and a pyramid that read the same graph from the store, then MaterialX noise animating all three, then a vertex wobble as a TSL function whose frame jobs a panel outside the canvas can pause by name.",
+    tags: ["useNodes", "useLocalNodes", "mx_noise", "Fn", "named jobs"],
+  },
+  {
+    href: "/demos/tsl-terrain/vertex",
+    title: "Terrain, from vertex shader to compute",
+    blurb:
+      "The compute terrain taken apart. Noise in the vertex shader first, every vertex every frame, then colour by height, then the same noise baked once into a storage texture that trees and an airplane sample without ever evaluating it.",
+    tags: ["positionNode", "mx_fractal_noise", "StorageTexture", "compute"],
+  },
+  {
+    href: "/demos/tsl-post/outputs",
+    title: "Post processing, one pass at a time",
+    blurb:
+      "The tower on a pedestal and a render pipeline that grows. MRT outputs picked by a uniform, then a typical AO, bloom, vignette and tone mapping chain, then screen space GI in a coloured room, then aerial haze on a descent from orbit, then FSR with every internal buffer on a debug switch.",
+    tags: ["useRenderPipeline", "MRT", "SSGI", "@pmndrs/sky", "FSR"],
+  },
+  {
     href: "/demos/grain-gradient",
     title: "Grain gradient",
     blurb:
