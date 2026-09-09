@@ -3,6 +3,9 @@
 The workshop build of the Paris mini-site: Advanced React Three Fiber —
 the PMNDRS workshop at Gobelins, Paris, September 8–9 2026.
 
+**Live:** https://r3f-workshop.github.io/workshop/ — the demos and the site,
+published from `main` by GitHub Pages.
+
 ## Branches
 
 - **`main` (you are here)** — the *starting point*. The full page structure,
@@ -36,6 +39,16 @@ pnpm lint
 **pnpm, not npm.** The repo carries a pnpm patch for Rapier in
 `tooling/patches/` (wired up in `pnpm-workspace.yaml`); installing with npm silently
 skips it and the build fails.
+
+## Deploy
+
+Every push to `main` runs `.github/workflows/pages.yml`, which builds a static
+export and publishes it to https://r3f-workshop.github.io/workshop/. The
+workflow sets `STATIC_EXPORT` and `NEXT_PUBLIC_BASE_PATH`, and only then does
+`next.config.ts` switch to `output: "export"` under the `/workshop` base path.
+Public asset URLs go through `src/lib/asset.ts` so they pick up that prefix;
+`next/link` handles routes on its own. Dev, plain builds, and Vercel are
+unaffected.
 
 ## Routes
 
