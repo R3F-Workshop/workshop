@@ -38,7 +38,6 @@ import {
   Vector2,
   type Group,
   type Node,
-  type UniformNode,
   type WebGPURenderer,
 } from "three/webgpu";
 
@@ -80,23 +79,6 @@ const TREES = 3000;
 /** The plane's circuit radius. */
 const ORBIT = 4.5;
 
-type Uniforms = {
-  frequency: UniformNode<"float", number>;
-  octaves: UniformNode<"float", number>;
-  lacunarity: UniformNode<"float", number>;
-  gain: UniformNode<"float", number>;
-  amplitude: UniformNode<"float", number>;
-  offsetX: UniformNode<"float", number>;
-  offsetZ: UniformNode<"float", number>;
-  /** Heights below this, as a fraction of the map, are under water. */
-  water: UniformNode<"float", number>;
-  snow: UniformNode<"float", number>;
-  /** Height above the ground the plane keeps. */
-  clearance: UniformNode<"float", number>;
-  /** Where the plane is, written by the loop. */
-  planeXZ: UniformNode<"vec2", Vector2>;
-};
-
 /** World xz to a texel address in 0..1. The one convention everything shares. */
 const mapUv = (xz: Node<"vec2">) => xz.div(WORLD).add(0.5);
 
@@ -114,7 +96,7 @@ const mapUv = (xz: Node<"vec2">) => xz.div(WORLD).add(0.5);
  * the demo would have nothing to say.
  */
 function build({ uniforms, gpuStorage }: CreatorState) {
-  const u = uniforms.scope("computeTerrain") as unknown as Uniforms;
+  const u = uniforms.computeTerrain;
   const map = gpuStorage.computeTerrainMap as unknown as StorageTexture;
 
   /** The noise, mapped to roughly 0..1. Only the bake calls it. */

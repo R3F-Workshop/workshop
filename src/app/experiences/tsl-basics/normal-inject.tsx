@@ -82,19 +82,6 @@ import { asset } from "@/lib/asset";
 
 //* The injected node =========================================================
 
-/** The dials and the pointer, as the store hands them back. */
-type Uniforms = {
-  /** The pointer on the surface, in the helmet's own space. */
-  hit: UniformNode<"vec3", Vector3>;
-  /** How far the ripple reaches from the pointer, in local units. */
-  radius: UniformNode<"float", number>;
-  /** Ring frequency, in rings per local unit. */
-  rings: UniformNode<"float", number>;
-  speed: UniformNode<"float", number>;
-  /** How far the normal tilts at the strongest point. */
-  amplitude: UniformNode<"float", number>;
-};
-
 /**
  * The creator, run once by `useLocalNodes`. Module level so its identity is
  * stable and the graph is not rebuilt when a Leva change re-renders
@@ -105,7 +92,7 @@ type Uniforms = {
  * and the fade would flicker.
  */
 function build({ uniforms }: CreatorState) {
-  const u = uniforms.scope("tslNormalInject") as unknown as Uniforms;
+  const u = uniforms.tslNormalInject;
   const touch = uniform(0);
 
   const normalNode = Fn(() => {

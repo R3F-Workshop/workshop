@@ -10,7 +10,7 @@ import {
 import { useControls } from "leva";
 import { useRef } from "react";
 import { float, mix, normalView, sin, uv } from "three/tsl";
-import type { Color, Mesh, UniformNode } from "three/webgpu";
+import type { Mesh } from "three/webgpu";
 
 import { useWebGPU } from "@/lib/use-webgpu";
 
@@ -49,16 +49,6 @@ import { useWebGPU } from "@/lib/use-webgpu";
  * the nodes back for use outside a builder.
  */
 
-/** The scope, as the store hands it back. */
-type Shared = {
-  base: UniformNode<"color", Color>;
-  tip: UniformNode<"color", Color>;
-  /** How strongly the rim picks up the tip colour. */
-  sheen: UniformNode<"float", number>;
-  /** 0..1, written every frame by `Dials`. */
-  pulse: UniformNode<"float", number>;
-};
-
 function Dials() {
   const { rate, ...values } = useControls("tsl hooks · shared", {
     base: "#22222a",
@@ -68,7 +58,7 @@ function Dials() {
     rate: { value: 1.2, min: 0, max: 6, step: 0.05 },
   });
 
-  const u = useUniforms({ ...values, pulse: 0 }, "hooksShared") as unknown as Shared;
+  const u = useUniforms({ ...values, pulse: 0 }, "hooksShared");
 
   const t = useRef(0);
   useFrame(({ delta }) => {
@@ -80,7 +70,7 @@ function Dials() {
 }
 
 function orbBuild({ uniforms }: CreatorState) {
-  const u = uniforms.scope("hooksShared") as unknown as Shared;
+  const u = uniforms.hooksShared;
   // Rim: bright where the surface turns away from the eye.
   const rim = float(1).sub(normalView.z.abs()).pow(2);
   return {
@@ -90,14 +80,14 @@ function orbBuild({ uniforms }: CreatorState) {
 }
 
 function slabBuild({ uniforms }: CreatorState) {
-  const u = uniforms.scope("hooksShared") as unknown as Shared;
+  const u = uniforms.hooksShared;
   // Bands across the face that slide with the pulse.
   const band = sin(uv().y.mul(18).add(u.pulse.mul(Math.PI))).step(0.2);
   return { colorNode: mix(u.base, u.tip, band.mul(u.sheen)) };
 }
 
 function ringBuild({ uniforms }: CreatorState) {
-  const u = uniforms.scope("hooksShared") as unknown as Shared;
+  const u = uniforms.hooksShared;
   // The whole ring breathes between the two colours.
   return { colorNode: mix(u.base, u.tip, u.pulse.mul(u.sheen)) };
 }

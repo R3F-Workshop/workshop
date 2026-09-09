@@ -1,0 +1,81 @@
+diff --git a/dist/webgpu/index.d.ts b/dist/webgpu/index.d.ts
+index 7c11c4fa5bf37813568688393cb1ce5519faa061..7ef3423f7d95ed74d3ee1f3ee2d5ecae7f07461c 100644
+--- a/dist/webgpu/index.d.ts
++++ b/dist/webgpu/index.d.ts
+@@ -3820,23 +3820,24 @@ type ResourceLeafGuard<T> = (value: unknown) => value is T;
+  * structure is `Record<string, T | Record<string, T>>` (leaf nodes or nested scopes).
+  *
+  * The wrapper uses a Proxy to:
+- * 1. Return `T` for property access (type assumption: assumes leaf node)
+- * 2. Provide `.scope(key)` method for explicit nested access
+- * 3. Support iteration methods: has(), keys(), Object.keys(), for...in
++ * 1. Return `T` for root leaf access
++ * 2. Allow registered scopes to use direct dot access
++ * 3. Provide `.scope(key)` for explicit nested access
++ * 4. Support iteration methods: has(), keys(), Object.keys(), for...in
+  *
+  * @example
+  * ```tsx
+  * useLocalNodes(({ uniforms }) => ({
+  *   wobble: sin(uniforms.uTime.mul(2)),           // No cast needed!
+- *   playerHealth: uniforms.scope('player').uHealth // Explicit scope access
++ *   playerHealth: uniforms.player.uHealth         // Direct scope access
+  * }))
+  * ```
+  */
+ 
+ /**
+  * Type-safe wrapper interface for accessing nested store data.
+- * Property access returns `T` (assumes leaf node).
+- * Use `.scope(key)` for nested object access.
++ * Property access returns `T` unless a registered scope supplies its shape.
++ * Use `.scope<TScope>(key)` for an explicitly typed nested access.
+  *
+  */
+ type ScopedStoreMethods<TLeaf> = {
+@@ -3848,6 +3849,7 @@ type ScopedStoreMethods<TLeaf> = {
+     keys(): string[];
+ };
+ type ScopedStoreType<TLeaf, TEntries extends Record<string, TLeaf> = Record<string, TLeaf>> = Readonly<TEntries> & ScopedStoreMethods<TLeaf>;
++type RegisteredScopedStore<TLeaf, TScopes> = ScopedStoreMethods<TLeaf> & Readonly<TScopes> & Readonly<Record<string, any>>;
+ interface ScopedStoreData<TLeaf> {
+     [key: string]: TLeaf | ScopedStoreData<TLeaf>;
+ }
+@@ -3857,19 +3859,33 @@ interface ScopedStoreData<TLeaf> {
+  * @returns A ScopedStoreType wrapper with type-safe access
+  */
+ declare function createScopedStore<TLeaf>(data: ScopedStoreData<TLeaf>, isLeaf: ResourceLeafGuard<TLeaf>): ScopedStoreType<TLeaf>;
++declare global {
++    /** App-owned uniform scopes available through CreatorState dot access. */
++    interface ThreeFiberUniformScopes {
++    }
++    /** App-owned node scopes available through CreatorState dot access. */
++    interface ThreeFiberNodeScopes {
++    }
++    /** App-owned buffer scopes available through CreatorState dot access. */
++    interface ThreeFiberBufferScopes {
++    }
++    /** App-owned GPU storage scopes available through CreatorState dot access. */
++    interface ThreeFiberGPUStorageScopes {
++    }
++}
+ /**
+  * State type passed to creator functions with ScopedStore wrappers.
+  * Provides type-safe access to uniforms, nodes, buffers, and gpuStorage without manual casting.
+  */
+ type CreatorState = Omit<RootState, 'uniforms' | 'nodes' | 'buffers' | 'gpuStorage'> & {
+     /** Type-safe uniform access - property access returns UniformNode */
+-    uniforms: ScopedStoreType<UniformNode>;
++    uniforms: RegisteredScopedStore<UniformNode, ThreeFiberUniformScopes>;
+     /** Type-safe node access for real, callable, and legacy structural nodes */
+-    nodes: ScopedStoreType<NodeLike>;
++    nodes: RegisteredScopedStore<NodeLike, ThreeFiberNodeScopes>;
+     /** Type-safe buffer access - property access returns BufferLike (TypedArrays, BufferAttributes, TSL nodes) */
+-    buffers: ScopedStoreType<BufferLike>;
++    buffers: RegisteredScopedStore<BufferLike, ThreeFiberBufferScopes>;
+     /** Type-safe GPU storage access - property access returns StorageLike (StorageTexture, TSL nodes) */
+-    gpuStorage: ScopedStoreType<StorageLike>;
++    gpuStorage: RegisteredScopedStore<StorageLike, ThreeFiberGPUStorageScopes>;
+ };
+ 
+ /** Creator function that returns uniform inputs (can be raw values or UniformNodes) */

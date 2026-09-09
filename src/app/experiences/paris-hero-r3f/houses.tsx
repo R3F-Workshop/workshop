@@ -35,8 +35,6 @@ const [Town, House] = createInstances<{
   origin: [number, number, number];
 }>();
 
-type TownUniforms = { progress: THREE.UniformNode<"float", number> };
-
 /**
  * Scales each house about its own base as its moment on the timeline passes.
  *
@@ -45,7 +43,7 @@ type TownUniforms = { progress: THREE.UniformNode<"float", number> };
  * origin back.
  */
 function createGrowNodes({ uniforms }: CreatorState) {
-  const { progress } = uniforms.scope("town") as unknown as TownUniforms;
+  const { progress } = uniforms.town;
   const birth = attribute<"float">("birth", "float");
   const origin = attribute<"vec3">("origin", "vec3");
 
@@ -139,7 +137,7 @@ function SampledHouses({
   const { progress } = useUniforms(
     { progress: 0 },
     "town",
-  ) as unknown as TownUniforms;
+  );
 
   // The one write per frame.
   useFrame(({ delta }) => {

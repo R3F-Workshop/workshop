@@ -27,9 +27,7 @@ import {
 } from "three/tsl";
 import {
   Vector3,
-  type Color,
   type StorageBufferNode,
-  type UniformNode,
   type WebGPURenderer,
 } from "three/webgpu";
 
@@ -66,19 +64,6 @@ const PITCH = 0.12;
 /** Parking spot for the cursor when it is off the ground. */
 const AWAY = 1e6;
 
-type Uniforms = {
-  /** World space. Only x and z are read. */
-  pointer: UniformNode<"vec3", Vector3>;
-  radius: UniformNode<"float", number>;
-  /** Ease rate, per second. */
-  rate: UniformNode<"float", number>;
-  jitter: UniformNode<"float", number>;
-  height: UniformNode<"float", number>;
-  base: UniformNode<"color", Color>;
-  tip: UniformNode<"color", Color>;
-  dt: UniformNode<"float", number>;
-};
-
 //* GPU build ==================================================================
 
 /**
@@ -92,7 +77,7 @@ type Uniforms = {
  * the vertex stage agree on where a cell sits without sharing a variable.
  */
 function build({ uniforms, gpuStorage }: CreatorState) {
-  const u = uniforms.scope("computeCursor") as unknown as Uniforms;
+  const u = uniforms.computeCursor;
   const lifts =
     gpuStorage.computeCursorLift as unknown as StorageBufferNode<"float">;
 
@@ -157,7 +142,7 @@ function Grid() {
   const u = useUniforms(
     { ...values, pointer, dt: 0 },
     "computeCursor",
-  ) as unknown as Uniforms;
+  );
 
   // Zero-filled at allocation, which is exactly "flat".
   useGPUStorage(() => ({

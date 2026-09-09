@@ -28,7 +28,6 @@ import {
 import {
   StorageTexture,
   type Mesh,
-  type UniformNode,
   type WebGPURenderer,
 } from "three/webgpu";
 
@@ -62,16 +61,8 @@ import { useWebGPU } from "@/lib/use-webgpu";
 
 const SIZE = 256;
 
-type Uniforms = {
-  /** How many waves fit across the texture. */
-  scale: UniformNode<"float", number>;
-  hue: UniformNode<"float", number>;
-  /** Seconds, written every frame by `Plasma`. */
-  t: UniformNode<"float", number>;
-};
-
 function plasmaBuild({ uniforms, gpuStorage }: CreatorState) {
-  const u = uniforms.scope("hooksStorage") as unknown as Uniforms;
+  const u = uniforms.hooksStorage;
   const field = gpuStorage.hooksStorageField as unknown as StorageTexture;
 
   // One invocation per texel. The index unrolls to a pixel address. The
@@ -109,7 +100,7 @@ function Plasma() {
     // CPU only. It scales the clock before the clock becomes a uniform.
     speed: { value: 1, min: 0, max: 4, step: 0.05 },
   });
-  const u = useUniforms({ ...values, t: 0 }, "hooksStorage") as unknown as Uniforms;
+  const u = useUniforms({ ...values, t: 0 }, "hooksStorage");
 
   // Allocated once, never read back.
   useGPUStorage(() => ({ hooksStorageField: new StorageTexture(SIZE, SIZE) }));

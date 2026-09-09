@@ -30,9 +30,7 @@ import {
   vec3,
 } from "three/tsl";
 import type {
-  Color,
   StorageBufferNode,
-  UniformNode,
   WebGPURenderer,
 } from "three/webgpu";
 
@@ -69,13 +67,6 @@ const BINS = 48;
 /** The line's length, in world units. */
 const WIDTH = 8;
 
-type Uniforms = {
-  /** How fast the points wander. */
-  drift: UniformNode<"float", number>;
-  base: UniformNode<"color", Color>;
-  tip: UniformNode<"color", Color>;
-};
-
 //* GPU build ==================================================================
 
 /**
@@ -90,7 +81,7 @@ type Uniforms = {
  * heights buffer, the float copy, because the atomic buffer is compute only.
  */
 function build({ uniforms, gpuStorage }: CreatorState) {
-  const u = uniforms.scope("computeReduce") as unknown as Uniforms;
+  const u = uniforms.computeReduce;
   const positions =
     gpuStorage.computeReducePositions as unknown as StorageBufferNode<"vec2">;
   const bins = gpuStorage.computeReduceBins as unknown as StorageBufferNode<"uint">;

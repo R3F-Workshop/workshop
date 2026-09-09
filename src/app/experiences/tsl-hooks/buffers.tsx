@@ -14,10 +14,8 @@ import { instancedBufferAttribute, mix, positionLocal, vec3 } from "three/tsl";
 import {
   DynamicDrawUsage,
   InstancedBufferAttribute,
-  type Color,
   type Mesh,
   type Node,
-  type UniformNode,
 } from "three/webgpu";
 
 import { useWebGPU } from "@/lib/use-webgpu";
@@ -58,12 +56,6 @@ const PITCH = 0.22;
 type Buffers = {
   offsets: InstancedBufferAttribute;
   heights: InstancedBufferAttribute;
-};
-
-type Uniforms = {
-  base: UniformNode<"color", Color>;
-  tip: UniformNode<"color", Color>;
-  amplitude: UniformNode<"float", number>;
 };
 
 function Field() {
@@ -110,8 +102,8 @@ function Field() {
 }
 
 function columnsBuild({ buffers, uniforms }: CreatorState) {
-  const b = buffers.scope("hooksBuffers") as unknown as Buffers;
-  const u = uniforms.scope("hooksBuffers") as unknown as Uniforms;
+  const b = buffers.hooksBuffers;
+  const u = uniforms.hooksBuffers;
 
   // The attributes as nodes. The builder registers them on the material, so
   // the geometry stays a plain box. three types the attribute node as an
@@ -160,7 +152,7 @@ function Marker() {
   // first render, and the frame that may run before the re-render, see an
   // empty scope. Hence the guard.
   const { offsets, heights } = useBuffers("hooksBuffers") as unknown as Buffers;
-  const u = useUniforms("hooksBuffers") as unknown as Uniforms;
+  const u = useUniforms("hooksBuffers") as unknown as ThreeFiberUniformScopes["hooksBuffers"];
   const ref = useRef<Mesh>(null);
 
   useFrame(() => {

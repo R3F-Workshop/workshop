@@ -30,10 +30,8 @@ import {
   vec3,
 } from "three/tsl";
 import type {
-  Color,
   Node,
   StorageBufferNode,
-  UniformNode,
   WebGPURenderer,
 } from "three/webgpu";
 
@@ -63,22 +61,6 @@ import { useWebGPU } from "@/lib/use-webgpu";
 
 const COUNT = 32768;
 
-type Uniforms = {
-  gravity: UniformNode<"float", number>;
-  /** Launch speed in world units per second. */
-  speed: UniformNode<"float", number>;
-  /** Sideways spread of the launch cone, as a fraction of up. */
-  spread: UniformNode<"float", number>;
-  /** How much vertical speed survives a bounce. */
-  bounce: UniformNode<"float", number>;
-  floor: UniformNode<"float", number>;
-  size: UniformNode<"float", number>;
-  cool: UniformNode<"color", Color>;
-  hot: UniformNode<"color", Color>;
-  /** Seconds, written every frame. */
-  dt: UniformNode<"float", number>;
-};
-
 //* GPU build ==================================================================
 
 /**
@@ -95,7 +77,7 @@ type Uniforms = {
  * helper that builds nodes, not a GPU function call.
  */
 function build({ uniforms, gpuStorage }: CreatorState) {
-  const u = uniforms.scope("computePersist") as unknown as Uniforms;
+  const u = uniforms.computePersist;
   const positions =
     gpuStorage.computePersistPositions as unknown as StorageBufferNode<"vec3">;
   const velocities =
@@ -185,7 +167,7 @@ function Fountain() {
   const u = useUniforms(
     { ...values, floor: -2, dt: 0 },
     "computePersist",
-  ) as unknown as Uniforms;
+  );
 
   // Allocated once. The CPU never reads them back.
   useGPUStorage(() => ({

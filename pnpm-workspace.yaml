@@ -2,6 +2,9 @@ allowBuilds:
   unrs-resolver: true
 
 patchedDependencies:
+  # Fiber's scoped-store runtime supports nested dot access, but alpha.5 types only expose `.scope()`.
+  # Remove when the WebGPU creator-state types model direct scoped properties upstream.
+  '@react-three/fiber@10.0.0-alpha.5': tooling/patches/@react-three__fiber@10.0.0-alpha.5.patch
   '@react-three/rapier@2.2.0': tooling/patches/@react-three__rapier@2.2.0.patch
 # react-three-rapier 2.x pins its peer to R3F v9. It only reaches for `useFrame`
 # and `useThree`, both unchanged in v10 — and the patch below repoints them at the

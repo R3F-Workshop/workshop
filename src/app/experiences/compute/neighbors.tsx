@@ -38,8 +38,6 @@ import {
   PlaneGeometry,
   StorageTexture,
   Vector3,
-  type Color,
-  type UniformNode,
   type WebGPURenderer,
 } from "three/webgpu";
 
@@ -77,20 +75,6 @@ const SIZE = 256;
 /** The sheet's edge, in world units. */
 const WORLD = 8;
 
-type Uniforms = {
-  /** Texel coordinates and strength. Strength 0 means no drop this frame. */
-  drop: UniformNode<"vec3", Vector3>;
-  /** Drop radius, in texels. */
-  spread: UniformNode<"float", number>;
-  /** Energy kept per step. */
-  damping: UniformNode<"float", number>;
-  /** Wave speed. Half is the stable maximum for this stencil. */
-  speed: UniformNode<"float", number>;
-  amplitude: UniformNode<"float", number>;
-  deep: UniformNode<"color", Color>;
-  crest: UniformNode<"color", Color>;
-};
-
 //* GPU build ==================================================================
 
 /**
@@ -106,7 +90,7 @@ type Uniforms = {
  * texture, and the rest of the scene need not know how it was made.
  */
 function build({ uniforms, gpuStorage }: CreatorState) {
-  const u = uniforms.scope("computeNeighbors") as unknown as Uniforms;
+  const u = uniforms.computeNeighbors;
   const a = gpuStorage.computeNeighborsA as unknown as StorageTexture;
   const b = gpuStorage.computeNeighborsB as unknown as StorageTexture;
 

@@ -9,7 +9,7 @@ import {
 import { useControls } from "leva";
 import { useRef } from "react";
 import { mix, positionLocal, sin, time } from "three/tsl";
-import type { Color, Mesh, UniformNode } from "three/webgpu";
+import type { Mesh } from "three/webgpu";
 
 import { useWebGPU } from "@/lib/use-webgpu";
 
@@ -47,15 +47,6 @@ import { useWebGPU } from "@/lib/use-webgpu";
  * about the graph changed. Only a number did.
  */
 
-/** The dials the shader reads, as the store hands them back. */
-type Uniforms = {
-  base: UniformNode<"color", Color>;
-  tip: UniformNode<"color", Color>;
-  /** Bands along the knot's local y axis. */
-  bands: UniformNode<"float", number>;
-  speed: UniformNode<"float", number>;
-};
-
 function Knot() {
   // Namespaced, because Leva's store is global and every demo shares it.
   const params = useControls("tsl hooks · uniform", {
@@ -69,10 +60,9 @@ function Knot() {
   useUniforms(params, "hooksUniform");
 
   // The store is filled synchronously by the line above, so the builder
-  // never sees a missing uniform. The cast restores the types the store
-  // drops.
+  // never sees a missing uniform.
   const { colorNode } = useLocalNodes(({ uniforms }) => {
-    const u = uniforms.scope("hooksUniform") as unknown as Uniforms;
+    const u = uniforms.hooksUniform;
     // A sine along local y, sliding with time, mapped to 0..1.
     const band = sin(positionLocal.y.mul(u.bands).add(time.mul(u.speed)))
       .mul(0.5)

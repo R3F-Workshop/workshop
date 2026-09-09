@@ -11,7 +11,7 @@ import {
 import { useControls } from "leva";
 import { useRef } from "react";
 import { cos, Fn, positionLocal, sin, time, uv, vec3 } from "three/tsl";
-import type { Mesh, Node, UniformNode } from "three/webgpu";
+import type { Mesh, Node } from "three/webgpu";
 
 import { useWebGPU } from "@/lib/use-webgpu";
 
@@ -40,22 +40,6 @@ import { useWebGPU } from "@/lib/use-webgpu";
  * renderer can read both.
  */
 
-/** The dials, as the store hands them back. */
-type Uniforms = {
-  /** Slides the whole palette around the hue circle. */
-  hueShift: UniformNode<"float", number>;
-  bands: UniformNode<"float", number>;
-  speed: UniformNode<"float", number>;
-};
-
-/** The graph, as the store hands it back. */
-type Library = {
-  /** Cosine palette: 0..1 in, a colour out. Wraps, so any drift works. */
-  palette: (inputs: { t: Node<"float"> }) => Node<"vec3">;
-  /** Bands along local y, sliding with time. 0..1. */
-  stripes: Node<"float">;
-};
-
 function Library() {
   const params = useControls("tsl hooks · nodes", {
     hueShift: { value: 0, min: 0, max: 1, step: 0.01 },
@@ -65,7 +49,7 @@ function Library() {
   useUniforms(params, "hooksNodes");
 
   useNodes(({ uniforms }) => {
-    const u = uniforms.scope("hooksNodes") as unknown as Uniforms;
+    const u = uniforms.hooksNodes;
 
     // Inigo Quilez's cosine palette, with the phase offset per channel so
     // the three curves fan out into a full spectrum. Object inputs, because
@@ -94,13 +78,13 @@ function Library() {
 }
 
 function barsBuild({ nodes }: CreatorState) {
-  const lib = nodes.scope("hooksNodes") as unknown as Library;
+  const lib = nodes.hooksNodes;
   return { colorNode: lib.palette({ t: lib.stripes }) };
 }
 
 function ballBuild({ nodes, uniforms }: CreatorState) {
-  const lib = nodes.scope("hooksNodes") as unknown as Library;
-  const u = uniforms.scope("hooksNodes") as unknown as Uniforms;
+  const lib = nodes.hooksNodes;
+  const u = uniforms.hooksNodes;
   // A gradient by height, drifting through the palette over time.
   return {
     colorNode: lib.palette({
@@ -110,7 +94,7 @@ function ballBuild({ nodes, uniforms }: CreatorState) {
 }
 
 function sheetBuild({ nodes }: CreatorState) {
-  const lib = nodes.scope("hooksNodes") as unknown as Library;
+  const lib = nodes.hooksNodes;
   // The palette laid out flat, with the stripes wobbling it.
   return {
     colorNode: lib.palette({ t: uv().x.add(lib.stripes.mul(0.15)) }),

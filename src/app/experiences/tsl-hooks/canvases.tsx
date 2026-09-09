@@ -11,7 +11,7 @@ import {
 import { useControls } from "leva";
 import { useEffect, useRef, useState } from "react";
 import { mix, positionLocal, sin } from "three/tsl";
-import type { Color, Mesh, UniformNode } from "three/webgpu";
+import type { Mesh } from "three/webgpu";
 
 import { useWebGPU } from "@/lib/use-webgpu";
 
@@ -38,14 +38,6 @@ import { useWebGPU } from "@/lib/use-webgpu";
 
 const PRIMARY = "hooksPrimary";
 
-type Shared = {
-  base: UniformNode<"color", Color>;
-  tip: UniformNode<"color", Color>;
-  bands: UniformNode<"float", number>;
-  /** 0..1, written every frame by `Dials`. */
-  pulse: UniformNode<"float", number>;
-};
-
 function Dials() {
   const { rate, ...values } = useControls("tsl hooks · canvases", {
     base: "#22222a",
@@ -54,7 +46,7 @@ function Dials() {
     rate: { value: 1.2, min: 0, max: 6, step: 0.05 },
   });
 
-  const u = useUniforms({ ...values, pulse: 0 }, "hooksCanvases") as unknown as Shared;
+  const u = useUniforms({ ...values, pulse: 0 }, "hooksCanvases");
 
   const t = useRef(0);
   useFrame(({ delta }) => {
@@ -67,7 +59,7 @@ function Dials() {
 
 /** One graph, built by whichever canvas asks for it. */
 function build({ uniforms }: CreatorState) {
-  const u = uniforms.scope("hooksCanvases") as unknown as Shared;
+  const u = uniforms.hooksCanvases;
   const band = sin(positionLocal.y.mul(u.bands).add(u.pulse.mul(Math.PI)))
     .mul(0.5)
     .add(0.5);

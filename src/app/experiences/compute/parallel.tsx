@@ -27,10 +27,8 @@ import {
 } from "three/tsl";
 import {
   AdditiveBlending,
-  type Color,
   type Group,
   type StorageBufferNode,
-  type UniformNode,
   type WebGPURenderer,
 } from "three/webgpu";
 
@@ -60,14 +58,6 @@ import { useWebGPU } from "@/lib/use-webgpu";
 
 const COUNT = 1 << 20;
 const TAU = Math.PI * 2;
-
-type Uniforms = {
-  /** Changes the fuzz radius, so every rebuild is visibly a rebuild. */
-  seed: UniformNode<"float", number>;
-  size: UniformNode<"float", number>;
-  a: UniformNode<"color", Color>;
-  b: UniformNode<"color", Color>;
-};
 
 /** Runs `fn` and returns how long the main thread spent inside it. */
 //* CPU build ==================================================================
@@ -115,18 +105,17 @@ function fillOnCpu(out: Float32Array, seed: number) {
  * keeps what it returns for the life of the component. All the TSL lives
  * here: the compute pass and the material nodes that read what it wrote.
  *
- * It finds its inputs by name rather than by prop. `uniforms.scope` looks
- * up the values `useUniforms` registered under "computeParallel", and
+ * It finds its inputs by name rather than by prop. `uniforms.computeParallel`
+ * reads the values `useUniforms` registered under that scope, and
  * `gpuStorage` holds the buffer `useGPUStorage` allocated. Both hooks run
- * before this does, so the names resolve. The casts are the price of that
- * lookup, the store is untyped and this file knows what it put in.
+ * before this does, so the names resolve.
  *
  * `fill` is the pass. `Fn(() => {})()` builds the kernel, `.compute(COUNT)`
  * turns it into a dispatch of COUNT invocations. Nothing runs yet. The
  * result is a description the renderer executes when asked.
  */
 function build({ uniforms, gpuStorage }: CreatorState) {
-  const u = uniforms.scope("computeParallel") as unknown as Uniforms;
+  const u = uniforms.computeParallel;
   const positions =
     gpuStorage.computeParallelPositions as unknown as StorageBufferNode<"vec3">;
 
@@ -180,7 +169,7 @@ function Cloud({ onReport }: { onReport: (line: string) => void }) {
     a: "#3a5aff",
     b: "#ffd9a0",
   });
-  const u = useUniforms(values, "computeParallel") as unknown as Uniforms;
+  const u = useUniforms(values, "computeParallel");
 
   const { computeParallelPositions: positions } = useGPUStorage(() => ({
     computeParallelPositions: instancedArray(COUNT, "vec3"),

@@ -14,7 +14,6 @@ import { useWebGPU } from "@/lib/use-webgpu";
 import { grainNodes } from "./nodes/grain";
 import { rampNodes } from "./nodes/ramp";
 import { shapeNode } from "./nodes/shape";
-import type { GrainUniforms } from "./nodes/uniforms";
 
 /**
  * A grain gradient, the one at /demos/grain-gradient.
@@ -51,7 +50,7 @@ import type { GrainUniforms } from "./nodes/uniforms";
  */
 
 function createGrainNodes({ uniforms }: CreatorState) {
-  const u = uniforms.scope("grainGradient") as unknown as GrainUniforms;
+  const u = uniforms.grainGradient;
   const shape = shapeNode(u);
   const { distort, lift } = grainNodes(u.grainSize);
   return rampNodes({ shape, distort, lift }, u);

@@ -36,7 +36,6 @@ import {
   Vector2,
   type Node,
   type PointLight,
-  type UniformNode,
   type WebGPURenderer,
 } from "three/webgpu";
 
@@ -44,7 +43,7 @@ import type { EnvPreset } from "@/app/home/components/canvas/studio-env";
 import { useWebGPU } from "@/lib/use-webgpu";
 
 import { Environment } from "./environment";
-import { tileSurface, type SurfaceUniforms } from "./tile-surface";
+import { tileSurface } from "./tile-surface";
 import { AWAY, useSweepCursor } from "./use-sweep-cursor";
 
 /**
@@ -108,27 +107,6 @@ const Tile = struct(
  */
 type FloatNode = Node<"float">;
 type Vec2Node = Node<"vec2">;
-
-/**
- * The uniforms the simulation reads, as the store hands them back. The
- * surface's own are declared beside the surface.
- */
-type FlipGridUniforms = SurfaceUniforms & {
-  /** Cell pitch, tile edge, and flip radius, all in world units. */
-  step: UniformNode<"float", number>;
-  tile: UniformNode<"float", number>;
-  radius: UniformNode<"float", number>;
-  /** Tile depth as a fraction of its edge. */
-  thickness: UniformNode<"float", number>;
-  hold: UniformNode<"float", number>;
-  stiffness: UniformNode<"float", number>;
-  damping: UniformNode<"float", number>;
-  massJitter: UniformNode<"float", number>;
-  /** Written by the frame loop: the timestep and the cursor now and last frame. */
-  dt: UniformNode<"float", number>;
-  pointer: UniformNode<"vec2", Vector2>;
-  pointerPrev: UniformNode<"vec2", Vector2>;
-};
 
 /**
  * Every tunable, as the Leva panel hands them back. The defaults and what each
@@ -201,8 +179,8 @@ function Scene({
 
   // Scoped, because uniforms resolve against the primary store. On the site
   // this canvas shares one renderer with the hero, and unscoped names would
-  // collide with it. The cast restores the types the store drops; the same
-  // nodes come back typed the same way inside the builder.
+  // collide with it. The same nodes come back through the registered scope
+  // type inside the builder.
   const u = useUniforms(
     {
       // Sizes in world units, so the shader never has to know the viewport.
@@ -231,7 +209,7 @@ function Scene({
       curvature: config.curvature,
     },
     "flipGrid",
-  ) as unknown as FlipGridUniforms;
+  );
 
   // Zero-filled at allocation, which is exactly "flat, still, not held".
   // `instancedArray` accepts a struct type at runtime but isn't typed for one
@@ -258,7 +236,7 @@ function Scene({
   // pipeline. Memoised on the per-mount values, the graph is built once.
   const build = useCallback(
     ({ uniforms }: CreatorState) => {
-      const u = uniforms.scope("flipGrid") as unknown as FlipGridUniforms;
+      const u = uniforms.flipGrid;
 
       /** This instance's cell centre, in world units. */
       const cellCentre = () => {
